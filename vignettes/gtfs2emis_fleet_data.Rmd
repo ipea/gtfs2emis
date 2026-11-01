@@ -108,7 +108,6 @@ Based on the California Emission Factor model ([EMFAC2017](https://arb.ca.gov/em
 fleet_data_ef_emfac <- data.frame(  veh_type = "BUS_URBAN_D"
                                   , model_year = 2011:2015
                                   , fuel = "D"
-                                  , calendar_year = 2019
                                   , fleet_composition = rep(0.2,5))
 fleet_data_ef_emfac
 ```
@@ -122,10 +121,11 @@ Based on the Motor Vehicle Emission Simulator ([MOVES3 Model](https://www.epa.go
 fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
                                   , model_year = 2011:2015
                                   , fuel = "D"
-                                  , calendar_year = 2016
                                   , fleet_composition = rep(0.2,5))
 fleet_data_ef_moves
 ```
+
+For both US models, the year of the emission inventory is not a column of the fleet data: it is set with the `reference_year` argument of `emission_model()`.
 
 
 ## Learn more

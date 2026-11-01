@@ -30,7 +30,7 @@ The R script used to organize the CETESB database can be found in the repository
 <\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_brazil_cetesb_db.R}>.
 }
 \seealso{
-Other emission factor data: 
+Other emission factor data:
 \code{\link{ef_europe_emep_db}},
 \code{\link{ef_usa_emfac_db}},
 \code{\link{ef_usa_moves_db}}

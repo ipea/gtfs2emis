@@ -48,7 +48,7 @@ values from the \href{https://www.epa.gov/moves}{MOVES3 Model}.
 Estimates expressed in units 'g/km'.
 }
 \seealso{
-Other emission factor data: 
+Other emission factor data:
 \code{\link{ef_brazil_cetesb_db}},
 \code{\link{ef_europe_emep_db}},
 \code{\link{ef_usa_emfac_db}}

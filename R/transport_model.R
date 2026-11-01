@@ -92,7 +92,7 @@ transport_model <- function(gtfs_data
   assert_true(min_speed < max_speed, .var.name = "min_speed < max_speed")
   assert_logical(parallel, any.missing = FALSE) 
   
-  if(parallel)  assert_integerish(ncores,lower = 1,upper = ncores <- parallelly::availableCores(omit = 1)
+  if(parallel)  assert_integerish(ncores,lower = 1,upper = parallelly::availableCores(omit = 1)
                                              ,null.ok = TRUE)
   
   assert_logical(continue, null.ok = FALSE, any.missing = FALSE) 
@@ -124,6 +124,8 @@ transport_model <- function(gtfs_data
   
   
   gps_path <-  paste0(tempdir(),"//gps//")
+  # remove leftovers from previous (e.g. interrupted) runs, unless resuming
+  if(!continue) unlink(gps_path, recursive = TRUE)
   suppressWarnings(dir.create(tempdir()))
   suppressWarnings(dir.create(gps_path))
   
@@ -142,7 +144,8 @@ transport_model <- function(gtfs_data
   
   # create new dirs
   gps_adjust_path <-  paste0(tempdir(), "//gps_adjust//")
-  suppressWarnings(dir.create(tempdir())) 
+  if(!continue) unlink(gps_adjust_path, recursive = TRUE)
+  suppressWarnings(dir.create(tempdir()))
   suppressWarnings(dir.create(gps_adjust_path)) 
   
   

@@ -78,8 +78,8 @@ dt <- emis_to_dt(emi_list)
 }
 }
 \seealso{
-Other emission analysis: 
-\code{\link{emis_grid}()},
-\code{\link{emis_summary}()}
+Other emission analysis:
+\code{\link[=emis_grid]{emis_grid()}},
+\code{\link[=emis_summary]{emis_summary()}}
 }
 \concept{emission analysis}
