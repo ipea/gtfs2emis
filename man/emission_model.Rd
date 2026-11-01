@@ -207,7 +207,7 @@ emi_emfac <- emission_model(tp_model = tp_model
 }
 }
 \seealso{
-Other Core function: 
-\code{\link{transport_model}()}
+Other Core function:
+\code{\link[=transport_model]{transport_model()}}
 }
 \concept{Core function}

@@ -97,7 +97,7 @@ tp_model <- transport_model(gtfs_data = gtfs_small,
 }
 }
 \seealso{
-Other Core function: 
-\code{\link{emission_model}()}
+Other Core function:
+\code{\link[=emission_model]{emission_model()}}
 }
 \concept{Core function}

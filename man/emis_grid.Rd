@@ -86,8 +86,8 @@ plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
 }
 }
 \seealso{
-Other emission analysis: 
-\code{\link{emis_summary}()},
-\code{\link{emis_to_dt}()}
+Other emission analysis:
+\code{\link[=emis_summary]{emis_summary()}},
+\code{\link[=emis_to_dt]{emis_to_dt()}}
 }
 \concept{emission analysis}
