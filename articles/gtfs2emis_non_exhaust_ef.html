@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Exploring Non-Exhaust Emission Factors • gtfs2emis</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Exploring Non-Exhaust Emission Factors">
 </head>
@@ -68,7 +68,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Exploring Non-Exhaust Emission Factors</h1>
             
-            <h4 data-toc-skip class="date">2026-02-12</h4>
+            <h4 data-toc-skip class="date">2026-11-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ipeaGIT/gtfs2emis/blob/master/vignettes/gtfs2emis_non_exhaust_ef.Rmd" class="external-link"><code>vignettes/gtfs2emis_non_exhaust_ef.Rmd</code></a></small>
       <div class="d-none name"><code>gtfs2emis_non_exhaust_ef.Rmd</code></div>
@@ -82,12 +82,12 @@ tire, brake and road wear. The <code>gtfs2emis</code> incorporates the
 non-exhaust emissions methods from <a href="https://www.eea.europa.eu//publications/emep-eea-guidebook-2019" class="external-link">EMEP-EEA</a>.</p>
 <p>The following equation is employed to evaluate emissions originating
 from tire and brake wear</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><msub><mi>E</mi><mi>i</mi></msub><mo>=</mo><mi>d</mi><mi>i</mi><mi>s</mi><mi>t</mi><mo>×</mo><mi>E</mi><msub><mi>F</mi><mrow><mi>t</mi><mi>s</mi><mi>p</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>×</mo><mi>m</mi><msub><mi>f</mi><mi>s</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>×</mo><mi>S</mi><mi>C</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><msub><mi>E</mi><mi>i</mi></msub><mo>=</mo><mi>d</mi><mi>i</mi><mi>s</mi><mi>t</mi><mo>×</mo><mi>E</mi><msub><mi>F</mi><mrow><mi>t</mi><mi>s</mi><mi>p</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo>×</mo><mi>m</mi><msub><mi>f</mi><mi>s</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo stretchy="false" form="postfix">)</mo><mo>×</mo><mi>S</mi><mi>C</mi><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
  TE_i = dist \times EF_{tsp}(j) \times mf_s(i) \times SC(speed)
 </annotation></semantics></math> where:</p>
 <ul>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mi>E</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">TE(i)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mi>E</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">TE(i)</annotation></semantics></math>
 = total emissions of pollutant
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
 (g),</li>
@@ -95,17 +95,17 @@ from tire and brake wear</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mi>i</mi><mi>s</mi><mi>t</mi></mrow><annotation encoding="application/x-tex">dist</annotation></semantics></math>
 = distance driven by each vehicle (km),</li>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>t</mi><mi>s</mi><mi>p</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">EF_{tsp}(j)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>t</mi><mi>s</mi><mi>p</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">EF_{tsp}(j)</annotation></semantics></math>
 = TSP (Total Suspended Particle) mass emission factor for vehicles of
 category
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
 (g/km),</li>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><msub><mi>f</mi><mi>s</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">mf_s(i)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><msub><mi>f</mi><mi>s</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">mf_s(i)</annotation></semantics></math>
 = mass fraction of TSP that can be attributed to pollutant
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,</li>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>C</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">SC(speed)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>C</mi><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">SC(speed)</annotation></semantics></math>
 = correction factor for a mean vehicle travelling at a given speed
 (-).</li>
 </ul>
@@ -134,7 +134,7 @@ load. These parameters are introduced into the equation as follows:</p>
 (g/km).</li>
 </ul>
 <p>and
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi>C</mi><msub><mi>F</mi><mrow><mi>t</mi><mi>i</mi><mi>r</mi><mi>e</mi></mrow></msub><mo>=</mo><mn>1.41</mn><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1.38</mn><mo>×</mo><mi>L</mi><mi>F</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">LCF_{tire} = 1.41 + (1.38 \times LF)</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi>C</mi><msub><mi>F</mi><mrow><mi>t</mi><mi>i</mi><mi>r</mi><mi>e</mi></mrow></msub><mo>=</mo><mn>1.41</mn><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mn>1.38</mn><mo>×</mo><mi>L</mi><mi>F</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">LCF_{tire} = 1.41 + (1.38 \times LF)</annotation></semantics></math></p>
 <p>where:</p>
 <ul>
 <li>
@@ -204,15 +204,15 @@ vehicle axes:</p>
 <p>Finally, the speed correction is:</p>
 <ul>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>t</mi><mi>i</mi><mi>r</mi><mi>e</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1.39</mn></mrow><annotation encoding="application/x-tex">SC_{tire}(speed) = 1.39</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>t</mi><mi>i</mi><mi>r</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1.39</mn></mrow><annotation encoding="application/x-tex">SC_{tire}(speed) = 1.39</annotation></semantics></math>,
 when
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo>&lt;</mo><mn>40</mn><mi>k</mi><mi>m</mi><mi>/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">speed &lt; 40 km/h</annotation></semantics></math>;</li>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>t</mi><mi>i</mi><mi>r</mi><mi>e</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>−</mo><mn>0.00974</mn><mo>×</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo>+</mo><mn>1.78</mn></mrow><annotation encoding="application/x-tex">SC_{tire}(speed) = -0.00974 \times speed + 1.78</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>t</mi><mi>i</mi><mi>r</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>−</mi><mn>0.00974</mn><mo>×</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo>+</mo><mn>1.78</mn></mrow><annotation encoding="application/x-tex">SC_{tire}(speed) = -0.00974 \times speed + 1.78</annotation></semantics></math>,
 when
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>40</mn><mo>&lt;</mo><mo>=</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo>&lt;</mo><mo>=</mo><mn>90</mn><mi>k</mi><mi>m</mi><mi>/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">40 &lt;= speed &lt;= 90 km/h</annotation></semantics></math>;</li>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>t</mi><mi>i</mi><mi>r</mi><mi>e</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0.902</mn></mrow><annotation encoding="application/x-tex">SC_{tire}(speed) = 0.902</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>t</mi><mi>i</mi><mi>r</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.902</mn></mrow><annotation encoding="application/x-tex">SC_{tire}(speed) = 0.902</annotation></semantics></math>,
 when
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo>&gt;</mo><mn>90</mn><mi>k</mi><mi>m</mi><mi>/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">speed &gt; 90 km/h</annotation></semantics></math>.</li>
 </ul>
@@ -268,7 +268,7 @@ from heavy-duty vehicles.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mi>F</mi><mi>T</mi><mi>S</mi><msubsup><mi>P</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi></mrow><mrow><mi>p</mi><mi>c</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">EFTSP^{pc}_{brake}</annotation></semantics></math>
 = passenger car emission factor for TSP.</li>
 </ul>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi>C</mi><msub><mi>F</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>0.79</mn><mo>×</mo><mi>L</mi><mi>F</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">LCF_{brake} = 1 + (0.79 \times LF),</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi>C</mi><msub><mi>F</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mn>0.79</mn><mo>×</mo><mi>L</mi><mi>F</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">LCF_{brake} = 1 + (0.79 \times LF),</annotation></semantics></math></p>
 <p>where:</p>
 <ul>
 <li>
@@ -308,15 +308,15 @@ laden one.</li>
 <p>Finally, the speed correction is:</p>
 <ul>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1.67</mn></mrow><annotation encoding="application/x-tex">SC_{brake}(speed) = 1.67</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1.67</mn></mrow><annotation encoding="application/x-tex">SC_{brake}(speed) = 1.67</annotation></semantics></math>,
 when
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo>&lt;</mo><mn>40</mn><mi>k</mi><mi>m</mi><mi>/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">speed &lt; 40 km/h</annotation></semantics></math>;</li>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>−</mo><mn>0.0270</mn><mo>×</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo>+</mo><mn>2.75</mn></mrow><annotation encoding="application/x-tex">SC_{brake}(speed) = -0.0270 \times speed + 2.75</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>−</mi><mn>0.0270</mn><mo>×</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo>+</mo><mn>2.75</mn></mrow><annotation encoding="application/x-tex">SC_{brake}(speed) = -0.0270 \times speed + 2.75</annotation></semantics></math>,
 when
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>40</mn><mo>&lt;</mo><mo>=</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo>&lt;</mo><mo>=</mo><mn>95</mn><mi>k</mi><mi>m</mi><mi>/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">40 &lt;= speed &lt;= 95 km/h</annotation></semantics></math>;</li>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0.185</mn></mrow><annotation encoding="application/x-tex">SC_{brake}(speed) = 0.185</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><msub><mi>C</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0.185</mn></mrow><annotation encoding="application/x-tex">SC_{brake}(speed) = 0.185</annotation></semantics></math>,
 when
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>p</mi><mi>e</mi><mi>e</mi><mi>d</mi><mo>&gt;</mo><mn>95</mn><mi>k</mi><mi>m</mi><mi>/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">speed &gt; 95 km/h</annotation></semantics></math>.</li>
 </ul>
@@ -356,11 +356,11 @@ when
 <h2 id="road-wear">Road Wear<a class="anchor" aria-label="anchor" href="#road-wear"></a>
 </h2>
 <p>Emissions are calculated according to the equation:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mi>E</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>d</mi><mi>i</mi><mi>s</mi><mi>t</mi><mo>×</mo><mi>E</mi><msubsup><mi>F</mi><mrow><mi>t</mi><mi>s</mi><mi>p</mi></mrow><mrow><mi>r</mi><mi>o</mi><mi>a</mi><mi>d</mi></mrow></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>×</mo><mi>m</mi><msub><mi>f</mi><mrow><mi>r</mi><mi>o</mi><mi>a</mi><mi>d</mi></mrow></msub></mrow><annotation encoding="application/x-tex">TE(i) = dist \times EF^{road}_{tsp}(j) \times mf_{road}</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mi>E</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>d</mi><mi>i</mi><mi>s</mi><mi>t</mi><mo>×</mo><mi>E</mi><msubsup><mi>F</mi><mrow><mi>t</mi><mi>s</mi><mi>p</mi></mrow><mrow><mi>r</mi><mi>o</mi><mi>a</mi><mi>d</mi></mrow></msubsup><mo stretchy="false" form="prefix">(</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo><mo>×</mo><mi>m</mi><msub><mi>f</mi><mrow><mi>r</mi><mi>o</mi><mi>a</mi><mi>d</mi></mrow></msub></mrow><annotation encoding="application/x-tex">TE(i) = dist \times EF^{road}_{tsp}(j) \times mf_{road}</annotation></semantics></math></p>
 <p>where:</p>
 <ul>
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mi>E</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">TE(i)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mi>E</mi><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">TE(i)</annotation></semantics></math>
 = total emissions of pollutant i (g),</li>
 <li>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mi>i</mi><mi>s</mi><mi>t</mi></mrow><annotation encoding="application/x-tex">dist</annotation></semantics></math>
@@ -462,15 +462,15 @@ visualizations.</p>
 <h3 id="a-preparing-the-data">a) Preparing the data<a class="anchor" aria-label="anchor" href="#a-preparing-the-data"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfstools/" class="external-link">gtfstools</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipea.github.io/gtfstools/" class="external-link">gtfstools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># read GTFS</span></span>
 <span><span class="va">gtfs_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/bra_cur_gtfs.zip"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
-<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span> </span>
+<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipea.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="co"># keep a single trip_id to speed up this example</span></span>
-<span><span class="va">gtfs_small</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/filter_by_trip_id.html" class="external-link">filter_by_trip_id</a></span><span class="op">(</span><span class="va">gtfs</span>, trip_id <span class="op">=</span><span class="st">"4451136"</span><span class="op">)</span></span>
+<span><span class="va">gtfs_small</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipea.github.io/gtfstools/reference/filter_by_trip_id.html" class="external-link">filter_by_trip_id</a></span><span class="op">(</span><span class="va">gtfs</span>, trip_id <span class="op">=</span><span class="st">"4451136"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># run transport model</span></span>
 <span><span class="va">tp_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/transport_model.html">transport_model</a></span><span class="op">(</span>gtfs_data <span class="op">=</span> <span class="va">gtfs_small</span>,</span>
@@ -594,7 +594,7 @@ page</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

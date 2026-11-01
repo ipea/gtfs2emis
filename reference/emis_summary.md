@@ -105,11 +105,12 @@ emis_summary(emi_list
 }
 #> Converting shapes to sf objects
 #> Processing the data
-#> 'CO2' Emission factor not found for 'SCR' Technology and Euro 'IV'.
-#>  The package assumes missing Technology entry. Please check `data(ef_europe_emep_db)` for available data.
-#> 'CO2' Emission factor not found for 'DPF+SCR' Technology and Euro 'VI'.
-#>  The package assumed 'SCR' Technology entry. Please check `data(ef_europe_emep_db)` for available data.
-#> Loading required namespace: testthat
+#> "CO2" emission factor not found for technology "SCR" and Euro "IV".
+#> ℹ The package assumes missing Technology entry. Check `data(ef_europe_emep_db)`
+#>   for available data.
+#> "CO2" emission factor not found for technology "DPF+SCR" and Euro "VI".
+#> ℹ The package assumed 'SCR' Technology entry. Check `data(ef_europe_emep_db)`
+#>   for available data.
 #>    timestamp_hour pollutant     process              emi
 #>             <int>    <char>      <char>          <units>
 #> 1:              8       CO2 hot_exhaust 1.076303e+04 [g]

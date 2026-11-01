@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Estimating Public Transport Emissions from General Transit Feed Specification (GTFS) Data • gtfs2emis</title>
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Estimating Public Transport Emissions from General Transit Feed Specification (GTFS) Data">
 <meta name="description" content="A bottom up model to estimate the emission levels of public transport systems based on General Transit Feed Specification (GTFS) data. The package requires two main inputs: i) Public transport data in the GTFS standard format; and ii) Some basic information on fleet characteristics such as fleet age, technology, fuel and Euro stage. As it stands, the package estimates several pollutants at high spatial and temporal resolutions. Pollution levels can be calculated for specific transport routes, trips, time of the day or for the transport system as a whole. The output with emission estimates can be extracted in different formats, supporting analysis on how emission levels vary across space, time and by fleet characteristics. A full description of the methods used in the gtfs2emis model is presented in Vieira, J. P. B.; Pereira, R. H. M.; Andrade, P. R. (2022) &lt;doi:10.31219/osf.io/8m2cy&gt;.">
@@ -128,7 +128,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># read GTFS.zip</span></span>
 <span><span class="va">gtfs_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_gtfs.zip"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
-<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span></span>
+<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipea.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># generate transport model</span></span>
 <span><span class="va">tp_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/transport_model.html">transport_model</a></span><span class="op">(</span>gtfs_data <span class="op">=</span> <span class="va">gtfs</span>,spatial_resolution <span class="op">=</span> <span class="fl">100</span>,parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span></code></pre></div>
@@ -200,24 +200,24 @@
 <col width="19%">
 <col width="80%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Source</th>
 <th>Pollutants</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>CETESB</td>
 <td>CH4, CO, CO2, ETOH, FC (Fuel Consumption), FS (Fuel Sales), gCO2/KWH, gD/KWH, HC, KML, N2O, NH3, NMHC, NO, NO2, NOx, PM10 and RCHO</td>
 </tr>
-<tr class="even">
+<tr>
 <td>EMFAC2017/CARB</td>
 <td>CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX, and TOG (Total Organic Gases)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>EMEP/EEA</td>
 <td>CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (#kWh), and VOC</td>
 </tr>
-<tr class="even">
+<tr>
 <td>MOVES3/EPA</td>
 <td>CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG, and VOC</td>
 </tr>
@@ -233,28 +233,28 @@
 <col width="30%">
 <col width="46%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Source</th>
 <th>Buses</th>
 <th>Characteristics</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>CETESB</td>
 <td>Micro, Standard, Articulated</td>
 <td>Age, Fuel, EURO standard</td>
 </tr>
-<tr class="even">
+<tr>
 <td>EMEP/EAA</td>
 <td>Micro, Standard, Articulated</td>
 <td>Fuel, EURO standard, technology, load, slope</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>EMFAC2017/CARB</td>
 <td>Urban Buses</td>
 <td>Age, Fuel</td>
 </tr>
-<tr class="even">
+<tr>
 <td>MOVES3/EPA</td>
 <td>Urban Buses</td>
 <td>Age, Fuel</td>
@@ -385,7 +385,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

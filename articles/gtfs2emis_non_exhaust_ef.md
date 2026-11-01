@@ -9,16 +9,18 @@ emissions methods from
 The following equation is employed to evaluate emissions originating
 from tire and brake wear
 
-$$TE_{i} = dist \times EF_{tsp}(j) \times mf_{s}(i) \times SC(speed)$$
+``` math
+ TE_i = dist \times EF_{tsp}(j) \times mf_s(i) \times SC(speed)
+```
 where:
 
-- $TE(i)$ = total emissions of pollutant $i$ (g),
-- $dist$ = distance driven by each vehicle (km),
-- $EF_{tsp}(j)$ = TSP (Total Suspended Particle) mass emission factor
-  for vehicles of category $j$ (g/km),
-- $mf_{s}(i)$ = mass fraction of TSP that can be attributed to pollutant
-  $i$,
-- $SC(speed)$ = correction factor for a mean vehicle travelling at a
+- $`TE(i)`$ = total emissions of pollutant $`i`$ (g),
+- $`dist`$ = distance driven by each vehicle (km),
+- $`EF_{tsp}(j)`$ = TSP (Total Suspended Particle) mass emission factor
+  for vehicles of category $`j`$ (g/km),
+- $`mf_s(i)`$ = mass fraction of TSP that can be attributed to pollutant
+  $`i`$,
+- $`SC(speed)`$ = correction factor for a mean vehicle travelling at a
   given speed (-).
 
 ## Tire
@@ -27,22 +29,27 @@ In the case of heavy-duty vehicles, the emission factor needs the
 incorporation of vehicle size, as determined by the number of axles, and
 load. These parameters are introduced into the equation as follows:
 
-$$EFTSP_{tire}^{hdv} = 0.5 \times N_{axle} \times LCF_{tire} \times EFTSP_{tire}^{pc}$$
+``` math
+EFTSP^{hdv}_{tire} = 0.5 \times N_{axle} \times LCF_{tire} \times EFTSP^{pc}_{tire}
+```
 
 where:
 
-- $EFTSP_{tire}^{hdv}$ = TSP emission factor for tire wear from
+- $`EFTSP^{hdv}_{tire}`$ = TSP emission factor for tire wear from
   heavy-duty vehicles (g/km),
-- $N_{axle}$ = number of vehicle axles (-),
-- $LCF_{tire}$ = a load correction factor for tire wear (-),
-- $EFTSP_{tire}^{pc}$ = TSP emission factor for tire wear from passenger
-  car vehicles (g/km).
+- $`N_{axle}`$ = number of vehicle axles (-),
+- $`LCF_{tire}`$ = a load correction factor for tire wear (-),
+- $`EFTSP^{pc}_{tire}`$ = TSP emission factor for tire wear from
+  passenger car vehicles (g/km).
 
-and $$LCF_{tire} = 1.41 + (1.38 \times LF)$$
+and
+``` math
+LCF_{tire} = 1.41 + (1.38 \times LF)
+```
 
 where:
 
-- $LF$ = load factor (-), ranging from 0 for an empty bus to 1 for a
+- $`LF`$ = load factor (-), ranging from 0 for an empty bus to 1 for a
   fully laden one.
 
 The function considers the following look-up table for number of vehicle
@@ -68,12 +75,13 @@ The size distribution of tire wear particles are given by:
 
 Finally, the speed correction is:
 
-- $SC_{tire}(speed) = 1.39$, when $speed < 40km/h$;
-- $SC_{tire}(speed) = - 0.00974 \times speed + 1.78$, when
-  $40 < = speed < = 90km/h$;
-- $SC_{tire}(speed) = 0.902$, when $speed > 90km/h$.
+- $`SC_{tire}(speed) = 1.39`$, when $`speed < 40 km/h`$;
+- $`SC_{tire}(speed) = -0.00974 \times speed + 1.78`$, when
+  $`40 <= speed <= 90 km/h`$;
+- $`SC_{tire}(speed) = 0.902`$, when $`speed > 90 km/h`$.
 
 ``` r
+
 library(gtfs2emis)
 emi_europe_emep_wear(dist = units::set_units(1,"km"),
                               speed =  units::set_units(30,"km/h"),
@@ -113,19 +121,23 @@ The heavy-duty vehicle emission factor is derived by modifying the
 passenger car emission factor to conform to experimental data obtained
 from heavy-duty vehicles.
 
-$$EFTSP_{brake}^{hdv} = 1.956 \times LCF_{brake} \times EFTSP_{brake}^{pc}$$
+``` math
+EFTSP^{hdv}_{brake} = 1.956 \times LCF_{brake} \times EFTSP^{pc}_{brake}
+```
 
 where:
 
-- $EFTSP_{brake}^{hdv}$ = heavy-duty vehicle emission factor for TSP,
-- $LCF_{brake}$ = load correction factor for brake wear,
-- $EFTSP_{brake}^{pc}$ = passenger car emission factor for TSP.
+- $`EFTSP^{hdv}_{brake}`$ = heavy-duty vehicle emission factor for TSP,
+- $`LCF_{brake}`$ = load correction factor for brake wear,
+- $`EFTSP^{pc}_{brake}`$ = passenger car emission factor for TSP.
 
-$$LCF_{brake} = 1 + (0.79 \times LF),$$
+``` math
+LCF_{brake} = 1 + (0.79 \times LF),
+```
 
 where:
 
-- $LF$ = load factor (-), ranging from 0 for an empty bus to 1 for a
+- $`LF`$ = load factor (-), ranging from 0 for an empty bus to 1 for a
   fully laden one.
 
 The size distribution of brake wear particles are given by:
@@ -140,12 +152,13 @@ The size distribution of brake wear particles are given by:
 
 Finally, the speed correction is:
 
-- $SC_{brake}(speed) = 1.67$, when $speed < 40km/h$;
-- $SC_{brake}(speed) = - 0.0270 \times speed + 2.75$, when
-  $40 < = speed < = 95km/h$;
-- $SC_{brake}(speed) = 0.185$, when $speed > 95km/h$.
+- $`SC_{brake}(speed) = 1.67`$, when $`speed < 40 km/h`$;
+- $`SC_{brake}(speed) = -0.0270 \times speed + 2.75`$, when
+  $`40 <= speed <= 95 km/h`$;
+- $`SC_{brake}(speed) = 0.185`$, when $`speed > 95 km/h`$.
 
 ``` r
+
 emi_europe_emep_wear(dist = units::set_units(1,"km"),
                               speed =  units::set_units(30,"km/h"),
                               pollutant = c("PM10","TSP","PM2.5"),
@@ -182,16 +195,18 @@ emi_europe_emep_wear(dist = units::set_units(1,"km"),
 
 Emissions are calculated according to the equation:
 
-$$TE(i) = dist \times EF_{tsp}^{road}(j) \times mf_{road}$$
+``` math
+TE(i) = dist \times EF^{road}_{tsp}(j) \times mf_{road}
+```
 
 where:
 
-- $TE(i)$ = total emissions of pollutant i (g),
-- $dist$ = total distance driven by vehicles in category j (km),
-- $EF_{tsp}^{road}$ = TSP mass emission factor from road wear for
+- $`TE(i)`$ = total emissions of pollutant i (g),
+- $`dist`$ = total distance driven by vehicles in category j (km),
+- $`EF^{road}_{tsp}`$ = TSP mass emission factor from road wear for
   vehicles j (0.0760 g/km),
-- $mf_{road}$ = mass fraction of TSP that can be attributed to particle
-  size class i (-).
+- $`mf_{road}`$ = mass fraction of TSP that can be attributed to
+  particle size class i (-).
 
 The following table shows the size distribution of road surface wear
 particles
@@ -203,6 +218,7 @@ particles
 | PM2.5                   | 0.27                 |
 
 ``` r
+
 emi_europe_emep_wear(dist = units::set_units(1,"km"),
                               speed =  units::set_units(30,"km/h"),
                               pollutant = c("PM10","TSP","PM2.5"),
@@ -241,6 +257,7 @@ Users can also use one single function to apply for more than one
 process (e.g. tire, brake and road), as shown below.
 
 ``` r
+
 library(units)
 library(ggplot2)
 
@@ -273,6 +290,7 @@ and temporal visualizations.
 ### a) Preparing the data
 
 ``` r
+
 library(gtfstools)
 library(sf)
 
@@ -319,6 +337,7 @@ emi_list_ne$tp_model <- tp_model
 ### b) Creating spatial grid
 
 ``` r
+
 # create spatial grid
 grid <- sf::st_make_grid(
   x = sf::st_make_valid(tp_model)
@@ -352,6 +371,7 @@ emi_grid_sf  <- sf::st_as_sf(emi_grid_dt)
 ### c) Generating spatial and temporal patterns
 
 ``` r
+
 # plot
 library(ggplot2)
 
@@ -369,6 +389,7 @@ ggplot(emi_grid_sf) +
 The total emissions can be also viewed in bar graphics
 
 ``` r
+
 # Emissions by time
 emi_time_he <- emis_summary(emi_list_he,by = "time")
 emi_time_ne <- emis_summary(emi_list_ne,by = "time")

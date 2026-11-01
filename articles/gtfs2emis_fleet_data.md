@@ -30,6 +30,7 @@ characteristics: vehicle type, Euro standard, technology, and fuel. Note
 that `sum(fleet_df$fleet_composition)` has to be equal to 1.
 
 ``` r
+
 simple_fleet_file <- system.file("extdata/irl_dub_fleet.txt", package = "gtfs2emis")
 simple_fleet_df <- read.csv(simple_fleet_file)
 head(simple_fleet_df)
@@ -52,6 +53,7 @@ example, it allows users to assign articulated buses to specific routes
 in the transport network.
 
 ``` r
+
 detailed_fleet_file <- system.file("extdata/bra_cur_fleet.txt", package = "gtfs2emis")
 detailed_fleet_df <- read.csv(detailed_fleet_file)
 head(detailed_fleet_df)
@@ -80,12 +82,12 @@ To check which columns and sets of vehicle characteristics are required
 by each emission factor model, the user can read the documentation of
 the emission factor functions listed in the table below:
 
-| Emission factor function                                                                  | Region | Source         | Type of buses                | Other required characteristics            |
-|-------------------------------------------------------------------------------------------|--------|----------------|------------------------------|-------------------------------------------|
-| [`ef_brazil_cetesb()`](https://ipeagit.github.io/gtfs2emis/reference/ef_brazil_cetesb.md) | Brazil | CETESB         | Micro, Standard, Articulated | Age, Fuel, EURO stage                     |
-| [`ef_europe_emep()`](https://ipeagit.github.io/gtfs2emis/reference/ef_europe_emep.md)     | Europe | EMEP/EEA       | Micro, Standard, Articulated | Fuel, EURO stage, technology, load, slope |
-| [`ef_usa_moves()`](https://ipeagit.github.io/gtfs2emis/reference/ef_usa_moves.md)         | US     | EMFAC2017/CARB | Urban Buses                  | Age, Fuel                                 |
-| [`ef_usa_emfac()`](https://ipeagit.github.io/gtfs2emis/reference/ef_usa_emfac.md)         | US     | MOVES3/EPA     | Urban Buses                  | Age, Fuel                                 |
+| Emission factor function | Region | Source | Type of buses | Other required characteristics |
+|----|----|----|----|----|
+| [`ef_brazil_cetesb()`](https://ipeagit.github.io/gtfs2emis/reference/ef_brazil_cetesb.md) | Brazil | CETESB | Micro, Standard, Articulated | Age, Fuel, EURO stage |
+| [`ef_europe_emep()`](https://ipeagit.github.io/gtfs2emis/reference/ef_europe_emep.md) | Europe | EMEP/EEA | Micro, Standard, Articulated | Fuel, EURO stage, technology, load, slope |
+| [`ef_usa_moves()`](https://ipeagit.github.io/gtfs2emis/reference/ef_usa_moves.md) | US | EMFAC2017/CARB | Urban Buses | Age, Fuel |
+| [`ef_usa_emfac()`](https://ipeagit.github.io/gtfs2emis/reference/ef_usa_emfac.md) | US | MOVES3/EPA | Urban Buses | Age, Fuel |
 
 ## 4. Examples of fleet data tables
 
@@ -100,6 +102,7 @@ represented by vehicles with each characteristic.
 Based on the 2019 data from the emission factor model of CETESB.
 
 ``` r
+
 fleet_data_ef_cetesb <- data.frame( veh_type = c("BUS_MICRO_D", "BUS_URBAN_D", "BUS_ARTIC_D")
                                   , model_year = c(2010, 2012, 2018)
                                   , fuel = rep("D", 3)
@@ -118,6 +121,7 @@ Based on the European Monitoring and Evaluation Programme
 developed by EEA.
 
 ``` r
+
 fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t"
                                                   ,"Ubus Std 15 - 18 t"
                                                   ,"Ubus Artic >18 t")
@@ -138,6 +142,7 @@ Based on the California Emission Factor model
 ([EMFAC2017](https://arb.ca.gov/emfac/)), developed by CARB.
 
 ``` r
+
 fleet_data_ef_emfac <- data.frame(  veh_type = "BUS_URBAN_D"
                                   , model_year = 2011:2015
                                   , fuel = "D"
@@ -158,6 +163,7 @@ Based on the Motor Vehicle Emission Simulator ([MOVES3
 Model](https://www.epa.gov/moves)), developed by EPA.
 
 ``` r
+
 fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
                                   , model_year = 2011:2015
                                   , fuel = "D"

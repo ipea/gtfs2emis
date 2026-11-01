@@ -89,14 +89,14 @@ List. emission factors in units 'g/km' (list or a data.table).
 The new convention for vehicles names are translated from the EMEP/EEA
 report:
 
-|                      |                                                             |
-|----------------------|-------------------------------------------------------------|
-| vehicle category     | description                                                 |
-| Ubus Midi \<=15 t    | Urban Bus Midi size, Gross Vehicle Weight (GVW) \<= 15 tons |
-| Ubus Std 15 - 18 t   | Urban Bus Standard size, GVW between 15 - 18 tons           |
-| Ubus Artic \>18 t    | Urban Bus Articulated size, GVW \>= 18 tons                 |
-| Coaches Std \<=18 t  | Coach (inter-state) Standard size, GVW \<= 18 tons          |
-| Coaches Artic \>18 t | Coach (inter-state) Articulated size, GVW \> 18 tons        |
+|  |  |
+|----|----|
+| vehicle category | description |
+| Ubus Midi \<=15 t | Urban Bus Midi size, Gross Vehicle Weight (GVW) \<= 15 tons |
+| Ubus Std 15 - 18 t | Urban Bus Standard size, GVW between 15 - 18 tons |
+| Ubus Artic \>18 t | Urban Bus Articulated size, GVW \>= 18 tons |
+| Coaches Std \<=18 t | Coach (inter-state) Standard size, GVW \<= 18 tons |
+| Coaches Artic \>18 t | Coach (inter-state) Articulated size, GVW \> 18 tons |
 
 When the information of vehicle technology does not match the existing
 database, the function display a message mentioning the returned

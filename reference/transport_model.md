@@ -28,7 +28,7 @@ transport_model(
 
   A path to a GTFS file or a GTFS data organized as a list of
   `data.tables` created with
-  [`gtfstools::read_gtfs()`](https://ipeagit.github.io/gtfstools/reference/read_gtfs.html).
+  [`gtfstools::read_gtfs()`](https://ipea.github.io/gtfstools/reference/read_gtfs.html).
 
 - min_speed:
 

@@ -31,6 +31,7 @@ description of the methods used in the gtfs2emis model is presented in
 You can install `gtfs2emis`:
 
 ``` r
+
 # From CRAN
 install.packages("gtfs2emis")
 library(gtfs2emis)
@@ -92,6 +93,7 @@ the space-time position and speed of each vehicle of the public
 transport system at high spatial and temporal resolutions.
 
 ``` r
+
 # read GTFS.zip
 gtfs_file <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
 gtfs <- gtfstools::read_gtfs(gtfs_file)
@@ -117,6 +119,7 @@ Here is what a simple fleet table to be used with the EMEP-EEA emission
 factor model looks like:
 
 ``` r
+
 fleet_file <- system.file("extdata/irl_dub_fleet.txt", package = "gtfs2emis")
 
 fleet_df <- read.csv(fleet_file)
@@ -145,6 +148,7 @@ estimates and related information such as vehicle variables (`fuel`,
 `load`, `gps`) or pollution (`EF`, `emi`).
 
 ``` r
+
 emi_list <- emission_model(tp_model = tp_model
 , ef_model = "ef_europe_emep"
 , fleet_data = fleet_df
@@ -180,21 +184,21 @@ emission factor models:
 
 #### List of pollutants available by emission factor models
 
-| Source         | Pollutants                                                                                                                         |
-|----------------|------------------------------------------------------------------------------------------------------------------------------------|
-| CETESB         | CH4, CO, CO2, ETOH, FC (Fuel Consumption), FS (Fuel Sales), gCO2/KWH, gD/KWH, HC, KML, N2O, NH3, NMHC, NO, NO2, NOx, PM10 and RCHO |
-| EMFAC2017/CARB | CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX, and TOG (Total Organic Gases)                               |
-| EMEP/EEA       | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (#kWh), and VOC                                                                   |
-| MOVES3/EPA     | CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG, and VOC                                       |
+| Source | Pollutants |
+|----|----|
+| CETESB | CH4, CO, CO2, ETOH, FC (Fuel Consumption), FS (Fuel Sales), gCO2/KWH, gD/KWH, HC, KML, N2O, NH3, NMHC, NO, NO2, NOx, PM10 and RCHO |
+| EMFAC2017/CARB | CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX, and TOG (Total Organic Gases) |
+| EMEP/EEA | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (#kWh), and VOC |
+| MOVES3/EPA | CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG, and VOC |
 
 #### Fleet characteristics required by each emission factor model
 
-| Source         | Buses                        | Characteristics                              |
-|----------------|------------------------------|----------------------------------------------|
-| CETESB         | Micro, Standard, Articulated | Age, Fuel, EURO standard                     |
-| EMEP/EAA       | Micro, Standard, Articulated | Fuel, EURO standard, technology, load, slope |
-| EMFAC2017/CARB | Urban Buses                  | Age, Fuel                                    |
-| MOVES3/EPA     | Urban Buses                  | Age, Fuel                                    |
+| Source | Buses | Characteristics |
+|----|----|----|
+| CETESB | Micro, Standard, Articulated | Age, Fuel, EURO standard |
+| EMEP/EAA | Micro, Standard, Articulated | Fuel, EURO standard, technology, load, slope |
+| EMFAC2017/CARB | Urban Buses | Age, Fuel |
+| MOVES3/EPA | Urban Buses | Age, Fuel |
 
 ### Emissions from road vehicle tire, brake, and surface wear
 
@@ -249,6 +253,7 @@ systems using GTFS data.
 ## Citation
 
 ``` r
+
 citation("gtfs2emis")
 #> To cite gtfs2emis in publications use:
 #> 

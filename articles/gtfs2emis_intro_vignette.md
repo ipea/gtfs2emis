@@ -25,6 +25,7 @@ step-by-step reproducible example of how to use the package.
 One can install the development version `gtfs2emis` from Github:
 
 ``` r
+
 library(devtools)
 # From CRAN
 install.packages("gtfs2emis")
@@ -37,6 +38,7 @@ remotes::install_github("ipeaGIT/gtfs2emis")
 A few samples of GTFS and fleet files are included in the package:
 
 ``` r
+
 data_path <- system.file("extdata", package = "gtfs2emis")
 list.files(data_path)
 #> [1] "bra_cur_fleet.txt" "bra_cur_gtfs.zip"  "bra_cur-srtm.tif" 
@@ -69,6 +71,7 @@ Before we start, let’s load a few packages we’ll be using in this
 vignette:
 
 ``` r
+
 library(gtfs2emis)
 library(gtfstools)
 library(progressr)
@@ -134,12 +137,13 @@ GPS-like `data.table`, transforming the output into a `sf-linestring`,
 which is the required input for emissions estimates. The user can input
 either a string with the file path where the a `gtfs.zip` file is stored
 or an object of class `"gtfs" "list"`, generated with
-[`gtfstools::read_gtfs()`](https://ipeagit.github.io/gtfstools/reference/read_gtfs.html).
+[`gtfstools::read_gtfs()`](https://ipea.github.io/gtfstools/reference/read_gtfs.html).
 
 First, let’s read the GTFS data and filter only the transport services
 that run on
 
 ``` r
+
 # path to GTFS.zip file
 gtfs_file <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
 
@@ -160,6 +164,7 @@ function within
 as shown below.
 
 ``` r
+
 # generate transport model
 progressr::with_progress( 
   
@@ -169,6 +174,30 @@ progressr::with_progress(
                               spatial_resolution = 100,
                               parallel = TRUE) 
   )
+#> Warning: UNRELIABLE VALUE: Future (<unnamed-1>) unexpectedly generated random
+#> numbers without specifying argument 'seed'. There is a risk that those random
+#> numbers are not statistically sound and the overall results might be invalid.
+#> To fix this, specify 'seed=TRUE'. This ensures that proper, parallel-safe
+#> random numbers are produced. To disable this check, use 'seed=NULL', or set
+#> option 'future.rng.onMisuse' to "ignore". [future <unnamed-1>
+#> (7d4048e353486fdc80890709e054ca2d-1); on
+#> 7d4048e353486fdc80890709e054ca2d@runnervmcwoy2<9271>]
+#> Warning: UNRELIABLE VALUE: Future (<unnamed-2>) unexpectedly generated random
+#> numbers without specifying argument 'seed'. There is a risk that those random
+#> numbers are not statistically sound and the overall results might be invalid.
+#> To fix this, specify 'seed=TRUE'. This ensures that proper, parallel-safe
+#> random numbers are produced. To disable this check, use 'seed=NULL', or set
+#> option 'future.rng.onMisuse' to "ignore". [future <unnamed-2>
+#> (7d4048e353486fdc80890709e054ca2d-2); on
+#> 7d4048e353486fdc80890709e054ca2d@runnervmcwoy2<9271>]
+#> Warning: UNRELIABLE VALUE: Future (<unnamed-3>) unexpectedly generated random
+#> numbers without specifying argument 'seed'. There is a risk that those random
+#> numbers are not statistically sound and the overall results might be invalid.
+#> To fix this, specify 'seed=TRUE'. This ensures that proper, parallel-safe
+#> random numbers are produced. To disable this check, use 'seed=NULL', or set
+#> option 'future.rng.onMisuse' to "ignore". [future <unnamed-3>
+#> (7d4048e353486fdc80890709e054ca2d-3); on
+#> 7d4048e353486fdc80890709e054ca2d@runnervmcwoy2<9271>]
 
 head(tp_model)
 #> Simple feature collection with 6 features and 14 fields
@@ -212,6 +241,7 @@ position and speed of trip segments for every single vehicle of the
 public transport system.
 
 ``` r
+
 ggplot(data = tp_model) +
   geom_sf(aes(color= as.numeric(speed))) +
   scale_color_continuous(type = "viridis")+
@@ -236,6 +266,7 @@ tells us the proportion of buses in Dublin according to their vehicle
 type, Euro standard, technology, and fuel. The table looks like this:
 
 ``` r
+
 fleet_file <- system.file("extdata/irl_dub_fleet.txt", package = "gtfs2emis")
 fleet_df <- read.csv(fleet_file)
 head(fleet_df)
@@ -271,6 +302,7 @@ estimates and related information such as vehicle variables (`fuel`,
 `load`, `gps`) or pollution (`EF`, `emi`).
 
 ``` r
+
 emi_list <- emission_model(tp_model = tp_model,
                            ef_model = "ef_europe_emep",
                            fleet_data = fleet_df,
@@ -297,6 +329,7 @@ function to convert the output of
 from a `list` to a `data.table` format:
 
 ``` r
+
 emi_dt <- emis_to_dt(emi_list = emi_list,
                      veh_vars = c("veh_type", "euro", "fuel"),
                      pol_vars = "pollutant"
@@ -321,6 +354,7 @@ by pollutant, time of the day, vehicle or road segment (spatial).
 ### 6.1 Total emissions by pollutant
 
 ``` r
+
 emi_by_pol <- emis_summary(emi_list = emi_list,
                                  by = "pollutant") 
 emi_by_pol
@@ -338,6 +372,7 @@ function help users summarize emission estimates by either `veh_type`,
 `pollutant`, or `time`. Using this function, users can easily:
 
 ``` r
+
 emi_by_veh <- emis_summary(emi_list = emi_list,
                           by = "vehicle") 
 head(emi_by_veh)
@@ -351,6 +386,7 @@ It is also possible to summarize emission estimates by other vehicle
 characteristics AND pollutants.
 
 ``` r
+
 emi_by_veh <- emis_summary(emi_list = emi_list,
                           by = "vehicle",
                           veh_vars = c("veh_type","euro")) 
@@ -378,6 +414,7 @@ ggplot(data = emi_by_veh) +
 ### 6.3 Total emissions by time of the day
 
 ``` r
+
 emi_by_time <- emis_summary(emi_list = emi_list,
                                 by = "time") 
 head(emi_by_time) 
@@ -412,6 +449,7 @@ vector data (`sf POLYGON`).
 Let’s create a regular hexagonal grid for this example.
 
 ``` r
+
 # create spatial grid
 mygrid <- sf::st_make_grid(
   x = sf::st_make_valid(emi_list$tp_model)
@@ -428,6 +466,7 @@ mygrid <- sf::st_make_grid(
 ![](gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-15-1.png)
 
 ``` r
+
 mygrid_emi <- emis_grid(emi_list, mygrid,time_resolution = "day"
                         ,quiet = FALSE)
 

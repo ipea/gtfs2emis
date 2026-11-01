@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Getting started • gtfs2emis</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting started">
 </head>
@@ -68,7 +68,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Getting started</h1>
             
-            <h4 data-toc-skip class="date">2026-02-12</h4>
+            <h4 data-toc-skip class="date">2026-11-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ipeaGIT/gtfs2emis/blob/master/vignettes/gtfs2emis_intro_vignette.Rmd" class="external-link"><code>vignettes/gtfs2emis_intro_vignette.Rmd</code></a></small>
       <div class="d-none name"><code>gtfs2emis_intro_vignette.Rmd</code></div>
@@ -155,7 +155,7 @@ pollutants provided by the package.</li>
 vignette:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfs2emis/">gtfs2emis</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfstools/" class="external-link">gtfstools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipea.github.io/gtfstools/" class="external-link">gtfstools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://progressr.futureverse.org" class="external-link">progressr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -223,7 +223,7 @@ into a <code>sf-linestring</code>, which is the required input for
 emissions estimates. The user can input either a string with the file
 path where the a <code>gtfs.zip</code> file is stored or an object of
 class <code>"gtfs" "list"</code>, generated with
-<code><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">gtfstools::read_gtfs()</a></code>.</p>
+<code><a href="https://ipea.github.io/gtfstools/reference/read_gtfs.html" class="external-link">gtfstools::read_gtfs()</a></code>.</p>
 <p>First, let’s read the GTFS data and filter only the transport
 services that run on</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -231,10 +231,10 @@ services that run on</p>
 <span><span class="va">gtfs_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_gtfs.zip"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># read GTFS</span></span>
-<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span></span>
+<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipea.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Keep Monday services GTFS</span></span>
-<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/filter_by_weekday.html" class="external-link">filter_by_weekday</a></span><span class="op">(</span><span class="va">gtfs</span>, </span>
+<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipea.github.io/gtfstools/reference/filter_by_weekday.html" class="external-link">filter_by_weekday</a></span><span class="op">(</span><span class="va">gtfs</span>, </span>
 <span>                                     weekday <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'saturday'</span>, <span class="st">'sunday'</span><span class="op">)</span>, </span>
 <span>                                     keep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>Now let’s generate the transport model. This is the most
@@ -251,6 +251,30 @@ calling the <code><a href="../reference/transport_model.html">transport_model()<
 <span>                              spatial_resolution <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>                              parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span>
 <span>  <span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: UNRELIABLE VALUE: Future (&lt;unnamed-1&gt;) unexpectedly generated random</span></span>
+<span><span class="co">#&gt; numbers without specifying argument 'seed'. There is a risk that those random</span></span>
+<span><span class="co">#&gt; numbers are not statistically sound and the overall results might be invalid.</span></span>
+<span><span class="co">#&gt; To fix this, specify 'seed=TRUE'. This ensures that proper, parallel-safe</span></span>
+<span><span class="co">#&gt; random numbers are produced. To disable this check, use 'seed=NULL', or set</span></span>
+<span><span class="co">#&gt; option 'future.rng.onMisuse' to "ignore". [future &lt;unnamed-1&gt;</span></span>
+<span><span class="co">#&gt; (7d4048e353486fdc80890709e054ca2d-1); on</span></span>
+<span><span class="co">#&gt; 7d4048e353486fdc80890709e054ca2d@runnervmcwoy2&lt;9271&gt;]</span></span>
+<span><span class="co">#&gt; Warning: UNRELIABLE VALUE: Future (&lt;unnamed-2&gt;) unexpectedly generated random</span></span>
+<span><span class="co">#&gt; numbers without specifying argument 'seed'. There is a risk that those random</span></span>
+<span><span class="co">#&gt; numbers are not statistically sound and the overall results might be invalid.</span></span>
+<span><span class="co">#&gt; To fix this, specify 'seed=TRUE'. This ensures that proper, parallel-safe</span></span>
+<span><span class="co">#&gt; random numbers are produced. To disable this check, use 'seed=NULL', or set</span></span>
+<span><span class="co">#&gt; option 'future.rng.onMisuse' to "ignore". [future &lt;unnamed-2&gt;</span></span>
+<span><span class="co">#&gt; (7d4048e353486fdc80890709e054ca2d-2); on</span></span>
+<span><span class="co">#&gt; 7d4048e353486fdc80890709e054ca2d@runnervmcwoy2&lt;9271&gt;]</span></span>
+<span><span class="co">#&gt; Warning: UNRELIABLE VALUE: Future (&lt;unnamed-3&gt;) unexpectedly generated random</span></span>
+<span><span class="co">#&gt; numbers without specifying argument 'seed'. There is a risk that those random</span></span>
+<span><span class="co">#&gt; numbers are not statistically sound and the overall results might be invalid.</span></span>
+<span><span class="co">#&gt; To fix this, specify 'seed=TRUE'. This ensures that proper, parallel-safe</span></span>
+<span><span class="co">#&gt; random numbers are produced. To disable this check, use 'seed=NULL', or set</span></span>
+<span><span class="co">#&gt; option 'future.rng.onMisuse' to "ignore". [future &lt;unnamed-3&gt;</span></span>
+<span><span class="co">#&gt; (7d4048e353486fdc80890709e054ca2d-3); on</span></span>
+<span><span class="co">#&gt; 7d4048e353486fdc80890709e054ca2d@runnervmcwoy2&lt;9271&gt;]</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tp_model</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Simple feature collection with 6 features and 14 fields</span></span>
@@ -529,7 +553,7 @@ page</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

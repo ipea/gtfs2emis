@@ -1,6 +1,21 @@
 # Changelog
 
+## gtfs2emis (development version)
+
+- Errors and messages now use {cli}. All errors have class
+  `gtfs2emis_error`, and a missing emission-factor combination has class
+  `gtfs2emis_missing_ef`, so they can be caught with
+  [`tryCatch()`](https://rdrr.io/r/base/conditions.html). Input checks
+  still use {checkmate}. Error and message wording changed, so code that
+  matches the old text with a regular expression may need updating. New
+  dependencies: cli, rlang.
+- [`emis_summary()`](https://ipeagit.github.io/gtfs2emis/reference/emis_summary.md)
+  no longer calls a {testthat} function at run time, so it works without
+  {testthat} installed.
+
 ## gtfs2emis 0.1.2
+
+CRAN release: 2026-02-12
 
 - Minor improvements and internal fixes to emission estimation
   workflows.
