@@ -24,17 +24,17 @@ fuel_correction <- function(pollutant, euro_stage, improved_fuel = c(den = 835, 
   
   # checking----
   # pollutant
-  checkmate::assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(pollutant,any.missing = FALSE,min.len = 1)
-  for(i in pollutant) checkmate::assert_choice(i,c("CO","VOC","NOx","PM10"),null.ok = FALSE)
+  assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(pollutant,any.missing = FALSE,min.len = 1)
+  for(i in pollutant) assert_choice(i,c("CO","VOC","NOx","PM10"),null.ok = FALSE, .var.name = "pollutant")
   # euro_stage
-  checkmate::assert_vector(euro_stage,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(euro_stage,any.missing = FALSE,min.len = 1)
-  for(i in euro_stage) checkmate::assert_choice(i,c("PRE", "I", "II", "III", "IV", "V", "VI"),null.ok = FALSE)
+  assert_vector(euro_stage,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(euro_stage,any.missing = FALSE,min.len = 1)
+  for(i in euro_stage) assert_choice(i,c("PRE", "I", "II", "III", "IV", "V", "VI"),null.ok = FALSE, .var.name = "euro_stage")
   # improved_fuel
-  checkmate::assert_vector(improved_fuel,any.missing = FALSE,len = 5,null.ok = FALSE)
-  checkmate::assert_numeric(improved_fuel,any.missing = FALSE,len = 5)
-  for(i in names(improved_fuel)) checkmate::assert_choice(i,c("den","s","pah","cn","t95"),null.ok = FALSE)
+  assert_vector(improved_fuel,any.missing = FALSE,len = 5,null.ok = FALSE)
+  assert_numeric(improved_fuel,any.missing = FALSE,len = 5)
+  for(i in names(improved_fuel)) assert_choice(i,c("den","s","pah","cn","t95"),null.ok = FALSE, .var.name = "improved_fuel")
   
   # relation between fuel properties and emissions
   

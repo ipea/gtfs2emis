@@ -177,55 +177,59 @@ emi_europe_emep_wear <- function(dist,speed,pollutant,veh_type,
   # as_list = TRUE
   # check inputs ----------
   # speed
-  checkmate::assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_numeric(speed,lower = 1,upper = 130)
-  checkmate::assert_class(speed,"units")
+  assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_numeric(speed,lower = 1,upper = 130)
+  assert_class(speed,"units")
   if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
-    stop("Invalid 'speed' units: 'speed' needs to be in 'km/h' units.")
+    cli::cli_abort(c("{.arg speed} must be in {.val km/h}."
+                     , "x" = "It has units {.val {units::deparse_unit(speed)}}.")
+                   , class = "gtfs2emis_error")
   }
   # dist
-  checkmate::assert_vector(dist,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_numeric(dist,any.missing = FALSE,min.len = 1)
-  checkmate::assert_class(dist,"units")
+  assert_vector(dist,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_numeric(dist,any.missing = FALSE,min.len = 1)
+  assert_class(dist,"units")
   if(units(dist)$numerator != "km"){
-    stop("Invalid 'dist' argument: 'units' should be in 'km'.")
+    cli::cli_abort(c("{.arg dist} must be in {.val km}."
+                     , "x" = "It has units {.val {units::deparse_unit(dist)}}.")
+                   , class = "gtfs2emis_error")
   }
   # length dist and speed
   checkmate::check_true(length(speed) == length(dist),na.ok = FALSE)
   # veh_type
-  checkmate::assert_vector(veh_type,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_class(veh_type,"character")
+  assert_vector(veh_type,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_class(veh_type,"character")
   names_veh <- c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"
                  ,"Coaches Std <=18 t","Coaches Artic >18 t")
-  for(i in veh_type) checkmate::assert_choice(i,names_veh)
+  for(i in veh_type) assert_choice(i,names_veh, .var.name = "veh_type")
   # process
-  checkmate::assert_vector(process,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_class(process,"character")
+  assert_vector(process,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_class(process,"character")
   name_process <- c('tyre','brake','road')
-  for(i in process) checkmate::assert_choice(i,name_process)
+  for(i in process) assert_choice(i,name_process, .var.name = "process")
   # pollutant
-  checkmate::assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(pollutant,any.missing = FALSE,min.len = 1)
+  assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(pollutant,any.missing = FALSE,min.len = 1)
   for(i in process){
     if(i != "road"){
-      for(j in pollutant) checkmate::assert_choice(j,c('TSP','PM10','PM2.5','PM1.0','PM0.1'),null.ok = FALSE)
+      for(j in pollutant) assert_choice(j,c('TSP','PM10','PM2.5','PM1.0','PM0.1'),null.ok = FALSE, .var.name = "pollutant")
     }else{
-      for(j in pollutant) checkmate::assert_choice(j,c('TSP','PM10','PM2.5'),null.ok = FALSE)
+      for(j in pollutant) assert_choice(j,c('TSP','PM10','PM2.5'),null.ok = FALSE, .var.name = "pollutant")
     }
   }
   # fleet_composition
-  checkmate::assert_vector(fleet_composition,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_numeric(fleet_composition,any.missing = FALSE,min.len = 1,lower = 0,upper = 1)
+  assert_vector(fleet_composition,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_numeric(fleet_composition,any.missing = FALSE,min.len = 1,lower = 0,upper = 1)
   # load factor
-  checkmate::assert_vector(load,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_numeric(load,lower = 0,upper = 1)
-  checkmate::assert_class(load,"numeric")
+  assert_vector(load,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_numeric(load,lower = 0,upper = 1)
+  assert_class(load,"numeric")
   if(length(load) != 1){
     checkmate::check_true(length(load) == length(dist),na.ok = FALSE)
     checkmate::check_true(length(load) == length(speed),na.ok = FALSE)
   }
   # as_list
-  checkmate::assert_logical(as_list, any.missing = FALSE) 
+  assert_logical(as_list, any.missing = FALSE) 
   
   # Adjust lengths
   # check lengths----

@@ -32,6 +32,7 @@ Depends:
     R (>= 3.6)
 Imports: 
     checkmate,
+    cli (>= 3.4.0),
     data.table,
     furrr,
     future,
@@ -41,7 +42,8 @@ Imports:
     sfheaders,
     terra,
     units,
-    parallelly
+    parallelly,
+    rlang (>= 1.0.0)
 Suggests: 
     gtfstools,
     ggplot2,
