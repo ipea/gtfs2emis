@@ -47,14 +47,14 @@ the total number of available cores minus one.}
 
 \item{spatial_resolution}{The spatial resolution in meters. Defaults to \code{100}.
 The function only creates points in order to guarantee that the
-minimum distance between two consecutive points will be at most the
+maximum distance between two consecutive points will be at most the
 \code{spatial_resolution} value. If a given GTFS shape_id has two
 consecutive points with a distance smaller than the spatial resolution,
 the algorithm will not remove such points.}
 
 \item{output_path}{character. A directory path. If \code{NULL} (Default), the
-function returns the output. If the user passes a valid \code{passed}, the
-output will be saved in the \code{output_path} dir. Note that that the
+function returns the output. If the user passes a valid \code{output_path}, the
+output will be saved in the \code{output_path} dir. Note that the
 output of each public transport \code{shape_id} is saved separately in
 different files. Setting an \code{output_path} is recommended when working
 with large public transport system because the output of the function
@@ -66,7 +66,9 @@ files. It is useful to continue processing a GTFS file that was stopped
 for some reason. Default value is FALSE.}
 }
 \value{
-A \verb{data.table sf_linestring} object or \code{NULL}.
+An \code{sf} object (class \code{c("sf", "data.frame")}) with one LINESTRING
+per segment between consecutive stops, or \code{NULL} when \code{output_path}
+is provided (the outputs are then saved as files in \code{output_path}).
 }
 \description{
 This function converts a public transport data set in GTFS format into a

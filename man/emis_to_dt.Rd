@@ -16,8 +16,8 @@ emis_to_dt(
 \arguments{
 \item{emi_list}{list. A list of emission estimates}
 
-\item{emi_vars}{character. data.frame names of 'emi_list' object attributed
-to emissions or  emission factors. Default is 'emi'.}
+\item{emi_vars}{character. Name of the single element of \code{emi_list} that
+holds emissions or emission factors. Default is 'emi'.}
 
 \item{veh_vars}{character. data.frame names of 'emi_list' object attributed
 to vehicle characteristics. Default is 'veh_type'.}

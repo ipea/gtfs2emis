@@ -40,7 +40,7 @@ head(simple_fleet_df)
 
 ### Example of *detailed* fleet table
 
-This other table illustrates what a detailed fleet data table looks like, using the example of the city of Curitiba, Brazil. Here, the `N` column also tells us the absolute number of buses with each combination of vehicle characteristics. However, note that this table brings a `shape_id` column. These columns indicate which specific vehicles should be allocated to run on predefined `shape_id`s of the GTFS data. For example, it allows users to assign articulated buses to specific routes in the transport network.
+This other table illustrates what a detailed fleet data table looks like, using the example of the city of Curitiba, Brazil. Here, the `total` column tells us the absolute number of buses with each combination of vehicle characteristics. However, note that this table brings a `shape_id` column. These columns indicate which specific vehicles should be allocated to run on predefined `shape_id`s of the GTFS data. For example, it allows users to assign articulated buses to specific routes in the transport network.
 
 ```{r, message = FALSE}
 detailed_fleet_file <- system.file("extdata/bra_cur_fleet.txt", package = "gtfs2emis")
@@ -58,10 +58,10 @@ To check which columns and sets of vehicle characteristics are required by each 
 
 | Emission factor function | Region  | Source        | Type of buses                | Other required characteristics            |
 |--------------------------|---------|---------------|------------------------------|-------------------------------------------|
-| `ef_brazil_cetesb()`     | Brazil  | CETESB        | Micro, Standard, Articulated | Age, Fuel, EURO stage                     |
+| `ef_brazil_cetesb()`     | Brazil  | CETESB        | Micro, Standard, Articulated | Age                                       |
 | `ef_europe_emep()`       | Europe  | EMEP/EEA      | Micro, Standard, Articulated | Fuel, EURO stage, technology, load, slope |
-| `ef_usa_moves()`         | US      | EMFAC2017/CARB| Urban Buses                  | Age, Fuel                                 |
-| `ef_usa_emfac()`         | US      | MOVES3/EPA    | Urban Buses                  | Age, Fuel                                 |
+| `ef_usa_moves()`         | US      | MOVES3/EPA    | Urban Buses                  | Age, Fuel                                 |
+| `ef_usa_emfac()`         | US      | EMFAC2017/CARB| Urban Buses                  | Age, Fuel                                 |
 
 
 

@@ -305,9 +305,9 @@ emission_model <- function(  tp_model
   ### Character input path----
   if(is.character(tp_model)){ 
     
-    tp_fname_files <- list.files(path = tp_model,pattern = ".rds"
+    tp_fname_files <- list.files(path = tp_model,pattern = "\\.rds$"
                                  ,all.files = TRUE,full.names = TRUE)
-    tp_name_files <- list.files(path = tp_model,pattern = ".rds"
+    tp_name_files <- list.files(path = tp_model,pattern = "\\.rds$"
                                 ,all.files = TRUE,full.names = FALSE)
     
     # check if there is files with .txt|.rds patterns
@@ -513,6 +513,7 @@ emission_model <- function(  tp_model
       emisLine <- furrr::future_map(.x = 1:length(tp_fname_files)
                                     ,.f = prepare_emis_output
                                     ,.options = furrr::furrr_options(
+                                      seed = TRUE,
                                       packages = requiredPackages))
     }else{
       emisLine <- lapply(X = 1:length(tp_fname_files)
