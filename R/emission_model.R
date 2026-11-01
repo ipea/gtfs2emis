@@ -194,76 +194,76 @@ emission_model <- function(  tp_model
   #quiet = TRUE
   # A) Checking inputs -----
   
-  checkmate::assert_data_frame(fleet_data, null.ok = FALSE)
-  checkmate::assert_vector(pollutant, null.ok = FALSE)
-  checkmate::assert_logical(parallel, null.ok = FALSE)
+  assert_data_frame(fleet_data, null.ok = FALSE)
+  assert_vector(pollutant, null.ok = FALSE)
+  assert_logical(parallel, null.ok = FALSE)
   
-  if(parallel)  checkmate::assert_integerish(ncores,lower = 1,upper = parallelly::availableCores(omit = 1),null.ok = TRUE)
+  if(parallel)  assert_integerish(ncores,lower = 1,upper = parallelly::availableCores(omit = 1),null.ok = TRUE)
   
-  checkmate::assert_logical(continue, null.ok = FALSE)
-  checkmate::assert_logical(quiet, null.ok = FALSE)
-  checkmate::assert_numeric(reference_year, lower = 2000, finite = TRUE, any.missing = TRUE)
-  checkmate::assert(
+  assert_logical(continue, null.ok = FALSE)
+  assert_logical(quiet, null.ok = FALSE)
+  assert_numeric(reference_year, lower = 2000, finite = TRUE, any.missing = TRUE)
+  assert_checks(
     checkmate::check_class(tp_model, classes = c("sf", "data.frame"))
     , checkmate::check_class(tp_model, classes = c("character"))
-    , combine = "or"
+    , combine = "or", .var.name = "tp_model"
   )
-  if(is.character(tp_model)) checkmate::assert_directory_exists(tp_model)
-  checkmate::assert_string(output_path, null.ok = TRUE)
-  if(!is.null(output_path)) checkmate::assert_directory_exists(output_path)
+  if(is.character(tp_model)) assert_directory_exists(tp_model)
+  assert_string(output_path, null.ok = TRUE)
+  if(!is.null(output_path)) assert_directory_exists(output_path)
   
   ## height file ----
-  checkmate::assert(
+  assert_checks(
     checkmate::check_class(heightfile, classes = c("RasterLayer","Raster"),null.ok = TRUE)
     , checkmate::check_class(heightfile, classes = c("character"),null.ok = TRUE)
-    , combine = "or"
+    , combine = "or", .var.name = "heightfile"
   )
-  if(is.character(heightfile)) checkmate::assert_file_exists(heightfile)
+  if(is.character(heightfile)) assert_file_exists(heightfile)
   
   ## i) EF model ----
-  checkmate::assert_choice(ef_model
+  assert_choice(ef_model
                            ,c("ef_brazil_cetesb","ef_usa_emfac"
                               ,"ef_usa_moves","ef_europe_emep"
                               ,"ef_brazil_scaled_euro")
                            ,null.ok = FALSE)
   ## ii) Fleet data  | EF model ----
   if (ef_model != "ef_europe_emep"){
-    checkmate::assert(
+    assert_checks(
       checkmate::check_choice('veh_type', names(fleet_data))
       , checkmate::check_choice('model_year', names(fleet_data))
       , checkmate::check_choice('fleet_composition', names(fleet_data))
-      , combine = "and"
+      , combine = "and", .var.name = "fleet_data"
     )
   }
   if (ef_model == "ef_brazil_scaled_euro"){
-    checkmate::assert(
+    assert_checks(
       checkmate::check_choice('euro', names(fleet_data))
       , checkmate::check_choice('type_name_eu', names(fleet_data))
       , checkmate::check_choice('fuel', names(fleet_data))
       , checkmate::check_choice('tech', names(fleet_data))
-      , combine = "and"
+      , combine = "and", .var.name = "fleet_data"
     )
   }
   if (ef_model == "ef_europe_emep"){
     if("hot_exhaust" %in% process){
-      checkmate::assert(
+      assert_checks(
         checkmate::check_choice('euro', names(fleet_data))
         , checkmate::check_choice('fuel', names(fleet_data))
         , checkmate::check_choice('tech', names(fleet_data))
         , checkmate::check_choice('fleet_composition', names(fleet_data))
-        , combine = "and"
+        , combine = "and", .var.name = "fleet_data"
       )
     }else{
       # process
-      checkmate::assert_vector(process,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-      checkmate::assert_class(process,"character")
+      assert_vector(process,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+      assert_class(process,"character")
       name_process <- c('tyre','brake','road')
-      for(i in process) checkmate::assert_choice(i,name_process)
+      for(i in process) assert_choice(i,name_process, .var.name = "process")
       # names fleet_data
-      checkmate::assert(
+      assert_checks(
         checkmate::check_choice('veh_type', names(fleet_data))
         , checkmate::check_choice('fleet_composition', names(fleet_data))
-        , combine = "and"
+        , combine = "and", .var.name = "fleet_data"
       )
     }
   }
@@ -280,8 +280,9 @@ emission_model <- function(  tp_model
     
     # check if there is files with .txt|.rds patterns
     if(length(tp_fname_files) == 0){ 
-      stop(sprintf("No files with patterns '.rds' were found in %s path "
-                   ,tp_model,".\n Please provide a valid input path."))
+      cli::cli_abort(c("No {.file .rds} files were found in {.path {tp_model}}."
+                       , "i" = "Please provide a valid input path.")
+                     , class = "gtfs2emis_error")
     }
     
   }
@@ -291,7 +292,7 @@ emission_model <- function(  tp_model
     if(is.null(ncores)){
       ncores <- parallelly::availableCores(omit = 1)
 
-      if(!quiet) message(paste('Using', ncores, 'CPU cores'))
+      if(!quiet) cli::cli_inform('Using {ncores} CPU cores')
     }
     
     oplan <- future::plan("multisession", workers = ncores)
@@ -506,8 +507,7 @@ emission_model <- function(  tp_model
                           ,".rds")
     
     if( data.table::uniqueN(tp_model$shape_id) > 1 & quiet == "FALSE"){
-      message(sprintf("Writing output as '%s' file."
-                      ,export_path))
+      cli::cli_inform("Writing output as {.file {export_path}} file.")
     }
     
     # continue condition

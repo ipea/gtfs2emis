@@ -53,19 +53,19 @@ ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
   
   # check inputs----
   
-  checkmate::assert_vector(pollutant,min.len = 1,any.missing = FALSE,null.ok = FALSE)
-  checkmate::assert_vector(veh_type,min.len = 1,any.missing = FALSE,null.ok = FALSE)
-  checkmate::assert_vector(model_year,min.len = 1,any.missing = FALSE,null.ok = FALSE)
-  checkmate::assert_numeric(model_year,lower = 1960,upper = 2020,any.missing = FALSE,min.len = 1)
-  checkmate::assert_logical(as_list,len = 1)
+  assert_vector(pollutant,min.len = 1,any.missing = FALSE,null.ok = FALSE)
+  assert_vector(veh_type,min.len = 1,any.missing = FALSE,null.ok = FALSE)
+  assert_vector(model_year,min.len = 1,any.missing = FALSE,null.ok = FALSE)
+  assert_numeric(model_year,lower = 1960,upper = 2020,any.missing = FALSE,min.len = 1)
+  assert_logical(as_list,len = 1)
   
   # pollutant
   names_pollutant <- unique(ef_brazil_cetesb_db$pollutant)
-  for(i in pollutant) checkmate::assert_choice(i,names_pollutant ,null.ok = FALSE)
+  for(i in pollutant) assert_choice(i,names_pollutant ,null.ok = FALSE, .var.name = "pollutant")
   
   # veh_type
   names_veh <- c('BUS_URBAN_D', 'BUS_MICRO_D', 'BUS_COACH_D', 'BUS_ARTIC_D')
-  for(i in veh_type) checkmate::assert_choice(i, names_veh,null.ok = FALSE)
+  for(i in veh_type) assert_choice(i, names_veh,null.ok = FALSE, .var.name = "veh_type")
   
   # model_year and veh_type
   if(length(model_year) != length(veh_type) && length(veh_type) == 1){
@@ -75,7 +75,8 @@ ef_brazil_cetesb <- function(pollutant, veh_type, model_year, as_list = TRUE){
     model_year <- rep(model_year, length(veh_type))
   }
   if(length(model_year) != length(veh_type)){
-    stop("Arguments 'model_year' and 'veh_type' should have the same length.")
+    cli::cli_abort("{.arg model_year} and {.arg veh_type} must have the same length."
+                   , class = "gtfs2emis_error")
   }
   
   # loop through database

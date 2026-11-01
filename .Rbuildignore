@@ -17,3 +17,8 @@
 ^CRAN-SUBMISSION$
 ^_pkgdown\.yml$
 ^pkgdown$
+^\.claude$
+^CLAUDE\.md$
+^MEMORY\.md$
+^templates$
+^quality_reports$

@@ -75,31 +75,33 @@ emis_summary <- function(emi_list,
                          veh_vars = "veh_type", 
                          segment_vars = NULL,
                          process_vars = "process"){
+  call <- rlang::current_env()  # header for conditions raised inside closures
   
   # A) Checking inputs -----
   
-  checkmate::assert_list(emi_list, null.ok = FALSE)
-  checkmate::assert_vector(by, len = 1,null.ok = FALSE)
-  checkmate::assert_string(by, null.ok = FALSE)
-  checkmate::assert_vector(segment_vars, len = 1, null.ok = TRUE)
-  checkmate::assert_string(segment_vars, null.ok = TRUE)
+  assert_list(emi_list, null.ok = FALSE)
+  assert_vector(by, len = 1,null.ok = FALSE)
+  assert_string(by, null.ok = FALSE)
+  assert_vector(segment_vars, len = 1, null.ok = TRUE)
+  assert_string(segment_vars, null.ok = TRUE)
   
-  checkmate::assert_choice("emi",names(emi_list),null.ok = FALSE)
-  checkmate::assert_choice("pollutant",names(emi_list),null.ok = FALSE)
-  checkmate::assert_choice(by,c("time","vehicle","pollutant"),null.ok = FALSE)
-  checkmate::assert_choice(segment_vars,names(emi_list),null.ok = TRUE)
+  assert_choice("emi",names(emi_list),null.ok = FALSE, .var.name = "emi_list")
+  assert_choice("pollutant",names(emi_list),null.ok = FALSE, .var.name = "emi_list")
+  assert_choice(by,c("time","vehicle","pollutant"),null.ok = FALSE)
+  assert_choice(segment_vars,names(emi_list),null.ok = TRUE)
   
   if(by == "time"){
     segment_vars = "tp_model"
-    checkmate::assert_choice(segment_vars,names(emi_list),null.ok = FALSE)
-    checkmate::assert_choice("timestamp",names(emi_list[[segment_vars]]))
+    assert_choice(segment_vars,names(emi_list),null.ok = FALSE)
+    assert_choice("timestamp",names(emi_list[[segment_vars]]), .var.name = "emi_list$tp_model")
     if(length(emi_list[[segment_vars]][["timestamp"]]) != nrow(emi_list[["emi"]])){
-      stop("Incorrect dimensions: 'emi_list$emi' columns needs to have the same length of 'timestamp'")
+      cli::cli_abort("{.arg emi_list$emi} columns must have the same length as {.field timestamp}."
+                     , class = "gtfs2emis_error")
     }
   }
   if(by == "vehicle"){
-    checkmate::assert_vector(veh_vars,min.len = 1,unique = TRUE, null.ok = FALSE)
-    for(i in veh_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
+    assert_vector(veh_vars,min.len = 1,unique = TRUE, null.ok = FALSE)
+    for(i in veh_vars) assert_choice(i,names(emi_list),null.ok = FALSE, .var.name = "veh_vars")
   }
   
   #
@@ -107,10 +109,11 @@ emis_summary <- function(emi_list,
   #
   
   lapply(seq_along(emi_list[["emi"]]),function(i){ 
-    checkmate::expect_class(emi_list[["emi"]][[i]],"units")
+    assert_class(emi_list[["emi"]][[i]],"units", .var.name = "emi_list$emi", call = call)
     if(units::deparse_unit(emi_list[["emi"]][[i]]) != "g" & 
        units::deparse_unit(emi_list[["emi"]][[i]]) != "kg"){
-      stop("Incorrect 'units': Emissions 'emi_list$emi' needs to have 'units' in 'g' or 'kg'.")
+      cli::cli_abort("{.arg emi_list$emi} must have units {.val g} or {.val kg}."
+                     , class = "gtfs2emis_error", call = call)
     }
   })
   

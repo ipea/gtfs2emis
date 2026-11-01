@@ -20,43 +20,49 @@
 #' 
 #' @keywords internal
 multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = NULL, as_list = TRUE){
+  call <- rlang::current_env()  # header for conditions raised inside closures
   
   # check ----
   # fleet_composition
-  checkmate::assert_vector(fleet_composition,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_numeric(fleet_composition,any.missing = FALSE,min.len = 1,lower = 0,upper = 1)
+  assert_vector(fleet_composition,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_numeric(fleet_composition,any.missing = FALSE,min.len = 1,lower = 0,upper = 1)
   # dist
-  checkmate::assert_vector(dist,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_numeric(dist,any.missing = FALSE,min.len = 1)
-  checkmate::assert_class(dist,"units")
+  assert_vector(dist,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_numeric(dist,any.missing = FALSE,min.len = 1)
+  assert_class(dist,"units")
   if(units(dist)$numerator != "km"){
-    stop("Invalid 'dist' argument: 'units' should be in 'km'.")
+    cli::cli_abort(c("{.arg dist} must be in {.val km}."
+                     , "x" = "It has units {.val {units::deparse_unit(dist)}}.")
+                   , class = "gtfs2emis_error")
   }
   # ef
   # check if its a list
   if(inherits(x = ef,what = "list")){
-    checkmate::assert_choice("EF",names(ef),null.ok = FALSE)
+    assert_choice("EF",names(ef),null.ok = FALSE, .var.name = "ef")
     tmpEf <- ef$EF
   }else{
     tmpEf <- ef
   }
   # check if ef is constant
   if(length(tmpEf[[1]]) == 1){
-    message("Constant emission factor along the route")
+    cli::cli_inform("Constant emission factor along the route")
   }
   
   # units
   lapply(seq_along(tmpEf), function(i){ # i = 1
     if(!is(tmpEf[[i]], "units")){
-      stop("Invalid 'ef' argument: 'ef' needs to have class 'units' in 'g/km'. Please, check package 'units'")
+      cli::cli_abort(c("{.arg ef} must have class {.cls units} in {.val g/km}."
+                       , "i" = "See the {.pkg units} package.")
+                     , class = "gtfs2emis_error", call = call)
     }
     if(units(tmpEf[[i]])$numerator != "g" | units(tmpEf[[i]])$denominator != "km"){
-      stop("Invalid 'ef' argument: 'ef' needs to have 'units' in 'g/km'.")
+      cli::cli_abort("{.arg ef} must have units {.val g/km}."
+                     , class = "gtfs2emis_error", call = call)
     }
     # check 'tmpEf' length with veh
     if(length(tmpEf[[i]]) != 1 & length(tmpEf[[i]]) != length(dist)){
-      stop(paste0("Invalid 'ef' argument: ef '", names(tmpEf[i])
-                  , "' needs to has the same length of dist"))
+      cli::cli_abort("{.arg ef} column {.val {names(tmpEf[i])}} must have the same length as {.arg dist}."
+                     , class = "gtfs2emis_error", call = call)
     }
   })
   

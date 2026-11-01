@@ -84,18 +84,18 @@ transport_model <- function(gtfs_data
   
   # check if required fields and files exist  ----
   
-  checkmate::assert_character(output_path,len = 1,null.ok = TRUE)
-  if(is.character(output_path)) checkmate::assert_directory_exists(output_path)
-  checkmate::assert_numeric(min_speed, lower = 2, finite = TRUE, null.ok = TRUE, any.missing = FALSE)  
-  checkmate::assert_numeric(max_speed, lower = 3, finite = TRUE, null.ok = TRUE, any.missing = FALSE)  
-  checkmate::assert_numeric(new_speed, lower = 1, finite = TRUE, null.ok = TRUE, any.missing = FALSE)
-  checkmate::assert_true(min_speed < max_speed)
-  checkmate::assert_logical(parallel, any.missing = FALSE) 
+  assert_character(output_path,len = 1,null.ok = TRUE)
+  if(is.character(output_path)) assert_directory_exists(output_path)
+  assert_numeric(min_speed, lower = 2, finite = TRUE, null.ok = TRUE, any.missing = FALSE)  
+  assert_numeric(max_speed, lower = 3, finite = TRUE, null.ok = TRUE, any.missing = FALSE)  
+  assert_numeric(new_speed, lower = 1, finite = TRUE, null.ok = TRUE, any.missing = FALSE)
+  assert_true(min_speed < max_speed, .var.name = "min_speed < max_speed")
+  assert_logical(parallel, any.missing = FALSE) 
   
-  if(parallel)  checkmate::assert_integerish(ncores,lower = 1,upper = ncores <- parallelly::availableCores(omit = 1)
+  if(parallel)  assert_integerish(ncores,lower = 1,upper = ncores <- parallelly::availableCores(omit = 1)
                                              ,null.ok = TRUE)
   
-  checkmate::assert_logical(continue, null.ok = FALSE, any.missing = FALSE) 
+  assert_logical(continue, null.ok = FALSE, any.missing = FALSE) 
   # Read GTFS ------------
   
   if (is.character(gtfs_data)) {
@@ -112,7 +112,7 @@ transport_model <- function(gtfs_data
     if(is.null(ncores)){
       ncores <- parallelly::availableCores(omit = 1)
       
-      message(paste('Using', ncores, 'CPU cores'))
+      cli::cli_inform('Using {ncores} CPU cores')
     }
     
     oplan <- future::plan("multisession", workers = ncores)

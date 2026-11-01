@@ -54,14 +54,14 @@
 slope_class_europe_emep <- function(tp_model,heightfile,keep = FALSE){
   
   # checks
-  checkmate::assert_class(tp_model, classes = c("sf", "data.frame"),null.ok = FALSE)
-  checkmate::assert(
+  assert_class(tp_model, classes = c("sf", "data.frame"),null.ok = FALSE)
+  assert_checks(
     checkmate::check_class(heightfile, classes = c("RasterLayer","Raster"),null.ok = FALSE)
     , checkmate::check_class(heightfile, classes = c("character"),null.ok = FALSE)
-    , combine = "or"
+    , combine = "or", .var.name = "heightfile"
   )
-  if(is.character(heightfile)) checkmate::assert_file_exists(heightfile)
-  checkmate::assert_logical(keep, null.ok = FALSE)
+  if(is.character(heightfile)) assert_file_exists(heightfile)
+  assert_logical(keep, null.ok = FALSE)
   
   # transport model
   

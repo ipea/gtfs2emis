@@ -70,6 +70,7 @@
 #'                 as_list = FALSE) 
 ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech = "SCR", 
                            slope = 0.0, load = 0.5, fcorr = 1, as_list = TRUE){
+  call <- rlang::current_env()  # header for conditions raised inside closures
   
   # speed = gpsLine$speed
   # veh_type = "Ubus Std 15 - 18 t"
@@ -90,34 +91,36 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   
   # check inputs ----
   # speed
-  checkmate::assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_numeric(speed,lower = 1,upper = 130)
-  checkmate::assert_class(speed,"units")
+  assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_numeric(speed,lower = 1,upper = 130)
+  assert_class(speed,"units")
   if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
-    stop("Invalid 'speed' units: 'speed' needs to be in 'km/h' units.")
+    cli::cli_abort(c("{.arg speed} must be in {.val km/h}."
+                     , "x" = "It has units {.val {units::deparse_unit(speed)}}.")
+                   , class = "gtfs2emis_error")
   }
   # vehicle type
-  checkmate::assert_vector(veh_type,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(veh_type,any.missing = FALSE,min.len = 1)
-  for(i in veh_type) checkmate::assert_choice(i,unique(temp_ef$Segment),null.ok = FALSE)
+  assert_vector(veh_type,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(veh_type,any.missing = FALSE,min.len = 1)
+  for(i in veh_type) assert_choice(i,unique(temp_ef$Segment),null.ok = FALSE, .var.name = "veh_type")
   # euro
-  checkmate::assert_vector(euro,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(euro,any.missing = FALSE,min.len = 1)
-  for(i in euro) checkmate::assert_choice(i,unique(temp_ef$Euro),null.ok = FALSE)
+  assert_vector(euro,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(euro,any.missing = FALSE,min.len = 1)
+  for(i in euro) assert_choice(i,unique(temp_ef$Euro),null.ok = FALSE, .var.name = "euro")
   # fuel
-  checkmate::assert_vector(fuel,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(fuel,any.missing = FALSE,min.len = 1)
-  for(i in fuel) checkmate::assert_choice(i,unique(temp_ef$Fuel),null.ok = FALSE)
+  assert_vector(fuel,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(fuel,any.missing = FALSE,min.len = 1)
+  for(i in fuel) assert_choice(i,unique(temp_ef$Fuel),null.ok = FALSE, .var.name = "fuel")
   # pollutant
-  checkmate::assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(pollutant,any.missing = FALSE,min.len = 1)
-  for(i in pollutant) checkmate::assert_choice(i,unique(temp_ef$Pol),null.ok = FALSE)
+  assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(pollutant,any.missing = FALSE,min.len = 1)
+  for(i in pollutant) assert_choice(i,unique(temp_ef$Pol),null.ok = FALSE, .var.name = "pollutant")
   # technology
-  checkmate::assert_vector(tech,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(tech,any.missing = FALSE,min.len = 1)
-  for(i in tech) checkmate::assert_choice(i,unique(temp_ef$Technology),null.ok = FALSE)
+  assert_vector(tech,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(tech,any.missing = FALSE,min.len = 1)
+  for(i in tech) assert_choice(i,unique(temp_ef$Technology),null.ok = FALSE, .var.name = "tech")
   # as_list
-  checkmate::assert_logical(as_list, any.missing = FALSE) 
+  assert_logical(as_list, any.missing = FALSE) 
   
   # speed----
   
@@ -141,10 +144,12 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   if(length(fcorr) == 1)  fcorr <- rep(fcorr,length(euro))
   
   if(length(slope) > 1 & (length(slope) != length(speed)) ){
-    stop("Invalid lengths: 'slope' and 'speed' arguments need to have the same length.")
+    cli::cli_abort("{.arg slope} and {.arg speed} must have the same length."
+                   , class = "gtfs2emis_error")
   }
   if(length(load) > 1 & (length(load) != length(speed)) ){
-    stop("Invalid lengths: 'load' and 'speed' arguments need to have the same length.")
+    cli::cli_abort("{.arg load} and {.arg speed} must have the same length."
+                   , class = "gtfs2emis_error")
   }
   
   # polynomial expression----
@@ -183,45 +188,45 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       # condition for missing technologies
       
       if(euro[j] %in%  c("Conventional","I","II","III") &  tech[j] != "-"){
-        message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
-                       ,"' Technology and Euro '", euro[j]
-                       ,"'.\n The package assumes missing Technology entry. Please check "
-                       ,"`data(ef_europe_emep_db)` for available data."))
+        cli::cli_inform(c(paste0("{.val {pollutant[i]}} emission factor not found for technology "
+                                 , "{.val {tech[j]}} and Euro {.val {euro[j]}}.")
+                        , "i" = paste0("The package assumes missing Technology entry. Check "
+                                       , "{.code data(ef_europe_emep_db)} for available data.")))
         tech[j] = "-"
       }
       # FC / CO2 with tech
       if((euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("FC","CO2")) & 
          tech[j] == "-"){
-        message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
-                       ,"' Technology and Euro '", euro[j]
-                       ,"'.\n The package assumed 'SCR' Technology entry. Please check "
-                       ,"`data(ef_europe_emep_db)` for available data."))
+        cli::cli_inform(c(paste0("{.val {pollutant[i]}} emission factor not found for technology "
+                                 , "{.val {tech[j]}} and Euro {.val {euro[j]}}.")
+                        , "i" = paste0("The package assumed 'SCR' Technology entry. Check "
+                                       , "{.code data(ef_europe_emep_db)} for available data.")))
         tech[j] = "SCR"
       }
       # FC / CO2 without tech
       if(!(euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("FC","CO2")) & 
          tech[j] != "-"){
-        message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
-                       ,"' Technology and Euro '", euro[j]
-                       ,"'.\n The package assumes missing Technology entry. Please check "
-                       ,"`data(ef_europe_emep_db)` for available data."))
+        cli::cli_inform(c(paste0("{.val {pollutant[i]}} emission factor not found for technology "
+                                 , "{.val {tech[j]}} and Euro {.val {euro[j]}}.")
+                        , "i" = paste0("The package assumes missing Technology entry. Check "
+                                       , "{.code data(ef_europe_emep_db)} for available data.")))
         tech[j] = "-"
       }
       # FC / CO2 with tech
       if((euro[j] %in%  c("V","VI")) && (pollutant[i] %in% c("FC","CO2")) & 
          (tech[j] %in% c("-","DPF+SCR"))){
-        message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
-                       ,"' Technology and Euro '", euro[j]
-                       ,"'.\n The package assumed 'SCR' Technology entry. Please check "
-                       ,"`data(ef_europe_emep_db)` for available data."))
+        cli::cli_inform(c(paste0("{.val {pollutant[i]}} emission factor not found for technology "
+                                 , "{.val {tech[j]}} and Euro {.val {euro[j]}}.")
+                        , "i" = paste0("The package assumed 'SCR' Technology entry. Check "
+                                       , "{.code data(ef_europe_emep_db)} for available data.")))
         tech[j] = "SCR"
       }
       # EURO VI
       if((euro[j] %in%  c("VI")) && !(pollutant[i] %in% c("CO2","FC")) & tech[j] != "DPF+SCR"){
-        message(paste0("'",pollutant[i],"' Emission factor not found for '", tech[j] 
-                       ,"' Technology and Euro '", euro[j]
-                       ,"'.\n The package assumed 'DPF+SCR' Technology entry. Please check "
-                       ,"`data(ef_europe_emep_db)` for available data."))
+        cli::cli_inform(c(paste0("{.val {pollutant[i]}} emission factor not found for technology "
+                                 , "{.val {tech[j]}} and Euro {.val {euro[j]}}.")
+                        , "i" = paste0("The package assumed 'DPF+SCR' Technology entry. Check "
+                                       , "{.code data(ef_europe_emep_db)} for available data.")))
         tech[j] = "DPF+SCR"
       }
       
@@ -255,16 +260,17 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       #
       
       if(nrow(temp_ef3) == 0){
-        erro_msg <- paste0("No available emission factor for the following combination of parameters:\n\n",
-                           "ef_europe_emep_db[Pol %in% '",pollutant[i],
-                           "' &\n Fuel %in% '",fuel[j],
-                           "' &\n Segment %in% '",veh_type[j],
-                           "' &\n Technology %in% '",tech[j],
-                           "' &\n Euro %in% '",euro[j],
-                           "' &\n Slope == ",slope[1],
-                           " &\n Load == ",load[1],", ]",
-                           "\n\n Please check `data(ef_europe_emep_db)` for available data.")
-        stop(erro_msg)
+        cli::cli_abort(c("No available emission factor for this combination of parameters:"
+                         , "*" = "Pol: {.val {pollutant[i]}}"
+                         , "*" = "Fuel: {.val {fuel[j]}}"
+                         , "*" = "Segment: {.val {veh_type[j]}}"
+                         , "*" = "Technology: {.val {tech[j]}}"
+                         , "*" = "Euro: {.val {euro[j]}}"
+                         , "*" = "Slope: {.val {slope[1]}}"
+                         , "*" = "Load: {.val {load[1]}}"
+                         , "i" = "Check {.code data(ef_europe_emep_db)} for available data.")
+                       , class = c("gtfs2emis_missing_ef", "gtfs2emis_error")
+                       , call = call)
       }
       
       

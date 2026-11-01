@@ -71,27 +71,27 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   # process_vars = "process"
   # segment_vars = NULL
   # checkings -----
-  checkmate::assert_list(emi_list, null.ok = FALSE)
+  assert_list(emi_list, null.ok = FALSE)
   # emi_vars
-  checkmate::assert_vector(emi_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(emi_vars,any.missing = FALSE,min.len = 1)
-  for(i in emi_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
+  assert_vector(emi_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(emi_vars,any.missing = FALSE,min.len = 1)
+  for(i in emi_vars) assert_choice(i,names(emi_list),null.ok = FALSE, .var.name = "emi_vars")
   # veh_vars
-  checkmate::assert_vector(veh_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(veh_vars,any.missing = FALSE,min.len = 1)
-  for(i in veh_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
+  assert_vector(veh_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(veh_vars,any.missing = FALSE,min.len = 1)
+  for(i in veh_vars) assert_choice(i,names(emi_list),null.ok = FALSE, .var.name = "veh_vars")
   # pol_vars
-  checkmate::assert_vector(pol_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(pol_vars,any.missing = FALSE,min.len = 1)
-  for(i in pol_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
+  assert_vector(pol_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(pol_vars,any.missing = FALSE,min.len = 1)
+  for(i in pol_vars) assert_choice(i,names(emi_list),null.ok = FALSE, .var.name = "pol_vars")
   # process
-  checkmate::assert_vector(process_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(process_vars,any.missing = FALSE,min.len = 1)
-  for(i in process_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
+  assert_vector(process_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(process_vars,any.missing = FALSE,min.len = 1)
+  for(i in process_vars) assert_choice(i,names(emi_list),null.ok = FALSE, .var.name = "process_vars")
   # segment_vars
-  checkmate::assert_vector(segment_vars,any.missing = FALSE,min.len = 1,null.ok = TRUE)
-  checkmate::assert_character(segment_vars,any.missing = FALSE,min.len = 1,null.ok = TRUE)
-  for(i in segment_vars) checkmate::assert_choice(i,names(emi_list),null.ok = FALSE)
+  assert_vector(segment_vars,any.missing = FALSE,min.len = 1,null.ok = TRUE)
+  assert_character(segment_vars,any.missing = FALSE,min.len = 1,null.ok = TRUE)
+  for(i in segment_vars) assert_choice(i,names(emi_list),null.ok = FALSE, .var.name = "segment_vars")
   
   # check units 
   myunits <- sapply(seq_along(emi_list[[emi_vars]]),function(i){
@@ -101,7 +101,9 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   if(length(unique(myunits)) == 1){
     myunits <- myunits[1]
   }else{
-    stop("Invalid units: units are not the same for all emissions columns")
+    cli::cli_abort(c("All emission columns must have the same units."
+                     , "x" = "Found units {.val {unique(myunits)}}.")
+                   , class = "gtfs2emis_error")
   }
   
   # expand process values

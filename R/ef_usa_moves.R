@@ -42,6 +42,7 @@
 #'         )
 #' @export
 ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fuel = 'D', as_list = TRUE){
+  call <- rlang::current_env()  # header for conditions raised inside closures
   
   # use specific name-----
   tmp_fuel <- fuel
@@ -53,27 +54,27 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
   
   # Checkings -----
   # pollutant
-  checkmate::assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(pollutant,any.missing = FALSE,min.len = 1)
-  for(i in pollutant) checkmate::assert_choice(i,unique(ef_usa_moves_db$pollutant),null.ok = FALSE)
+  assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(pollutant,any.missing = FALSE,min.len = 1)
+  for(i in pollutant) assert_choice(i,unique(ef_usa_moves_db$pollutant),null.ok = FALSE, .var.name = "pollutant")
   
   # reference_year
-  checkmate::assert_vector(reference_year,any.missing = FALSE,len = 1,null.ok = FALSE)
-  checkmate::assert_numeric(reference_year,lower = 2010,upper = 2020,len = 1,any.missing = FALSE)
+  assert_vector(reference_year,any.missing = FALSE,len = 1,null.ok = FALSE)
+  assert_numeric(reference_year,lower = 2010,upper = 2020,len = 1,any.missing = FALSE)
   
   # fuel
-  checkmate::assert_vector(fuel,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_character(fuel,any.missing = FALSE,min.len = 1)
-  for(i in unique(fuel)) checkmate::assert_choice(i,c("CNG","D","G"),null.ok = FALSE)
+  assert_vector(fuel,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_character(fuel,any.missing = FALSE,min.len = 1)
+  for(i in unique(fuel)) assert_choice(i,c("CNG","D","G"),null.ok = FALSE, .var.name = "fuel")
 
   # model_year
-  checkmate::assert_vector(model_year,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_numeric(model_year,lower = 1989,upper = 2022,min.len = 1,any.missing = FALSE)
+  assert_vector(model_year,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_numeric(model_year,lower = 1989,upper = 2022,min.len = 1,any.missing = FALSE)
   
   # speed
-  checkmate::assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  checkmate::assert_numeric(speed,lower = 1,upper = 120.7)
-  checkmate::assert_class(speed,"units")
+  assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
+  assert_numeric(speed,lower = 1,upper = 120.7)
+  assert_class(speed,"units")
   
   # pre-filter in usa data----
   temp_moves <- temp_ef[reference_year %in% as.character(unique(tmp_reference_year)) &
@@ -103,13 +104,13 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
                                                     fuel %in% tmp_fuel[j], ]
       # check condition
       if(dim(temp_moves2)[1] == 0){
-        erro_msg <- paste0("No available Emission Factor for the following combination of parameters:\n\n",
-                           "ef_usa_emfac_db[pollutant %in% '",i,
-                           "' &\n model_year %in% '",tmp_model_year[j],
-                           "' &\n fuel %in% '",tmp_fuel[j],", ]",
-                           "\n\n Please check `data(ef_usa_emfac_db)` for available data.")
-        
-        stop(erro_msg)
+        cli::cli_abort(c("No available emission factor for this combination of parameters:"
+                         , "*" = "pollutant: {.val {i}}"
+                         , "*" = "model_year: {.val {tmp_model_year[j]}}"
+                         , "*" = "fuel: {.val {tmp_fuel[j]}}"
+                         , "i" = "Check {.code data(ef_usa_emfac_db)} for available data.")
+                       , class = c("gtfs2emis_missing_ef", "gtfs2emis_error")
+                       , call = call)
       }
       return(temp_moves2[, ef])
     }) 
