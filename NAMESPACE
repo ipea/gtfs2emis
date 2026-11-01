@@ -12,10 +12,12 @@ export(emis_to_dt)
 export(emission_model)
 export(slope_class_europe_emep)
 export(transport_model)
-importFrom(data.table,"%like%")
-importFrom(data.table,":=")
-importFrom(data.table,.GRP)
-importFrom(data.table,.I)
-importFrom(data.table,.SD)
-importFrom(data.table,setDT)
+importFrom(data.table,
+  "%like%",
+  ":=",
+  .GRP,
+  .I,
+  .SD,
+  setDT
+)
 importFrom(methods,is)

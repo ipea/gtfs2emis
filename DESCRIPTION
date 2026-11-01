@@ -1,7 +1,7 @@
 Type: Package
 Package: gtfs2emis
 Title: Estimating Public Transport Emissions from General Transit Feed Specification (GTFS) Data
-Version: 0.1.2
+Version: 0.1.2.9000
 Authors@R: c(
              person(given = "Joao",
                 family = "Bazzo",
@@ -29,7 +29,7 @@ URL: https://ipeagit.github.io/gtfs2emis/ , https://github.com/ipeaGIT/gtfs2emis
 BugReports: https://github.com/ipeaGIT/gtfs2emis/issues
 License: MIT + file LICENSE
 Depends:
-    R (>= 3.6)
+    R (>= 4.1)
 Imports: 
     checkmate,
     data.table,
@@ -43,7 +43,7 @@ Imports:
     units,
     parallelly
 Suggests: 
-    gtfstools,
+    gtfstools (>= 2.0.0),
     ggplot2,
     knitr,
     lwgeom,
@@ -54,5 +54,5 @@ VignetteBuilder:
     knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 LazyData: true
+Config/roxygen2/version: 8.1.1
