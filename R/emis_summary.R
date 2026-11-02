@@ -157,6 +157,7 @@ emis_summary <- function(emi_list,
     tmp_dt <- tmp_dt[,lapply(.SD,sum,na.rm = TRUE)
                      ,by = c(my_var,"pollutant",process_vars)
                      ,.SDcols = c("emi")]
+    if(by == "time") data.table::setorderv(tmp_dt, my_var)
   }
   
   

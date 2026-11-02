@@ -108,11 +108,11 @@ temp_ef_scaled <- ef_scaled_euro(
                     )
 }
 \seealso{
-Other Emission factor model: 
-\code{\link{ef_brazil_cetesb}()},
-\code{\link{ef_europe_emep}()},
-\code{\link{ef_usa_emfac}()},
-\code{\link{ef_usa_moves}()},
-\code{\link{emi_europe_emep_wear}()}
+Other Emission factor model:
+\code{\link[=ef_brazil_cetesb]{ef_brazil_cetesb()}},
+\code{\link[=ef_europe_emep]{ef_europe_emep()}},
+\code{\link[=ef_usa_emfac]{ef_usa_emfac()}},
+\code{\link[=ef_usa_moves]{ef_usa_moves()}},
+\code{\link[=emi_europe_emep_wear]{emi_europe_emep_wear()}}
 }
 \concept{Emission factor model}

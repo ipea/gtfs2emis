@@ -39,7 +39,7 @@ can be found on the agencies' websites in the links below
 ***Hot-exhaust emissions***
 
 \- Brazil, Environment Company of Sao Paulo ---
-[CETESB]
+[CETESB](https://cetesb.sp.gov.br/veicular/)
 
 \- United States, Environmental Protection Agency --- [MOVES3
 Model](https://www.epa.gov/moves)
@@ -163,7 +163,7 @@ average urban driving speed SDC, respectively.
 
 The scaled behavior of EF can be verified graphically when we plot the
 $EF_{local}$, $EF_{scaled}(V)$, and the $EF_{euro}(V)$ that is used as
-the reference To plot these data, we need six quick steps:
+the reference. To plot these data, we need five quick steps:
 
 1)  Build a `data.frame` of fleet indicating the correspondence between
     the fleet characteristic in the local and European emission models
@@ -187,7 +187,7 @@ cur_local_ef_dt <- emis_to_dt(emi_list = cur_local_ef
                              ,emi_vars = "EF")
 ```
 
-3)  Estimate `ef_emep_europe`
+3)  Estimate `ef_europe_emep`
 
 ```{r}
 # Euro EF
@@ -257,19 +257,19 @@ ggplot() +
 
 In this case, the `scaled_EF` has the same value of `local_EF` (dashed
 line) when `speed = 19` km/h, and a similar decaying behavior as
-`Euro_EF` as speed decreases.
+`Euro_EF` as speed increases.
 
 ## Checking `gtfs2emis` imported data
 
 Users can have a closer look to the hot-exhaust emission factor data
 included in the package by using the following functions:
 
--   `data(ef_brazil_cetesb)` from Environment Company of Sao Paulo,
+-   `data(ef_brazil_cetesb_db)` from Environment Company of Sao Paulo,
     Brazil (CETESB)
--   `data(ef_usa_moves)` from MOtor Vehicle Emission Simulator (MOVES)
--   `data(ef_usa_emfac)` from California Air Resources Board (EMFAC
+-   `data(ef_usa_moves_db)` from MOtor Vehicle Emission Simulator (MOVES)
+-   `data(ef_usa_emfac_db)` from California Air Resources Board (EMFAC
     Model)
--   `data(ef_europe_emep)` from European Environment Agency (EMEP/EEA)
+-   `data(ef_europe_emep_db)` from European Environment Agency (EMEP/EEA)
 
 The data presented on the agencies website and software was downloaded
 and pre-processed in `gtfs2emis` to be easily read by the emission

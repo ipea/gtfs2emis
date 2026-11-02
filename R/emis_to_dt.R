@@ -7,8 +7,8 @@
 #' them into a `data.table` format.
 #' 
 #' @param emi_list list. A list of emission estimates
-#' @param emi_vars character. data.frame names of 'emi_list' object attributed 
-#'        to emissions or  emission factors. Default is 'emi'.
+#' @param emi_vars character. Name of the single element of `emi_list` that 
+#'        holds emissions or emission factors. Default is 'emi'.
 #' @param veh_vars character. data.frame names of 'emi_list' object attributed 
 #'        to vehicle characteristics. Default is 'veh_type'.
 #' @param pol_vars character. data.frame names of 'emi_list' object attributed 
@@ -73,9 +73,8 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
   # checkings -----
   assert_list(emi_list, null.ok = FALSE)
   # emi_vars
-  assert_vector(emi_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-  assert_character(emi_vars,any.missing = FALSE,min.len = 1)
-  for(i in emi_vars) assert_choice(i,names(emi_list),null.ok = FALSE, .var.name = "emi_vars")
+  assert_string(emi_vars)
+  assert_choice(emi_vars,names(emi_list),null.ok = FALSE)
   # veh_vars
   assert_vector(veh_vars,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_character(veh_vars,any.missing = FALSE,min.len = 1)

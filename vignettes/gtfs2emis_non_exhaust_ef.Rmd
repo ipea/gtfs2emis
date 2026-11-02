@@ -263,17 +263,17 @@ grid <- sf::st_make_grid(
 # grid (hot-exhaust)
 emi_grid_he <- emis_grid( emi_list_he,grid,time_resolution = 'day'
                           ,aggregate = TRUE)
-setDT(emi_grid_he)
+data.table::setDT(emi_grid_he)
 pol_names <- setdiff(names(emi_grid_he),"geometry")
-emi_grid_he_dt <- melt(emi_grid_he,measure.vars = pol_names,id.vars = "geometry")
+emi_grid_he_dt <- data.table::melt(emi_grid_he,measure.vars = pol_names,id.vars = "geometry")
 emi_grid_he_dt <- sf::st_as_sf(emi_grid_he_dt)
 
 # grid (non-exhaust)
 emi_grid_ne <- emis_grid( emi_list_ne,grid,time_resolution = 'day'
                        ,aggregate = TRUE)
-setDT(emi_grid_ne)
+data.table::setDT(emi_grid_ne)
 pol_names <- setdiff(names(emi_grid_ne),"geometry")
-emi_grid_ne_dt <- melt(emi_grid_ne,measure.vars = pol_names,id.vars = "geometry")
+emi_grid_ne_dt <- data.table::melt(emi_grid_ne,measure.vars = pol_names,id.vars = "geometry")
 emi_grid_ne_dt <- sf::st_as_sf(emi_grid_ne_dt)
 
 # bind grid

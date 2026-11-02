@@ -209,7 +209,7 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
     if(time_resolution == "minute"){
       
       tmp_netdata[
-        , "timestamp" := sprintf("%s:%s"
+        , "timestamp" := sprintf("%02d:%02d"
                                  ,data.table::hour(timestamp) 
                                  ,data.table::minute(timestamp))]
     }
@@ -280,6 +280,7 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
       , lapply(.SD, sum, na.rm = TRUE)
       ,.SDcols = name_emi_new
       ,by = .(timestamp, id)]
+    data.table::setorderv(netg, c("id", "timestamp"))
     
   }else{
     

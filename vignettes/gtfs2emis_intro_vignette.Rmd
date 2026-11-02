@@ -23,10 +23,9 @@ knitr::opts_chunk$set(
 
 # 2. Installation
 
-One can install the development version `gtfs2emis` from Github:
+One can install `gtfs2emis` from CRAN, or the development version from GitHub:
 
 ```{r, eval = FALSE, message = FALSE}
-library(devtools)
 # From CRAN
 install.packages("gtfs2emis")
 
@@ -96,7 +95,7 @@ To demonstrate how the `gtfs2emis` package works, we will be using a small sampl
 
 The first step is to generate the transport model using `transport_model{gtfs2emis}`. This function converts GTFS data into a GPS-like `data.table`, transforming the output into a `sf-linestring`, which is the required input for emissions estimates. The user can input either a string with the file path where the a `gtfs.zip` file is stored or an object of class `"gtfs" "list"`, generated with `gtfstools::read_gtfs()`.
 
-First, let's read the GTFS data and filter only the transport services that run on
+First, let's read the GTFS data and filter only the transport services that run on weekdays.
 
 ```{r, message = FALSE}
 # path to GTFS.zip file
@@ -105,7 +104,7 @@ gtfs_file <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
 # read GTFS
 gtfs <- gtfstools::read_gtfs(gtfs_file)
 
-# Keep Monday services GTFS
+# Keep weekday services (drop Saturday and Sunday)
 gtfs <- gtfstools::filter_by_weekday(gtfs, 
                                      weekday = c('saturday', 'sunday'), 
                                      keep = FALSE)
@@ -123,13 +122,13 @@ progressr::with_progress(
                               min_speed = 2,
                               max_speed = 80,
                               spatial_resolution = 100,
-                              parallel = TRUE) 
+                              parallel = FALSE) 
   )
 
 head(tp_model)
 ```
 
-Here is what the output of the transport model looks like. In essence, it's a trajectory `data.table sf linestring` with the space-time position and speed of trip segments for every single vehicle of the public transport system.
+Here is what the output of the transport model looks like. In essence, it's a trajectory `sf` linestring object with the space-time position and speed of trip segments for every single vehicle of the public transport system.
 
 ```{r, message = FALSE, fig.width=5, fig.height=5}
 ggplot(data = tp_model) +
@@ -163,14 +162,13 @@ Please note different emission factor models may require different information a
 
 ## 5.3 Emission model
 
-In the final step, we use the `emission_model{gtfs2emis}` function to estimate the hot exhaust emissions of our public transport system. Here, the user needs to pass the results from `transport_model()`, some fleet data as described above, and select which emission factor model and pollutants should be considered. The `emission_model()` outputs a `list` with several `vectors` and `data.frames` with emission estimates and related information such as vehicle variables (`fuel`, `age`, `tech`, `euro`, `fleet_composition`), travel variables (`slope`, `load`, `gps`) or pollution (`EF`, `emi`). 
+In the final step, we use the `emission_model{gtfs2emis}` function to estimate the hot exhaust emissions of our public transport system. Here, the user needs to pass the results from `transport_model()`, some fleet data as described above, and select which emission factor model and pollutants should be considered. The `emission_model()` outputs a `list` with several `vectors` and `data.frames` with emission estimates and related information such as vehicle variables (`veh_type`, `euro`, `fuel`, `tech`, `fleet_composition`), travel variables (`slope`, `load`, `speed`, `tp_model`) or pollution (`EF`, `emi`). 
 
 ```{r, message = FALSE}
 emi_list <- emission_model(tp_model = tp_model,
                            ef_model = "ef_europe_emep",
                            fleet_data = fleet_df,
-                           pollutant = c("CO2","PM10"),
-                           reference_year = 2020
+                           pollutant = c("CO2","PM10")
                            )
 
 names(emi_list)

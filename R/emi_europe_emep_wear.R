@@ -260,7 +260,7 @@ emi_europe_emep_wear <- function(dist,speed,pollutant,veh_type,
                         speed <= units::set_units(95,'km/h'))
     sb[id_speed] <- -0.0270 * as.numeric(speed[id_speed]) + 2.75
     # interv. 3
-    sb[speed > units::set_units(90,'km/h')] <- 0.185
+    sb[speed > units::set_units(95,'km/h')] <- 0.185
     return(sb)
   }
   # internal tables from EMEP

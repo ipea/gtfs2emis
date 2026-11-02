@@ -24,7 +24,7 @@ be extracted in different formats, supporting analysis of how emission
 levels vary across space, time, and by fleet characteristics. A full
 description of the methods used in the gtfs2emis model is presented in
 [Vieira, Pereira and Andrade
-(2022)](https://doi.org/10.31219/osf.io/8m2cy).
+(2023)](https://doi.org/10.1016/j.trd.2023.103757).
 
 ## Installation
 
@@ -36,7 +36,6 @@ install.packages("gtfs2emis")
 library(gtfs2emis)
 
 # or use the development version with latest features
-utils::remove.packages('gtfs2emis')
 devtools::install_github("ipeaGIT/gtfs2emis")
 library(gtfs2emis)
 ```
@@ -128,8 +127,9 @@ described above, and select which emission factor model and pollutants
 should be considered (see the options available below). The output from
 `emission_model()` is a `list` with several `vectors` and `data.frames`
 with emission estimates and related information such as vehicle
-variables (`fuel`, `age`, `tech`, `euro`, `fleet_composition`), travel
-variables (`slope`, `load`, `gps`) or pollution (`EF`, `emi`).
+variables (`veh_type`, `euro`, `fuel`, `tech`, `fleet_composition`),
+travel variables (`slope`, `load`, `speed`, `tp_model`) or pollution
+(`EF`, `emi`).
 
 ``` r
 emi_list <- emission_model(tp_model = tp_model
@@ -140,9 +140,10 @@ emi_list <- emission_model(tp_model = tp_model
 
 names(emi_list)
 #>  [1] "pollutant"         "veh_type"          "euro"             
-#>  [4] "fuel"              "tech"              "slope"            
-#>  [7] "load"              "speed"             "EF"               
-#> [10] "emi"               "fleet_composition" "tp_model"
+#>  [4] "fuel"              "tech"              "process"          
+#>  [7] "slope"             "load"              "speed"            
+#> [10] "EF"                "emi"               "tp_model"         
+#> [13] "fleet_composition"
 ```
 
 ## Emission factor models and pollutants available
@@ -179,7 +180,7 @@ emission factor models:
 | Source         | Buses                        | Characteristics                              |
 |-----------------|----------------------|----------------------------------|
 | CETESB         | Micro, Standard, Articulated | Age, Fuel, EURO standard                     |
-| EMEP/EAA       | Micro, Standard, Articulated | Fuel, EURO standard, technology, load, slope |
+| EMEP/EEA       | Micro, Standard, Articulated | Fuel, EURO standard, technology, load, slope |
 | EMFAC2017/CARB | Urban Buses                  | Age, Fuel                                    |
 | MOVES3/EPA     | Urban Buses                  | Age, Fuel                                    |
 
