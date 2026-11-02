@@ -22,10 +22,11 @@ step-by-step reproducible example of how to use the package.
 
 ## 2. Installation
 
-One can install the development version `gtfs2emis` from Github:
+One can install `gtfs2emis` from CRAN, or the development version from
+GitHub:
 
 ``` r
-library(devtools)
+
 # From CRAN
 install.packages("gtfs2emis")
 
@@ -37,6 +38,7 @@ remotes::install_github("ipeaGIT/gtfs2emis")
 A few samples of GTFS and fleet files are included in the package:
 
 ``` r
+
 data_path <- system.file("extdata", package = "gtfs2emis")
 list.files(data_path)
 #> [1] "bra_cur_fleet.txt" "bra_cur_gtfs.zip"  "bra_cur-srtm.tif" 
@@ -69,6 +71,7 @@ Before we start, let’s load a few packages we’ll be using in this
 vignette:
 
 ``` r
+
 library(gtfs2emis)
 library(gtfstools)
 library(progressr)
@@ -134,19 +137,20 @@ GPS-like `data.table`, transforming the output into a `sf-linestring`,
 which is the required input for emissions estimates. The user can input
 either a string with the file path where the a `gtfs.zip` file is stored
 or an object of class `"gtfs" "list"`, generated with
-[`gtfstools::read_gtfs()`](https://ipeagit.github.io/gtfstools/reference/read_gtfs.html).
+[`gtfstools::read_gtfs()`](https://ipea.github.io/gtfstools/reference/read_gtfs.html).
 
 First, let’s read the GTFS data and filter only the transport services
-that run on
+that run on weekdays.
 
 ``` r
+
 # path to GTFS.zip file
 gtfs_file <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
 
 # read GTFS
 gtfs <- gtfstools::read_gtfs(gtfs_file)
 
-# Keep Monday services GTFS
+# Keep weekday services (drop Saturday and Sunday)
 gtfs <- gtfstools::filter_by_weekday(gtfs, 
                                      weekday = c('saturday', 'sunday'), 
                                      keep = FALSE)
@@ -160,6 +164,7 @@ function within
 as shown below.
 
 ``` r
+
 # generate transport model
 progressr::with_progress( 
   
@@ -167,7 +172,7 @@ progressr::with_progress(
                               min_speed = 2,
                               max_speed = 80,
                               spatial_resolution = 100,
-                              parallel = TRUE) 
+                              parallel = FALSE) 
   )
 
 head(tp_model)
@@ -207,11 +212,12 @@ head(tp_model)
 ```
 
 Here is what the output of the transport model looks like. In essence,
-it’s a trajectory `data.table sf linestring` with the space-time
-position and speed of trip segments for every single vehicle of the
-public transport system.
+it’s a trajectory `sf` linestring object with the space-time position
+and speed of trip segments for every single vehicle of the public
+transport system.
 
 ``` r
+
 ggplot(data = tp_model) +
   geom_sf(aes(color= as.numeric(speed))) +
   scale_color_continuous(type = "viridis")+
@@ -236,6 +242,7 @@ tells us the proportion of buses in Dublin according to their vehicle
 type, Euro standard, technology, and fuel. The table looks like this:
 
 ``` r
+
 fleet_file <- system.file("extdata/irl_dub_fleet.txt", package = "gtfs2emis")
 fleet_df <- read.csv(fleet_file)
 head(fleet_df)
@@ -266,16 +273,16 @@ some fleet data as described above, and select which emission factor
 model and pollutants should be considered. The
 [`emission_model()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emission_model.md)
 outputs a `list` with several `vectors` and `data.frames` with emission
-estimates and related information such as vehicle variables (`fuel`,
-`age`, `tech`, `euro`, `fleet_composition`), travel variables (`slope`,
-`load`, `gps`) or pollution (`EF`, `emi`).
+estimates and related information such as vehicle variables (`veh_type`,
+`euro`, `fuel`, `tech`, `fleet_composition`), travel variables (`slope`,
+`load`, `speed`, `tp_model`) or pollution (`EF`, `emi`).
 
 ``` r
+
 emi_list <- emission_model(tp_model = tp_model,
                            ef_model = "ef_europe_emep",
                            fleet_data = fleet_df,
-                           pollutant = c("CO2","PM10"),
-                           reference_year = 2020
+                           pollutant = c("CO2","PM10")
                            )
 
 names(emi_list)
@@ -297,6 +304,7 @@ function to convert the output of
 from a `list` to a `data.table` format:
 
 ``` r
+
 emi_dt <- emis_to_dt(emi_list = emi_list,
                      veh_vars = c("veh_type", "euro", "fuel"),
                      pol_vars = "pollutant"
@@ -321,6 +329,7 @@ by pollutant, time of the day, vehicle or road segment (spatial).
 ### 6.1 Total emissions by pollutant
 
 ``` r
+
 emi_by_pol <- emis_summary(emi_list = emi_list,
                                  by = "pollutant") 
 emi_by_pol
@@ -338,6 +347,7 @@ function help users summarize emission estimates by either `veh_type`,
 `pollutant`, or `time`. Using this function, users can easily:
 
 ``` r
+
 emi_by_veh <- emis_summary(emi_list = emi_list,
                           by = "vehicle") 
 head(emi_by_veh)
@@ -351,6 +361,7 @@ It is also possible to summarize emission estimates by other vehicle
 characteristics AND pollutants.
 
 ``` r
+
 emi_by_veh <- emis_summary(emi_list = emi_list,
                           by = "vehicle",
                           veh_vars = c("veh_type","euro")) 
@@ -378,17 +389,18 @@ ggplot(data = emi_by_veh) +
 ### 6.3 Total emissions by time of the day
 
 ``` r
+
 emi_by_time <- emis_summary(emi_list = emi_list,
                                 by = "time") 
 head(emi_by_time) 
-#>    timestamp_hour pollutant     process          emi
-#>             <int>    <char>      <char>      <units>
-#> 1:             13       CO2 hot_exhaust 197791.4 [g]
-#> 2:             14       CO2 hot_exhaust 235187.9 [g]
-#> 3:             15       CO2 hot_exhaust 219913.4 [g]
-#> 4:             16       CO2 hot_exhaust 225923.6 [g]
-#> 5:             17       CO2 hot_exhaust 318723.4 [g]
-#> 6:             18       CO2 hot_exhaust 209437.0 [g]
+#>    timestamp_hour pollutant     process              emi
+#>             <int>    <char>      <char>          <units>
+#> 1:              8       CO2 hot_exhaust 2.559961e+05 [g]
+#> 2:              8      PM10 hot_exhaust 8.352432e+00 [g]
+#> 3:              9       CO2 hot_exhaust 2.303990e+05 [g]
+#> 4:              9      PM10 hot_exhaust 7.516394e+00 [g]
+#> 5:             10       CO2 hot_exhaust 2.018940e+05 [g]
+#> 6:             10      PM10 hot_exhaust 6.549726e+00 [g]
 
 # plot
 ggplot(data = emi_by_time) +
@@ -412,6 +424,7 @@ vector data (`sf POLYGON`).
 Let’s create a regular hexagonal grid for this example.
 
 ``` r
+
 # create spatial grid
 mygrid <- sf::st_make_grid(
   x = sf::st_make_valid(emi_list$tp_model)
@@ -428,6 +441,7 @@ mygrid <- sf::st_make_grid(
 ![](gtfs2emis_intro_vignette_files/figure-html/unnamed-chunk-15-1.png)
 
 ``` r
+
 mygrid_emi <- emis_grid(emi_list, mygrid,time_resolution = "day"
                         ,quiet = FALSE)
 

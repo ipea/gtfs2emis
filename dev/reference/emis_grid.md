@@ -104,7 +104,6 @@ plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
 #> Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 8.2.1; sf_use_s2() is TRUE
 #> Converting shapes to sf objects
 #> Processing the data
-#> Constant emission factor along the route
 
 # }
 ```

@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Estimating Public Transport Emissions from General Transit Feed Specification (GTFS) Data • gtfs2emis</title>
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Estimating Public Transport Emissions from General Transit Feed Specification (GTFS) Data">
 <meta name="description" content="A bottom up model to estimate the emission levels of public transport systems based on General Transit Feed Specification (GTFS) data. The package requires two main inputs: i) Public transport data in the GTFS standard format; and ii) Some basic information on fleet characteristics such as fleet age, technology, fuel and Euro stage. As it stands, the package estimates several pollutants at high spatial and temporal resolutions. Pollution levels can be calculated for specific transport routes, trips, time of the day or for the transport system as a whole. The output with emission estimates can be extracted in different formats, supporting analysis on how emission levels vary across space, time and by fleet characteristics. A full description of the methods used in the gtfs2emis model is presented in Vieira, J. P. B.; Pereira, R. H. M.; Andrade, P. R. (2022) &lt;doi:10.31219/osf.io/8m2cy&gt;.">
@@ -24,7 +24,7 @@
 
     <a class="navbar-brand me-2" href="index.html">gtfs2emis</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.1.9001</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.2.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,7 @@
 </h1>
 </div>
 <p><a href="https://CRAN.R-project.org/package=gtfs2emis" class="external-link"><img src="https://www.r-pkg.org/badges/version/gtfs2emis" alt="CRAN/METACRAN Version"></a> <a href="https://CRAN.R-project.org/package=gtfs2emis" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/gtfs2emis?color=blue" alt="CRAN/METACRAN Total downloads"></a> <a href="https://github.com/ipeaGIT/gtfs2emis/actions" class="external-link"><img src="https://github.com/ipeaGIT/gtfs2emis/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a> <a href="https://app.codecov.io/gh/ipeaGIT/gtfs2emis?branch=master" class="external-link"><img src="https://codecov.io/gh/ipeaGIT/gtfs2emis/branch/master/graph/badge.svg" alt="Codecov test coverage"></a> <a href="https://doi.org/10.1016/j.trd.2023.103757" class="external-link"><img src="https://img.shields.io/badge/DOI-10.1016/j.trd.2023.103757-blue" alt="DOI"></a></p>
-<p><strong>gtfs2emis</strong> is an R package to estimate the emission levels of public transport vehicles based on General Transit Feed Specification (GTFS) data. The package requires two main inputs: i) public transport data in GTFS standard format; and ii) some basic information on fleet characteristics such as vehicle age, technology, fuel, and Euro stage. As it stands, the package estimates several pollutants (see table below) at high spatial and temporal resolutions. Pollution levels can be calculated for specific transport routes, trips, time of the day, or for the transport system as a whole. The output with emission estimates can be extracted in different formats, supporting analysis of how emission levels vary across space, time, and by fleet characteristics. A full description of the methods used in the gtfs2emis model is presented in <a href="https://doi.org/10.31219/osf.io/8m2cy" class="external-link">Vieira, Pereira and Andrade (2022)</a>.</p>
+<p><strong>gtfs2emis</strong> is an R package to estimate the emission levels of public transport vehicles based on General Transit Feed Specification (GTFS) data. The package requires two main inputs: i) public transport data in GTFS standard format; and ii) some basic information on fleet characteristics such as vehicle age, technology, fuel, and Euro stage. As it stands, the package estimates several pollutants (see table below) at high spatial and temporal resolutions. Pollution levels can be calculated for specific transport routes, trips, time of the day, or for the transport system as a whole. The output with emission estimates can be extracted in different formats, supporting analysis of how emission levels vary across space, time, and by fleet characteristics. A full description of the methods used in the gtfs2emis model is presented in <a href="https://doi.org/10.1016/j.trd.2023.103757" class="external-link">Vieira, Pereira and Andrade (2023)</a>.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -82,7 +82,6 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfs2emis/">gtfs2emis</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># or use the development version with latest features</span></span>
-<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/remove.packages.html" class="external-link">remove.packages</a></span><span class="op">(</span><span class="st">'gtfs2emis'</span><span class="op">)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ipeaGIT/gtfs2emis"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfs2emis/">gtfs2emis</a></span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -129,7 +128,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># read GTFS.zip</span></span>
 <span><span class="va">gtfs_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_gtfs.zip"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
-<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span></span>
+<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipea.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># generate transport model</span></span>
 <span><span class="va">tp_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/transport_model.html">transport_model</a></span><span class="op">(</span>gtfs_data <span class="op">=</span> <span class="va">gtfs</span>,spatial_resolution <span class="op">=</span> <span class="fl">100</span>,parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span></code></pre></div>
@@ -153,7 +152,7 @@
 <div class="section level3">
 <h3 id="id_3-run-emission-model">3. Run emission model<a class="anchor" aria-label="anchor" href="#id_3-run-emission-model"></a>
 </h3>
-<p>In the final step, the <code><a href="reference/emission_model.html">emission_model()</a></code> function to estimate hot exhaust emissions of our public transport system. Here, the user needs to pass the results from <code><a href="reference/transport_model.html">transport_model()</a></code>, some fleet data as described above, and select which emission factor model and pollutants should be considered (see the options available below). The output from <code><a href="reference/emission_model.html">emission_model()</a></code> is a <code>list</code> with several <code>vectors</code> and <code>data.frames</code> with emission estimates and related information such as vehicle variables (<code>fuel</code>, <code>age</code>, <code>tech</code>, <code>euro</code>, <code>fleet_composition</code>), travel variables (<code>slope</code>, <code>load</code>, <code>gps</code>) or pollution (<code>EF</code>, <code>emi</code>).</p>
+<p>In the final step, the <code><a href="reference/emission_model.html">emission_model()</a></code> function to estimate hot exhaust emissions of our public transport system. Here, the user needs to pass the results from <code><a href="reference/transport_model.html">transport_model()</a></code>, some fleet data as described above, and select which emission factor model and pollutants should be considered (see the options available below). The output from <code><a href="reference/emission_model.html">emission_model()</a></code> is a <code>list</code> with several <code>vectors</code> and <code>data.frames</code> with emission estimates and related information such as vehicle variables (<code>veh_type</code>, <code>euro</code>, <code>fuel</code>, <code>tech</code>, <code>fleet_composition</code>), travel variables (<code>slope</code>, <code>load</code>, <code>speed</code>, <code>tp_model</code>) or pollution (<code>EF</code>, <code>emi</code>).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/emission_model.html">emission_model</a></span><span class="op">(</span>tp_model <span class="op">=</span> <span class="va">tp_model</span></span>
 <span>, ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span></span>
@@ -163,9 +162,10 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">emi_list</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "pollutant"         "veh_type"          "euro"             </span></span>
-<span><span class="co">#&gt;  [4] "fuel"              "tech"              "slope"            </span></span>
-<span><span class="co">#&gt;  [7] "load"              "speed"             "EF"               </span></span>
-<span><span class="co">#&gt; [10] "emi"               "fleet_composition" "tp_model"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [4] "fuel"              "tech"              "process"          </span></span>
+<span><span class="co">#&gt;  [7] "slope"             "load"              "speed"            </span></span>
+<span><span class="co">#&gt; [10] "EF"                "emi"               "tp_model"         </span></span>
+<span><span class="co">#&gt; [13] "fleet_composition"</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -181,7 +181,7 @@
 <li>Europe
 <ul>
 <li>
-<a href="https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep" class="external-link">EMEP/EEA</a>: European Monitoring and Evaluation Programme, developed by the European Environment Agency (EEA).</li>
+<a href="https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019" class="external-link">EMEP/EEA</a>: European Monitoring and Evaluation Programme, developed by the European Environment Agency (EEA).</li>
 </ul>
 </li>
 <li>United States
@@ -201,24 +201,24 @@
 <col width="19%">
 <col width="80%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Source</th>
 <th>Pollutants</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>CETESB</td>
 <td>CH4, CO, CO2, ETOH, FC (Fuel Consumption), FS (Fuel Sales), gCO2/KWH, gD/KWH, HC, KML, N2O, NH3, NMHC, NO, NO2, NOx, PM10 and RCHO</td>
 </tr>
-<tr class="even">
+<tr>
 <td>EMFAC2017/CARB</td>
 <td>CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX, and TOG (Total Organic Gases)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>EMEP/EEA</td>
 <td>CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (#kWh), and VOC</td>
 </tr>
-<tr class="even">
+<tr>
 <td>MOVES3/EPA</td>
 <td>CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG, and VOC</td>
 </tr>
@@ -234,28 +234,28 @@
 <col width="30%">
 <col width="46%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Source</th>
 <th>Buses</th>
 <th>Characteristics</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>CETESB</td>
 <td>Micro, Standard, Articulated</td>
 <td>Age, Fuel, EURO standard</td>
 </tr>
-<tr class="even">
-<td>EMEP/EAA</td>
+<tr>
+<td>EMEP/EEA</td>
 <td>Micro, Standard, Articulated</td>
 <td>Fuel, EURO standard, technology, load, slope</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>EMFAC2017/CARB</td>
 <td>Urban Buses</td>
 <td>Age, Fuel</td>
 </tr>
-<tr class="even">
+<tr>
 <td>MOVES3/EPA</td>
 <td>Urban Buses</td>
 <td>Age, Fuel</td>
@@ -266,7 +266,7 @@
 <div class="section level3">
 <h3 id="emissions-from-road-vehicle-tire-brake-and-surface-wear">Emissions from road vehicle tire, brake, and surface wear<a class="anchor" aria-label="anchor" href="#emissions-from-road-vehicle-tire-brake-and-surface-wear"></a>
 </h3>
-<p><code>gtfs2emis</code> also provides emissions estimates from tire, brake and surface wear using the <a href="https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep" class="external-link">EMEP/EEA model</a>. The function estimates emissions of particulate matter (PM), encompassing black carbon (BC), which arises from distinct sources (tire, brake, and road surface wear). The focus is on primary particles, which refer to those that are directly emitted, rather than those generated from the re-suspension of previously deposited material.</p>
+<p><code>gtfs2emis</code> also provides emissions estimates from tire, brake and surface wear using the <a href="https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019" class="external-link">EMEP/EEA model</a>. The function estimates emissions of particulate matter (PM), encompassing black carbon (BC), which arises from distinct sources (tire, brake, and road surface wear). The focus is on primary particles, which refer to those that are directly emitted, rather than those generated from the re-suspension of previously deposited material.</p>
 </div>
 </div>
 <div class="section level2">
@@ -386,7 +386,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

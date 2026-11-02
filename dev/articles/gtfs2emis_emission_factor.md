@@ -20,7 +20,8 @@ can be found on the agencies’ websites in the links below
 
 ***Hot-exhaust emissions***
 
-\- Brazil, Environment Company of Sao Paulo — \[CETESB\]
+\- Brazil, Environment Company of Sao Paulo —
+[CETESB](https://cetesb.sp.gov.br/veicular/)
 
 \- United States, Environmental Protection Agency — [MOVES3
 Model](https://www.epa.gov/moves)
@@ -48,10 +49,12 @@ Articulated) to illustrate how emissions vary according to vehicle type,
 average speed, and pollutant.
 
 ``` r
+
 #library(gtfs2emis)
 ```
 
 ``` r
+
 library(units)
 library(gtfs2emis)
 library(ggplot2)
@@ -77,6 +80,7 @@ relevant information for the emission factor — shown in
 factor results in a `data.frame` or graphic format.
 
 ``` r
+
 ef_europe_dt <- emis_to_dt(emi_list = ef_europe
                            ,emi_vars = "EF"
                            ,veh_vars = c("veh_type","euro","fuel","tech")
@@ -105,6 +109,7 @@ Plotting the speed-dependent emission factors according to vehicle type
 (`veh_type`) and euro standard (`euro`).
 
 ``` r
+
 ef_europe_dt$name_fleet <- paste(ef_europe_dt$veh_type, "/ Euro"
                                  , ef_europe_dt$euro)
 
@@ -129,13 +134,15 @@ combining variables (`euro`, `tech`, `veh_type`, and `pollutant`), or
 accept the assumed change in vehicle technology.
 
 ``` r
+
 ef_europe_co2 <- ef_europe_emep(speed = units::set_units(10:100,"km/h")
                                 ,veh_type = "Ubus Std 15 - 18 t"
                                 ,euro = "VI",pollutant = "CO2"
                                 ,tech = "DPF+SCR"
                                 ,as_list = TRUE)
-#> 'CO2' Emission factor not found for 'DPF+SCR' Technology and Euro 'VI'.
-#>  The package assumed 'SCR' Technology entry. Please check `data(ef_europe_emep_db)` for available data.
+#> "CO2" emission factor not found for technology "DPF+SCR" and Euro "VI".
+#> ℹ The package assumed 'SCR' Technology entry. Check `data(ef_europe_emep_db)`
+#>   for available data.
 ```
 
 The other EF functions,
@@ -159,20 +166,23 @@ using the function
 When using the EMEP-EEA model as a reference, the scaled emission factor
 varies according to vehicle’s speed following the expression:
 
-$$EF_{scaled}(V) = EF_{local}*\frac{EF_{euro}(V)}{EF_{euro}(SDC)},$$
-where $EF_{scaled}(V)$ is the scaled emission factor for each street
-link, $EF_{local}$ is the local emission factor, $EF_{euro}(V)$ and
-$EF_{euro}(SDC)$ are the EMEP/EEA emission factor the speed of V and the
-average urban driving speed SDC, respectively.
+``` math
+EF_{scaled} (V) = EF_{local} * \frac{EF_{euro}(V)}{EF_{euro}(SDC)}, 
+```
+where $`EF_{scaled}(V)`$ is the scaled emission factor for each street
+link, $`EF_{local}`$ is the local emission factor, $`EF_{euro}(V)`$ and
+$`EF_{euro}(SDC)`$ are the EMEP/EEA emission factor the speed of V and
+the average urban driving speed SDC, respectively.
 
 The scaled behavior of EF can be verified graphically when we plot the
-$EF_{local}$, $EF_{scaled}(V)$, and the $EF_{euro}(V)$ that is used as
-the reference To plot these data, we need six quick steps:
+$`EF_{local}`$, $`EF_{scaled}(V)`$, and the $`EF_{euro}(V)`$ that is
+used as the reference. To plot these data, we need five quick steps:
 
 1.  Build a `data.frame` of fleet indicating the correspondence between
     the fleet characteristic in the local and European emission models
 
 ``` r
+
 fleet_filepath <- system.file("extdata/bra_cur_fleet.txt", package = "gtfs2emis")
 cur_fleet <- read.table(fleet_filepath,header = TRUE, sep = ",", nrows = 1)
 cur_fleet
@@ -183,6 +193,7 @@ cur_fleet
 2.  Estimate local emission factors
 
 ``` r
+
 cur_local_ef <- ef_brazil_cetesb(pollutant = "CO2"
                                  ,veh_type = cur_fleet$type_name_br
                                  ,model_year = cur_fleet$year)
@@ -209,9 +220,10 @@ cur_local_ef_dt <- emis_to_dt(emi_list = cur_local_ef
                              ,emi_vars = "EF")
 ```
 
-3.  Estimate `ef_emep_europe`
+3.  Estimate `ef_europe_emep`
 
 ``` r
+
 # Euro EF
 cur_euro_ef <- ef_europe_emep(speed = units::set_units(10:100,"km/h")
                               ,veh_type = cur_fleet$veh_type
@@ -232,6 +244,7 @@ cur_euro_ef_dt$source <- "Euro EF"
     [`ef_scaled_euro()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_scaled_euro.md)
 
 ``` r
+
 cur_scaled_ef <- ef_scaled_euro(ef_local = cur_local_ef$EF
                                 ,speed = units::set_units(10:100,"km/h")
                                 ,veh_type = cur_fleet$veh_type
@@ -250,6 +263,7 @@ cur_scaled_ef_dt$source <- "Scaled EF"
 5.  View in ggplot2
 
 ``` r
+
 # rbind data
 cur_ef <- rbind(cur_euro_ef_dt, cur_scaled_ef_dt)
 cur_ef$source <- factor(cur_ef$source
@@ -282,18 +296,19 @@ ggplot() +
 
 In this case, the `scaled_EF` has the same value of `local_EF` (dashed
 line) when `speed = 19` km/h, and a similar decaying behavior as
-`Euro_EF` as speed decreases.
+`Euro_EF` as speed increases.
 
 ## Checking `gtfs2emis` imported data
 
 Users can have a closer look to the hot-exhaust emission factor data
 included in the package by using the following functions:
 
-- `data(ef_brazil_cetesb)` from Environment Company of Sao Paulo, Brazil
-  (CETESB)
-- `data(ef_usa_moves)` from MOtor Vehicle Emission Simulator (MOVES)
-- `data(ef_usa_emfac)` from California Air Resources Board (EMFAC Model)
-- `data(ef_europe_emep)` from European Environment Agency (EMEP/EEA)
+- `data(ef_brazil_cetesb_db)` from Environment Company of Sao Paulo,
+  Brazil (CETESB)
+- `data(ef_usa_moves_db)` from MOtor Vehicle Emission Simulator (MOVES)
+- `data(ef_usa_emfac_db)` from California Air Resources Board (EMFAC
+  Model)
+- `data(ef_europe_emep_db)` from European Environment Agency (EMEP/EEA)
 
 The data presented on the agencies website and software was downloaded
 and pre-processed in `gtfs2emis` to be easily read by the emission

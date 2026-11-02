@@ -27,7 +27,7 @@ emis_to_dt(
 
 - emi_vars:
 
-  character. data.frame names of 'emi_list' object attributed to
+  character. Name of the single element of `emi_list` that holds
   emissions or emission factors. Default is 'emi'.
 
 - veh_vars:
@@ -100,6 +100,5 @@ dt <- emis_to_dt(emi_list)
 }
 #> Converting shapes to sf objects
 #> Processing the data
-#> Constant emission factor along the route
 # }
 ```

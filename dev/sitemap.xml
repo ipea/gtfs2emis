@@ -1,5 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://ipeagit.github.io/gtfs2emis/dev/CLAUDE.html</loc></url>
 <url><loc>https://ipeagit.github.io/gtfs2emis/dev/LICENSE-text.html</loc></url>
+<url><loc>https://ipeagit.github.io/gtfs2emis/dev/MEMORY.html</loc></url>
 <url><loc>https://ipeagit.github.io/gtfs2emis/dev/articles/gtfs2emis_emission_factor.html</loc></url>
 <url><loc>https://ipeagit.github.io/gtfs2emis/dev/articles/gtfs2emis_fleet_data.html</loc></url>
 <url><loc>https://ipeagit.github.io/gtfs2emis/dev/articles/gtfs2emis_intro_vignette.html</loc></url>

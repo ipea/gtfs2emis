@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Getting started • gtfs2emis</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting started">
 <meta name="robots" content="noindex">
@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gtfs2emis</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.1.9001</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.2.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Getting started</h1>
             
-            <h4 data-toc-skip class="date">2026-02-03</h4>
+            <h4 data-toc-skip class="date">2026-11-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ipeaGIT/gtfs2emis/blob/master/vignettes/gtfs2emis_intro_vignette.Rmd" class="external-link"><code>vignettes/gtfs2emis_intro_vignette.Rmd</code></a></small>
       <div class="d-none name"><code>gtfs2emis_intro_vignette.Rmd</code></div>
@@ -103,11 +103,10 @@ example of how to use the package.</p>
 <div class="section level2">
 <h2 id="installation">2. Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>One can install the development version <code>gtfs2emis</code> from
-Github:</p>
+<p>One can install <code>gtfs2emis</code> from CRAN, or the development
+version from GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
-<span><span class="co"># From CRAN</span></span>
+<code class="sourceCode R"><span><span class="co"># From CRAN</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Dev. version with latest features</span></span>
@@ -156,7 +155,7 @@ pollutants provided by the package.</li>
 vignette:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfs2emis/">gtfs2emis</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfstools/" class="external-link">gtfstools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ipea.github.io/gtfstools/" class="external-link">gtfstools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://progressr.futureverse.org" class="external-link">progressr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -224,18 +223,18 @@ into a <code>sf-linestring</code>, which is the required input for
 emissions estimates. The user can input either a string with the file
 path where the a <code>gtfs.zip</code> file is stored or an object of
 class <code>"gtfs" "list"</code>, generated with
-<code><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">gtfstools::read_gtfs()</a></code>.</p>
+<code><a href="https://ipea.github.io/gtfstools/reference/read_gtfs.html" class="external-link">gtfstools::read_gtfs()</a></code>.</p>
 <p>First, let’s read the GTFS data and filter only the transport
-services that run on</p>
+services that run on weekdays.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># path to GTFS.zip file</span></span>
 <span><span class="va">gtfs_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/irl_dub_gtfs.zip"</span>, package <span class="op">=</span> <span class="st">"gtfs2emis"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># read GTFS</span></span>
-<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span></span>
+<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipea.github.io/gtfstools/reference/read_gtfs.html" class="external-link">read_gtfs</a></span><span class="op">(</span><span class="va">gtfs_file</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Keep Monday services GTFS</span></span>
-<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipeagit.github.io/gtfstools/reference/filter_by_weekday.html" class="external-link">filter_by_weekday</a></span><span class="op">(</span><span class="va">gtfs</span>, </span>
+<span><span class="co"># Keep weekday services (drop Saturday and Sunday)</span></span>
+<span><span class="va">gtfs</span> <span class="op">&lt;-</span> <span class="fu">gtfstools</span><span class="fu">::</span><span class="fu"><a href="https://ipea.github.io/gtfstools/reference/filter_by_weekday.html" class="external-link">filter_by_weekday</a></span><span class="op">(</span><span class="va">gtfs</span>, </span>
 <span>                                     weekday <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'saturday'</span>, <span class="st">'sunday'</span><span class="op">)</span>, </span>
 <span>                                     keep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>Now let’s generate the transport model. This is the most
@@ -250,7 +249,7 @@ calling the <code><a href="../reference/transport_model.html">transport_model()<
 <span>                              min_speed <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                              max_speed <span class="op">=</span> <span class="fl">80</span>,</span>
 <span>                              spatial_resolution <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>                              parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span>
+<span>                              parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </span>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tp_model</span><span class="op">)</span></span>
@@ -288,9 +287,9 @@ calling the <code><a href="../reference/transport_model.html">transport_model()<
 <span><span class="co">#&gt; 5 LINESTRING (-6.262147 53.35...</span></span>
 <span><span class="co">#&gt; 6 LINESTRING (-6.25953 53.348...</span></span></code></pre></div>
 <p>Here is what the output of the transport model looks like. In
-essence, it’s a trajectory <code>data.table sf linestring</code> with
-the space-time position and speed of trip segments for every single
-vehicle of the public transport system.</p>
+essence, it’s a trajectory <code>sf</code> linestring object with the
+space-time position and speed of trip segments for every single vehicle
+of the public transport system.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">tp_model</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">speed</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -344,16 +343,16 @@ select which emission factor model and pollutants should be considered.
 The <code><a href="../reference/emission_model.html">emission_model()</a></code> outputs a <code>list</code> with
 several <code>vectors</code> and <code>data.frames</code> with emission
 estimates and related information such as vehicle variables
-(<code>fuel</code>, <code>age</code>, <code>tech</code>,
-<code>euro</code>, <code>fleet_composition</code>), travel variables
-(<code>slope</code>, <code>load</code>, <code>gps</code>) or pollution
-(<code>EF</code>, <code>emi</code>).</p>
+(<code>veh_type</code>, <code>euro</code>, <code>fuel</code>,
+<code>tech</code>, <code>fleet_composition</code>), travel variables
+(<code>slope</code>, <code>load</code>, <code>speed</code>,
+<code>tp_model</code>) or pollution (<code>EF</code>,
+<code>emi</code>).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">emi_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emission_model.html">emission_model</a></span><span class="op">(</span>tp_model <span class="op">=</span> <span class="va">tp_model</span>,</span>
 <span>                           ef_model <span class="op">=</span> <span class="st">"ef_europe_emep"</span>,</span>
 <span>                           fleet_data <span class="op">=</span> <span class="va">fleet_df</span>,</span>
-<span>                           pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO2"</span>,<span class="st">"PM10"</span><span class="op">)</span>,</span>
-<span>                           reference_year <span class="op">=</span> <span class="fl">2020</span></span>
+<span>                           pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CO2"</span>,<span class="st">"PM10"</span><span class="op">)</span></span>
 <span>                           <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">emi_list</span><span class="op">)</span></span>
@@ -450,14 +449,14 @@ characteristics AND pollutants.</p>
 <code class="sourceCode R"><span><span class="va">emi_by_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_summary.html">emis_summary</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">emi_list</span>,</span>
 <span>                                by <span class="op">=</span> <span class="st">"time"</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">emi_by_time</span><span class="op">)</span> </span>
-<span><span class="co">#&gt;    timestamp_hour pollutant     process          emi</span></span>
-<span><span class="co">#&gt;             &lt;int&gt;    &lt;char&gt;      &lt;char&gt;      &lt;units&gt;</span></span>
-<span><span class="co">#&gt; 1:             13       CO2 hot_exhaust 197791.4 [g]</span></span>
-<span><span class="co">#&gt; 2:             14       CO2 hot_exhaust 235187.9 [g]</span></span>
-<span><span class="co">#&gt; 3:             15       CO2 hot_exhaust 219913.4 [g]</span></span>
-<span><span class="co">#&gt; 4:             16       CO2 hot_exhaust 225923.6 [g]</span></span>
-<span><span class="co">#&gt; 5:             17       CO2 hot_exhaust 318723.4 [g]</span></span>
-<span><span class="co">#&gt; 6:             18       CO2 hot_exhaust 209437.0 [g]</span></span>
+<span><span class="co">#&gt;    timestamp_hour pollutant     process              emi</span></span>
+<span><span class="co">#&gt;             &lt;int&gt;    &lt;char&gt;      &lt;char&gt;          &lt;units&gt;</span></span>
+<span><span class="co">#&gt; 1:              8       CO2 hot_exhaust 2.559961e+05 [g]</span></span>
+<span><span class="co">#&gt; 2:              8      PM10 hot_exhaust 8.352432e+00 [g]</span></span>
+<span><span class="co">#&gt; 3:              9       CO2 hot_exhaust 2.303990e+05 [g]</span></span>
+<span><span class="co">#&gt; 4:              9      PM10 hot_exhaust 7.516394e+00 [g]</span></span>
+<span><span class="co">#&gt; 5:             10       CO2 hot_exhaust 2.018940e+05 [g]</span></span>
+<span><span class="co">#&gt; 6:             10      PM10 hot_exhaust 6.549726e+00 [g]</span></span>
 <span></span>
 <span><span class="co"># plot</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">emi_by_time</span><span class="op">)</span> <span class="op">+</span></span>
@@ -530,7 +529,7 @@ page</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

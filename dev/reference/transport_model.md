@@ -28,7 +28,7 @@ transport_model(
 
   A path to a GTFS file or a GTFS data organized as a list of
   `data.tables` created with
-  [`gtfstools::read_gtfs()`](https://ipeagit.github.io/gtfstools/reference/read_gtfs.html).
+  [`gtfstools::read_gtfs()`](https://ipea.github.io/gtfstools/reference/read_gtfs.html).
 
 - min_speed:
 
@@ -68,7 +68,7 @@ transport_model(
 - spatial_resolution:
 
   The spatial resolution in meters. Defaults to `100`. The function only
-  creates points in order to guarantee that the minimum distance between
+  creates points in order to guarantee that the maximum distance between
   two consecutive points will be at most the `spatial_resolution` value.
   If a given GTFS shape_id has two consecutive points with a distance
   smaller than the spatial resolution, the algorithm will not remove
@@ -77,10 +77,10 @@ transport_model(
 - output_path:
 
   character. A directory path. If `NULL` (Default), the function returns
-  the output. If the user passes a valid `passed`, the output will be
-  saved in the `output_path` dir. Note that that the output of each
-  public transport `shape_id` is saved separately in different files.
-  Setting an `output_path` is recommended when working with large public
+  the output. If the user passes a valid `output_path`, the output will
+  be saved in the `output_path` dir. Note that the output of each public
+  transport `shape_id` is saved separately in different files. Setting
+  an `output_path` is recommended when working with large public
   transport system because the output of the function can be
   significantly large.
 
@@ -93,7 +93,9 @@ transport_model(
 
 ## Value
 
-A `data.table sf_linestring` object or `NULL`.
+An `sf` object (class `c("sf", "data.frame")`) with one LINESTRING per
+segment between consecutive stops, or `NULL` when `output_path` is
+provided (the outputs are then saved as files in `output_path`).
 
 ## See also
 

@@ -29,11 +29,11 @@ Transportation Research Part D: Transport and Environment. Volume 119,
 
     @Article{,
       title = {Estimating Public Transport Emissions from General Transit Feed Specification Data},
-      author = {João Pedro Bazzo and Rafael H. M. Pereira and Pedro R. Andrade},
+      author = {João Pedro Bazzo Vieira and Rafael H. M. Pereira and Pedro R. Andrade},
       journal = {Transportation Research Part D: Transport and Environment},
       year = {2023},
       volume = {119},
+      pages = {103757},
       doi = {10.1016/j.trd.2023.103757},
-      url = {https://doi.org/10.1016/j.trd.2023.103757},
       issn = {1361-9209},
     }

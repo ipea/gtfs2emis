@@ -24,19 +24,19 @@ be extracted in different formats, supporting analysis of how emission
 levels vary across space, time, and by fleet characteristics. A full
 description of the methods used in the gtfs2emis model is presented in
 [Vieira, Pereira and Andrade
-(2022)](https://doi.org/10.31219/osf.io/8m2cy).
+(2023)](https://doi.org/10.1016/j.trd.2023.103757).
 
 ## Installation
 
 You can install `gtfs2emis`:
 
 ``` r
+
 # From CRAN
 install.packages("gtfs2emis")
 library(gtfs2emis)
 
 # or use the development version with latest features
-utils::remove.packages('gtfs2emis')
 devtools::install_github("ipeaGIT/gtfs2emis")
 library(gtfs2emis)
 ```
@@ -92,6 +92,7 @@ the space-time position and speed of each vehicle of the public
 transport system at high spatial and temporal resolutions.
 
 ``` r
+
 # read GTFS.zip
 gtfs_file <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
 gtfs <- gtfstools::read_gtfs(gtfs_file)
@@ -117,6 +118,7 @@ Here is what a simple fleet table to be used with the EMEP-EEA emission
 factor model looks like:
 
 ``` r
+
 fleet_file <- system.file("extdata/irl_dub_fleet.txt", package = "gtfs2emis")
 
 fleet_df <- read.csv(fleet_file)
@@ -140,11 +142,12 @@ model and pollutants should be considered (see the options available
 below). The output from
 [`emission_model()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emission_model.md)
 is a `list` with several `vectors` and `data.frames` with emission
-estimates and related information such as vehicle variables (`fuel`,
-`age`, `tech`, `euro`, `fleet_composition`), travel variables (`slope`,
-`load`, `gps`) or pollution (`EF`, `emi`).
+estimates and related information such as vehicle variables (`veh_type`,
+`euro`, `fuel`, `tech`, `fleet_composition`), travel variables (`slope`,
+`load`, `speed`, `tp_model`) or pollution (`EF`, `emi`).
 
 ``` r
+
 emi_list <- emission_model(tp_model = tp_model
 , ef_model = "ef_europe_emep"
 , fleet_data = fleet_df
@@ -153,9 +156,10 @@ emi_list <- emission_model(tp_model = tp_model
 
 names(emi_list)
 #>  [1] "pollutant"         "veh_type"          "euro"             
-#>  [4] "fuel"              "tech"              "slope"            
-#>  [7] "load"              "speed"             "EF"               
-#> [10] "emi"               "fleet_composition" "tp_model"
+#>  [4] "fuel"              "tech"              "process"          
+#>  [7] "slope"             "load"              "speed"            
+#> [10] "EF"                "emi"               "tp_model"         
+#> [13] "fleet_composition"
 ```
 
 ## Emission factor models and pollutants available
@@ -168,7 +172,7 @@ emission factor models:
   - CETESB: 2019 model from the Environmental Company of Sao Paulo
     (CETESB)
 - Europe
-  - [EMEP/EEA](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep):
+  - [EMEP/EEA](https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019):
     European Monitoring and Evaluation Programme, developed by the
     European Environment Agency (EEA).
 - United States
@@ -180,27 +184,27 @@ emission factor models:
 
 #### List of pollutants available by emission factor models
 
-| Source         | Pollutants                                                                                                                         |
-|----------------|------------------------------------------------------------------------------------------------------------------------------------|
-| CETESB         | CH4, CO, CO2, ETOH, FC (Fuel Consumption), FS (Fuel Sales), gCO2/KWH, gD/KWH, HC, KML, N2O, NH3, NMHC, NO, NO2, NOx, PM10 and RCHO |
-| EMFAC2017/CARB | CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX, and TOG (Total Organic Gases)                               |
-| EMEP/EEA       | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (#kWh), and VOC                                                                   |
-| MOVES3/EPA     | CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG, and VOC                                       |
+| Source | Pollutants |
+|----|----|
+| CETESB | CH4, CO, CO2, ETOH, FC (Fuel Consumption), FS (Fuel Sales), gCO2/KWH, gD/KWH, HC, KML, N2O, NH3, NMHC, NO, NO2, NOx, PM10 and RCHO |
+| EMFAC2017/CARB | CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX, and TOG (Total Organic Gases) |
+| EMEP/EEA | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (#kWh), and VOC |
+| MOVES3/EPA | CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG, and VOC |
 
 #### Fleet characteristics required by each emission factor model
 
-| Source         | Buses                        | Characteristics                              |
-|----------------|------------------------------|----------------------------------------------|
-| CETESB         | Micro, Standard, Articulated | Age, Fuel, EURO standard                     |
-| EMEP/EAA       | Micro, Standard, Articulated | Fuel, EURO standard, technology, load, slope |
-| EMFAC2017/CARB | Urban Buses                  | Age, Fuel                                    |
-| MOVES3/EPA     | Urban Buses                  | Age, Fuel                                    |
+| Source | Buses | Characteristics |
+|----|----|----|
+| CETESB | Micro, Standard, Articulated | Age, Fuel, EURO standard |
+| EMEP/EEA | Micro, Standard, Articulated | Fuel, EURO standard, technology, load, slope |
+| EMFAC2017/CARB | Urban Buses | Age, Fuel |
+| MOVES3/EPA | Urban Buses | Age, Fuel |
 
 ### Emissions from road vehicle tire, brake, and surface wear
 
 `gtfs2emis` also provides emissions estimates from tire, brake and
 surface wear using the [EMEP/EEA
-model](https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep).
+model](https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019).
 The function estimates emissions of particulate matter (PM),
 encompassing black carbon (BC), which arises from distinct sources
 (tire, brake, and road surface wear). The focus is on primary particles,
@@ -249,6 +253,7 @@ systems using GTFS data.
 ## Citation
 
 ``` r
+
 citation("gtfs2emis")
 #> To cite gtfs2emis in publications use:
 #> 

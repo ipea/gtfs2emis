@@ -141,12 +141,16 @@ temp_ef_scaled <- ef_scaled_euro(
                     tech = c("SCR","SCR"),
                     pollutant = c("CO","PM10","CO2","CH4","NOx")
                     )
-#> 'CO2' Emission factor not found for 'SCR' Technology and Euro 'IV'.
-#>  The package assumes missing Technology entry. Please check `data(ef_europe_emep_db)` for available data.
-#> 'CO2' Emission factor not found for 'SCR' Technology and Euro 'IV'.
-#>  The package assumes missing Technology entry. Please check `data(ef_europe_emep_db)` for available data.
-#> 'CO2' Emission factor not found for 'SCR' Technology and Euro 'IV'.
-#>  The package assumes missing Technology entry. Please check `data(ef_europe_emep_db)` for available data.
-#> 'CO2' Emission factor not found for 'SCR' Technology and Euro 'IV'.
-#>  The package assumes missing Technology entry. Please check `data(ef_europe_emep_db)` for available data.
+#> "CO2" emission factor not found for technology "SCR" and Euro "IV".
+#> ℹ The package assumes missing Technology entry. Check `data(ef_europe_emep_db)`
+#>   for available data.
+#> "CO2" emission factor not found for technology "SCR" and Euro "IV".
+#> ℹ The package assumes missing Technology entry. Check `data(ef_europe_emep_db)`
+#>   for available data.
+#> "CO2" emission factor not found for technology "SCR" and Euro "IV".
+#> ℹ The package assumes missing Technology entry. Check `data(ef_europe_emep_db)`
+#>   for available data.
+#> "CO2" emission factor not found for technology "SCR" and Euro "IV".
+#> ℹ The package assumes missing Technology entry. Check `data(ef_europe_emep_db)`
+#>   for available data.
 ```

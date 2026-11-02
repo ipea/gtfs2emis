@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Exploring Emission Factors • gtfs2emis</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Exploring Emission Factors">
 <meta name="robots" content="noindex">
@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gtfs2emis</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.1.9001</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.2.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Exploring Emission Factors</h1>
             
-            <h4 data-toc-skip class="date">2026-02-03</h4>
+            <h4 data-toc-skip class="date">2026-11-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ipeaGIT/gtfs2emis/blob/master/vignettes/gtfs2emis_emission_factor.Rmd" class="external-link"><code>vignettes/gtfs2emis_emission_factor.Rmd</code></a></small>
       <div class="d-none name"><code>gtfs2emis_emission_factor.Rmd</code></div>
@@ -96,7 +96,7 @@ detailed information and methods on how these emission factor data were
 originally calculated can be found on the agencies’ websites in the
 links below</p>
 <p><strong><em>Hot-exhaust emissions</em></strong></p>
-<p>- Brazil, Environment Company of Sao Paulo — [CETESB]</p>
+<p>- Brazil, Environment Company of Sao Paulo — <a href="https://cetesb.sp.gov.br/veicular/" class="external-link">CETESB</a></p>
 <p>- United States, Environmental Protection Agency — <a href="https://www.epa.gov/moves" class="external-link">MOVES3 Model</a></p>
 <p>- United States, California Air Resources Board — <a href="https://arb.ca.gov/emfac/emissions-inventory" class="external-link">EMFAC2017
 model</a></p>
@@ -189,8 +189,9 @@ assumed change in vehicle technology.</p>
 <span>                                ,euro <span class="op">=</span> <span class="st">"VI"</span>,pollutant <span class="op">=</span> <span class="st">"CO2"</span></span>
 <span>                                ,tech <span class="op">=</span> <span class="st">"DPF+SCR"</span></span>
 <span>                                ,as_list <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 'CO2' Emission factor not found for 'DPF+SCR' Technology and Euro 'VI'.</span></span>
-<span><span class="co">#&gt;  The package assumed 'SCR' Technology entry. Please check `data(ef_europe_emep_db)` for available data.</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #0000BB;">"CO2"</span> emission factor not found for technology <span style="color: #0000BB;">"DPF+SCR"</span> and Euro <span style="color: #0000BB;">"VI"</span>.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> The package assumed 'SCR' Technology entry. Check `data(ef_europe_emep_db)`</span></span>
+<span><span class="co">#&gt;   for available data.</span></span></code></pre></div>
 <p>The other EF functions, <code><a href="../reference/ef_usa_emfac.html">ef_usa_emfac()</a></code>,
 <code><a href="../reference/ef_usa_moves.html">ef_usa_moves()</a></code> and <code><a href="../reference/ef_brazil_cetesb.html">ef_brazil_cetesb()</a></code> work in
 a similar way. See the functions documentation for more detail.</p>
@@ -206,25 +207,25 @@ emission factor values to make them speed-dependent using the function
 <code><a href="../reference/ef_scaled_euro.html">ef_scaled_euro()</a></code>.</p>
 <p>When using the EMEP-EEA model as a reference, the scaled emission
 factor varies according to vehicle’s speed following the expression:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>s</mi><mi>c</mi><mi>a</mi><mi>l</mi><mi>e</mi><mi>d</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>V</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>E</mi><msub><mi>F</mi><mrow><mi>l</mi><mi>o</mi><mi>c</mi><mi>a</mi><mi>l</mi></mrow></msub><mo>*</mo><mfrac><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>e</mi><mi>u</mi><mi>r</mi><mi>o</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>V</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>e</mi><mi>u</mi><mi>r</mi><mi>o</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mi>D</mi><mi>C</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>s</mi><mi>c</mi><mi>a</mi><mi>l</mi><mi>e</mi><mi>d</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>V</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>E</mi><msub><mi>F</mi><mrow><mi>l</mi><mi>o</mi><mi>c</mi><mi>a</mi><mi>l</mi></mrow></msub><mo>*</mo><mfrac><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>e</mi><mi>u</mi><mi>r</mi><mi>o</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>V</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>e</mi><mi>u</mi><mi>r</mi><mi>o</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mi>D</mi><mi>C</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">
 EF_{scaled} (V) = EF_{local} * \frac{EF_{euro}(V)}{EF_{euro}(SDC)}, 
 </annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>s</mi><mi>c</mi><mi>a</mi><mi>l</mi><mi>e</mi><mi>d</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>V</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">EF_{scaled}(V)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>s</mi><mi>c</mi><mi>a</mi><mi>l</mi><mi>e</mi><mi>d</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>V</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">EF_{scaled}(V)</annotation></semantics></math>
 is the scaled emission factor for each street link,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>l</mi><mi>o</mi><mi>c</mi><mi>a</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex">EF_{local}</annotation></semantics></math>
 is the local emission factor,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>e</mi><mi>u</mi><mi>r</mi><mi>o</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>V</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">EF_{euro}(V)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>e</mi><mi>u</mi><mi>r</mi><mi>o</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>V</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">EF_{euro}(V)</annotation></semantics></math>
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>e</mi><mi>u</mi><mi>r</mi><mi>o</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mi>D</mi><mi>C</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">EF_{euro}(SDC)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>e</mi><mi>u</mi><mi>r</mi><mi>o</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mi>D</mi><mi>C</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">EF_{euro}(SDC)</annotation></semantics></math>
 are the EMEP/EEA emission factor the speed of V and the average urban
 driving speed SDC, respectively.</p>
 <p>The scaled behavior of EF can be verified graphically when we plot
 the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>l</mi><mi>o</mi><mi>c</mi><mi>a</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex">EF_{local}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>s</mi><mi>c</mi><mi>a</mi><mi>l</mi><mi>e</mi><mi>d</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>V</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">EF_{scaled}(V)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>s</mi><mi>c</mi><mi>a</mi><mi>l</mi><mi>e</mi><mi>d</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>V</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">EF_{scaled}(V)</annotation></semantics></math>,
 and the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>e</mi><mi>u</mi><mi>r</mi><mi>o</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>V</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">EF_{euro}(V)</annotation></semantics></math>
-that is used as the reference To plot these data, we need six quick
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><msub><mi>F</mi><mrow><mi>e</mi><mi>u</mi><mi>r</mi><mi>o</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>V</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">EF_{euro}(V)</annotation></semantics></math>
+that is used as the reference. To plot these data, we need five quick
 steps:</p>
 <ol style="list-style-type: decimal">
 <li>Build a <code>data.frame</code> of fleet indicating the
@@ -266,7 +267,7 @@ European emission models</li>
 <span><span class="va">cur_local_ef_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/emis_to_dt.html">emis_to_dt</a></span><span class="op">(</span>emi_list <span class="op">=</span> <span class="va">cur_local_ef</span></span>
 <span>                             ,emi_vars <span class="op">=</span> <span class="st">"EF"</span><span class="op">)</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
-<li>Estimate <code>ef_emep_europe</code>
+<li>Estimate <code>ef_europe_emep</code>
 </li>
 </ol>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -336,7 +337,7 @@ European emission models</li>
 <p>In this case, the <code>scaled_EF</code> has the same value of
 <code>local_EF</code> (dashed line) when <code>speed = 19</code> km/h,
 and a similar decaying behavior as <code>Euro_EF</code> as speed
-decreases.</p>
+increases.</p>
 </div>
 </div>
 <div class="section level2">
@@ -346,17 +347,17 @@ decreases.</p>
 included in the package by using the following functions:</p>
 <ul>
 <li>
-<code>data(ef_brazil_cetesb)</code> from Environment Company of Sao
-Paulo, Brazil (CETESB)</li>
+<code>data(ef_brazil_cetesb_db)</code> from Environment Company of
+Sao Paulo, Brazil (CETESB)</li>
 <li>
-<code>data(ef_usa_moves)</code> from MOtor Vehicle Emission
+<code>data(ef_usa_moves_db)</code> from MOtor Vehicle Emission
 Simulator (MOVES)</li>
 <li>
-<code>data(ef_usa_emfac)</code> from California Air Resources Board
-(EMFAC Model)</li>
+<code>data(ef_usa_emfac_db)</code> from California Air Resources
+Board (EMFAC Model)</li>
 <li>
-<code>data(ef_europe_emep)</code> from European Environment Agency
-(EMEP/EEA)</li>
+<code>data(ef_europe_emep_db)</code> from European Environment
+Agency (EMEP/EEA)</li>
 </ul>
 <p>The data presented on the agencies website and software was
 downloaded and pre-processed in <code>gtfs2emis</code> to be easily read
@@ -391,7 +392,7 @@ page</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

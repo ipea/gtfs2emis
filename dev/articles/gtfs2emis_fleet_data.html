@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Preparing fleet data for gtfs2emis • gtfs2emis</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Preparing fleet data for gtfs2emis">
 <meta name="robots" content="noindex">
@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gtfs2emis</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.1.9001</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.2.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Preparing fleet data for gtfs2emis</h1>
             
-            <h4 data-toc-skip class="date">2026-02-03</h4>
+            <h4 data-toc-skip class="date">2026-11-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ipeaGIT/gtfs2emis/blob/master/vignettes/gtfs2emis_fleet_data.Rmd" class="external-link"><code>vignettes/gtfs2emis_fleet_data.Rmd</code></a></small>
       <div class="d-none name"><code>gtfs2emis_fleet_data.Rmd</code></div>
@@ -124,7 +124,7 @@ standard, technology, and fuel. Note that
 </h4>
 <p>This other table illustrates what a detailed fleet data table looks
 like, using the example of the city of Curitiba, Brazil. Here, the
-<code>N</code> column also tells us the absolute number of buses with
+<code>total</code> column tells us the absolute number of buses with
 each combination of vehicle characteristics. However, note that this
 table brings a <code>shape_id</code> column. These columns indicate
 which specific vehicles should be allocated to run on predefined
@@ -181,7 +181,7 @@ below:</p>
 <td>Brazil</td>
 <td>CETESB</td>
 <td>Micro, Standard, Articulated</td>
-<td>Age, Fuel, EURO stage</td>
+<td>Age</td>
 </tr>
 <tr class="even">
 <td><code><a href="../reference/ef_europe_emep.html">ef_europe_emep()</a></code></td>
@@ -193,14 +193,14 @@ below:</p>
 <tr class="odd">
 <td><code><a href="../reference/ef_usa_moves.html">ef_usa_moves()</a></code></td>
 <td>US</td>
-<td>EMFAC2017/CARB</td>
+<td>MOVES3/EPA</td>
 <td>Urban Buses</td>
 <td>Age, Fuel</td>
 </tr>
 <tr class="even">
 <td><code><a href="../reference/ef_usa_emfac.html">ef_usa_emfac()</a></code></td>
 <td>US</td>
-<td>MOVES3/EPA</td>
+<td>EMFAC2017/CARB</td>
 <td>Urban Buses</td>
 <td>Age, Fuel</td>
 </tr>
@@ -233,7 +233,7 @@ is represented by vehicles with each characteristic.</p>
 <div class="section level3">
 <h3 id="europe-emep---european-environment-agency-eea">4.2 Europe: EMEP - European Environment Agency (EEA)<a class="anchor" aria-label="anchor" href="#europe-emep---european-environment-agency-eea"></a>
 </h3>
-<p>Based on the European Monitoring and Evaluation Programme (<a href="https://www.eea.europa.eu/themes/air/air-pollution-sources-1/emep-eea-air-pollutant-emission-inventory-guidebook/emep" class="external-link">EMEP</a>),
+<p>Based on the European Monitoring and Evaluation Programme (<a href="https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/" class="external-link">EMEP</a>),
 developed by EEA.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fleet_data_ef_europe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>  veh_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ubus Midi &lt;=15 t"</span></span>
@@ -258,15 +258,14 @@ developed by EEA.</p>
 <code class="sourceCode R"><span><span class="va">fleet_data_ef_emfac</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>  veh_type <span class="op">=</span> <span class="st">"BUS_URBAN_D"</span></span>
 <span>                                  , model_year <span class="op">=</span> <span class="fl">2011</span><span class="op">:</span><span class="fl">2015</span></span>
 <span>                                  , fuel <span class="op">=</span> <span class="st">"D"</span></span>
-<span>                                  , calendar_year <span class="op">=</span> <span class="fl">2019</span></span>
 <span>                                  , fleet_composition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.2</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fleet_data_ef_emfac</span></span>
-<span><span class="co">#&gt;      veh_type model_year fuel calendar_year fleet_composition</span></span>
-<span><span class="co">#&gt; 1 BUS_URBAN_D       2011    D          2019               0.2</span></span>
-<span><span class="co">#&gt; 2 BUS_URBAN_D       2012    D          2019               0.2</span></span>
-<span><span class="co">#&gt; 3 BUS_URBAN_D       2013    D          2019               0.2</span></span>
-<span><span class="co">#&gt; 4 BUS_URBAN_D       2014    D          2019               0.2</span></span>
-<span><span class="co">#&gt; 5 BUS_URBAN_D       2015    D          2019               0.2</span></span></code></pre></div>
+<span><span class="co">#&gt;      veh_type model_year fuel fleet_composition</span></span>
+<span><span class="co">#&gt; 1 BUS_URBAN_D       2011    D               0.2</span></span>
+<span><span class="co">#&gt; 2 BUS_URBAN_D       2012    D               0.2</span></span>
+<span><span class="co">#&gt; 3 BUS_URBAN_D       2013    D               0.2</span></span>
+<span><span class="co">#&gt; 4 BUS_URBAN_D       2014    D               0.2</span></span>
+<span><span class="co">#&gt; 5 BUS_URBAN_D       2015    D               0.2</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="united-states-moves3---environmental-protection-agency-epa">4.4 United States: MOVES3 - Environmental Protection Agency
@@ -278,15 +277,17 @@ EPA.</p>
 <code class="sourceCode R"><span><span class="va">fleet_data_ef_moves</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>  veh_type <span class="op">=</span> <span class="st">"BUS_URBAN_D"</span></span>
 <span>                                  , model_year <span class="op">=</span> <span class="fl">2011</span><span class="op">:</span><span class="fl">2015</span></span>
 <span>                                  , fuel <span class="op">=</span> <span class="st">"D"</span></span>
-<span>                                  , calendar_year <span class="op">=</span> <span class="fl">2016</span></span>
 <span>                                  , fleet_composition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.2</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fleet_data_ef_moves</span></span>
-<span><span class="co">#&gt;      veh_type model_year fuel calendar_year fleet_composition</span></span>
-<span><span class="co">#&gt; 1 BUS_URBAN_D       2011    D          2016               0.2</span></span>
-<span><span class="co">#&gt; 2 BUS_URBAN_D       2012    D          2016               0.2</span></span>
-<span><span class="co">#&gt; 3 BUS_URBAN_D       2013    D          2016               0.2</span></span>
-<span><span class="co">#&gt; 4 BUS_URBAN_D       2014    D          2016               0.2</span></span>
-<span><span class="co">#&gt; 5 BUS_URBAN_D       2015    D          2016               0.2</span></span></code></pre></div>
+<span><span class="co">#&gt;      veh_type model_year fuel fleet_composition</span></span>
+<span><span class="co">#&gt; 1 BUS_URBAN_D       2011    D               0.2</span></span>
+<span><span class="co">#&gt; 2 BUS_URBAN_D       2012    D               0.2</span></span>
+<span><span class="co">#&gt; 3 BUS_URBAN_D       2013    D               0.2</span></span>
+<span><span class="co">#&gt; 4 BUS_URBAN_D       2014    D               0.2</span></span>
+<span><span class="co">#&gt; 5 BUS_URBAN_D       2015    D               0.2</span></span></code></pre></div>
+<p>For both US models, the year of the emission inventory is not a
+column of the fleet data: it is set with the <code>reference_year</code>
+argument of <code><a href="../reference/emission_model.html">emission_model()</a></code>.</p>
 </div>
 <div class="section level3">
 <h3 id="learn-more">Learn more<a class="anchor" aria-label="anchor" href="#learn-more"></a>
@@ -318,7 +319,7 @@ page</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
