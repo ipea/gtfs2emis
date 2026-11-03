@@ -52,6 +52,10 @@
 </ul><div class="section level3">
 <h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
 <ul><li>
+<code><a href="../reference/ef_usa_moves.html">ef_usa_moves()</a></code> returned wrong emission factors, without warning, when <code>fuel</code> had more than one value (mixed-fuel fleets): the fuel filter used the <code>fuel</code> argument instead of the <code>fuel_type</code> column. Results change for mixed-fuel fleets (<a href="https://github.com/ipeaGIT/gtfs2emis/issues/111" class="external-link">#111</a>).</li>
+<li>
+<code><a href="../reference/emi_europe_emep_wear.html">emi_europe_emep_wear()</a></code> assigned tyre axle counts in the order of its internal lookup table rather than the order of <code>veh_type</code>, so articulated and standard buses could swap axle counts. Tyre-wear results change when <code>veh_type</code> is not in table order or repeats a type (<a href="https://github.com/ipeaGIT/gtfs2emis/issues/112" class="external-link">#112</a>).</li>
+<li>
 <code><a href="../reference/transport_model.html">transport_model()</a></code> no longer merges shapes left over in <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> by a previous interrupted or failed run into its output. Intermediate files from earlier runs are now removed unless <code>continue = TRUE</code>.</li>
 <li>
 <code><a href="../reference/transport_model.html">transport_model()</a></code> now respects the <code>ncores</code> argument. Previously, it always used all available cores minus one when <code>parallel = TRUE</code>.</li>
