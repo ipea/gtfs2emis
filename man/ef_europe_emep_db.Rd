@@ -5,7 +5,7 @@
 \alias{ef_europe_emep_db}
 \title{Emission factors from European Environment Agency — EMEP/EEA}
 \format{
-A data.table with 6431 rows and 22 variables:
+A data.table with 9388 rows and 22 variables:
 \describe{
 \item{Category}{Buses.}
 \item{Fuel}{Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
@@ -16,7 +16,7 @@ A data.table with 6431 rows and 22 variables:
 \item{Technology}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction),
 "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are
 no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III". }
-\item{Pol}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. }
+\item{Pol}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" is fuel consumption (g/km); "EC" is energy consumption (MJ/km). }
 \item{Vmin}{Minimum speed for emission factor estimation, in km/h.}
 \item{Vmax}{Maximum speed for emission factor estimation, in km/h.}
 \item{Alpha, Beta, Gamma, Delta, Epsilon, Zita, Hta, Thita}{Constant parameters.}

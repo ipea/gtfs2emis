@@ -1,5 +1,9 @@
-#' REPORT 
-#' 
+#' NOTE: the source URLs below are no longer available (HTTP 410), so this
+#' script cannot be re-run. The shipped data was later patched by
+#' data-raw/ef_europe_emep_db_fix_110.R (FC rows stored as MJ/km, #110).
+#'
+#' REPORT
+#'
 #' There are four main steps in this script
 #'
 #' 1) Load Libraries and internal functions

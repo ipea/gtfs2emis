@@ -5,6 +5,8 @@
 
 ## Bug fixes
 
+- `ef_europe_emep()`: 1138 fuel consumption (FC) rows of `ef_europe_emep_db` held energy consumption in MJ/km labelled g/km, so FC for Conventional diesel, biodiesel and CNG buses was about 21–27 times too low. They are now converted to g/km with the EMEP/EEA guidebook net calorific values. FC no longer crashes for diesel Euro I, II, III and V (duplicated rows; the 2007/2013 rows are kept), and CNG CO2 was about 18 times too low. `ef_europe_emep_db` now has 9388 rows instead of 9913, and `"EC"` is documented as MJ/km. Results change (#110).
+
 - `ef_usa_moves()` returned wrong emission factors, without warning, when `fuel` had more than one value (mixed-fuel fleets): the fuel filter used the `fuel` argument instead of the `fuel_type` column. Results change for mixed-fuel fleets (#111).
 - `emi_europe_emep_wear()` assigned tyre axle counts in the order of its internal lookup table rather than the order of `veh_type`, so articulated and standard buses could swap axle counts. Tyre-wear results change when `veh_type` is not in table order or repeats a type (#112).
 - `transport_model()` no longer merges shapes left over in `tempdir()` by a previous interrupted or failed run into its output. Intermediate files from earlier runs are now removed unless `continue = TRUE`.

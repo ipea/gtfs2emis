@@ -11,7 +11,9 @@
 #' @param veh_type character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
 #' "Coaches Std <=18 t","Coaches Artic >18 t".
 #' @param euro character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".
-#' @param pollutant character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption. 
+#' @param pollutant character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" is fuel consumption (g/km).
+#' "EC" is energy consumption in MJ/km, although it is returned with g/km units. FC and CO2 are not available
+#' for every combination (e.g. there is no CO2 for "BD" or for "Conventional" diesel buses).
 #' @param fuel character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
 #' "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel).   
 #' @param tech character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 

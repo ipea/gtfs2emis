@@ -25,7 +25,9 @@ ef_europe_emep(
 
 \item{euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".}
 
-\item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption.}
+\item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" is fuel consumption (g/km).
+"EC" is energy consumption in MJ/km, although it is returned with g/km units. FC and CO2 are not available
+for every combination (e.g. there is no CO2 for "BD" or for "Conventional" diesel buses).}
 
 \item{fuel}{character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
 "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel).}
