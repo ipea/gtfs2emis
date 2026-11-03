@@ -282,7 +282,7 @@ emi_europe_emep_wear <- function(dist,speed,pollutant,veh_type,
       # load correction factor
       lcf_tw <- 1.41 + 1.38 * load
       # number of axles
-      n_axle <- n_axle_table[veh %in% tmp_veh_type,n_axle]
+      n_axle <- n_axle_table$n_axle[match(tmp_veh_type, n_axle_table$veh)]
       # emission factor
       ef_tsp_pc_tw <- units::set_units(0.0107,'g/km')
       ef_tsp_bus_tw <- as.matrix(n_axle * fleet_composition) %*%  t(lcf_tw * ef_tsp_pc_tw * 0.5)

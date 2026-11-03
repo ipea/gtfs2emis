@@ -25,3 +25,28 @@ test_that("emi_europe_emep_wear", {
   expect_equivalent(length(emi_list$veh_type), 2)
   expect_equivalent(length(emi_list$process), 3)
 })
+test_that("emi_europe_emep_wear tyre axles follow veh_type order (#112)", {
+  
+  tyre_tsp <- function(veh_type, fleet_composition){
+    emi <- emi_europe_emep_wear(dist = units::set_units(1, "km"),
+                                speed = units::set_units(30, "km/h"),
+                                pollutant = "TSP",
+                                veh_type = veh_type,
+                                fleet_composition = fleet_composition,
+                                load = 0.5,
+                                process = "tyre")
+    return(as.numeric(unlist(emi$emi)))
+  }
+  
+  # EMEP/EEA 1.A.3.b.vi tyre wear: EF = (n_axle / 2) * LCF_t * EF_TSP_PC * S_t(V),
+  # with LCF_t = 1.41 + 1.38 * 0.5 = 2.1, EF_TSP_PC = 0.0107 g/km and
+  # S_t(30 km/h) = 1.39; an articulated bus has 3 axles
+  artic <- 3 / 2 * 2.1 * 0.0107 * 1.39
+  expect_equal(tyre_tsp("Ubus Artic >18 t", 1), artic)
+  
+  # the same fleet listed in a different order gives the same emissions
+  std_artic <- tyre_tsp(c("Ubus Std 15 - 18 t", "Ubus Artic >18 t"), c(0.1, 0.9))
+  artic_std <- tyre_tsp(c("Ubus Artic >18 t", "Ubus Std 15 - 18 t"), c(0.9, 0.1))
+  expect_equal(artic_std, rev(std_artic))
+  expect_equal(artic_std[1], 0.9 * artic)
+})

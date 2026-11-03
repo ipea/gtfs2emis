@@ -101,14 +101,14 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
       # Filter Model Year & Pollutant & Fuel
       temp_moves2 <- data.table::copy(temp_moves)[pollutant %in% i & 
                                                     model_year %in% tmp_model_year[j] & 
-                                                    fuel %in% tmp_fuel[j], ]
+                                                    fuel_type %in% tmp_fuel[j], ]
       # check condition
       if(dim(temp_moves2)[1] == 0){
         cli::cli_abort(c("No available emission factor for this combination of parameters:"
                          , "*" = "pollutant: {.val {i}}"
                          , "*" = "model_year: {.val {tmp_model_year[j]}}"
                          , "*" = "fuel: {.val {tmp_fuel[j]}}"
-                         , "i" = "Check {.code data(ef_usa_emfac_db)} for available data.")
+                         , "i" = "Check {.code data(ef_usa_moves_db)} for available data.")
                        , class = c("gtfs2emis_missing_ef", "gtfs2emis_error")
                        , call = call)
       }
