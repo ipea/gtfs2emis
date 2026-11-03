@@ -5,6 +5,8 @@
 
 ## Bug fixes
 
+- `ef_usa_moves()` returned wrong emission factors, without warning, when `fuel` had more than one value (mixed-fuel fleets): the fuel filter used the `fuel` argument instead of the `fuel_type` column. Results change for mixed-fuel fleets (#111).
+- `emi_europe_emep_wear()` assigned tyre axle counts in the order of its internal lookup table rather than the order of `veh_type`, so articulated and standard buses could swap axle counts. Tyre-wear results change when `veh_type` is not in table order or repeats a type (#112).
 - `transport_model()` no longer merges shapes left over in `tempdir()` by a previous interrupted or failed run into its output. Intermediate files from earlier runs are now removed unless `continue = TRUE`.
 - `transport_model()` now respects the `ncores` argument. Previously, it always used all available cores minus one when `parallel = TRUE`.
 - `emission_model(quiet = TRUE)` now also suppresses messages when `tp_model` is an `sf` object.

@@ -72,3 +72,17 @@ test_that("ef_usa_moves", {
                           fuel = "banana")
   )
 })
+
+test_that("ef_usa_moves pairs each fuel with its own EF (#111)", {
+  
+  speed <- units::set_units(c(10, 50), "km/h")
+  ef_d <- ef_usa_moves(pollutant = "CO", model_year = 2015, reference_year = 2019,
+                       speed = speed, fuel = "D")
+  ef_cng <- ef_usa_moves(pollutant = "CO", model_year = 2015, reference_year = 2019,
+                         speed = speed, fuel = "CNG")
+  ef_mix <- ef_usa_moves(pollutant = "CO", model_year = c(2015, 2015), reference_year = 2019,
+                         speed = speed, fuel = c("D", "CNG"))
+  
+  expect_equal(as.numeric(ef_mix$EF[[1]]), as.numeric(ef_d$EF[[1]]))
+  expect_equal(as.numeric(ef_mix$EF[[2]]), as.numeric(ef_cng$EF[[1]]))
+})
