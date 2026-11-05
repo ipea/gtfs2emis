@@ -174,3 +174,35 @@ test_that("ef_europe_emep", {
                    ,euro = "III",load = rep(0.3,2))
   )
 })
+
+test_that("EMEP FC is g/km and keys are unique (#110)", {
+  # EMEP/EEA guidebook 2019, 1.A.3.b.i-iv: FC [g/km] = EC [MJ/km] / NCV [MJ/kg] * 1000
+  # (Table 3-28, diesel NCV = 42.695) and CNG CO2 = FC * 44.011 / (12.011 + 1.008 * 4)
+  # (equation 16, Table 3-29)
+  ef <- function(pollutant, euro, fuel = "D", tech = "-"){
+    suppressMessages(
+      ef_europe_emep(speed = units::set_units(30, "km/h")
+                     , veh_type = "Ubus Std 15 - 18 t"
+                     , euro = euro
+                     , pollutant = pollutant
+                     , fuel = fuel
+                     , tech = tech)
+    )$EF[[1]]
+  }
+
+  # diesel Conventional: EC 14.44 MJ/km -> about 338 g/km
+  ec <- as.numeric(ef("EC", "Conventional"))
+  fc <- as.numeric(ef("FC", "Conventional"))
+  expect_equal(fc, ec / 42.695 * 1000)
+  expect_equal(fc, 338.1, tolerance = 1e-3)
+
+  # diesel Euro I used to crash (duplicated keys); the 2007 row is kept
+  expect_error(ef("FC", "I"), NA)
+  expect_equal(as.numeric(ef("FC", "I")), 274.85, tolerance = 1e-3)
+
+  # CNG EEV CO2 (was about 51 g/km)
+  expect_equal(as.numeric(ef("CO2", "EEV", fuel = "CNG")), 923.9, tolerance = 1e-3)
+
+  key <- c("Fuel", "Segment", "Euro", "Technology", "Pol", "Slope", "Load")
+  expect_equal(anyDuplicated(ef_europe_emep_db, by = key), 0L)
+})
