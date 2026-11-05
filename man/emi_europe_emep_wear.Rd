@@ -131,7 +131,8 @@ where:
 \itemize{
 \item EF_tsp_brake_hdv  = heavy-duty vehicle emission factor for TSP,
 \item LCF_brake         = load correction factor for brake wear,
-\item EF_tsp_brake_pc   = passenger car emission factor for TSP,
+\item EF_tsp_brake_pc   = passenger car (ICE) emission factor for TSP, 0.0122 g/km
+(EMEP/EEA guidebook 2019, Table 3-6),
 }
 
 and
