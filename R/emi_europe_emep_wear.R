@@ -96,13 +96,13 @@
 #'  car emission factor to conform to experimental data obtained from 
 #'  heavy-duty vehicles.
 #'   
-#'  EF_tsp_brake_hdv = 3.13 x LCF_brake x EF_tsp_brake_pc (EMEP/EEA guidebook,
-#'  chapter 1.A.3.b.vi)
+#'  EF_tsp_brake_hdv = 1.956 x LCF_brake x EF_tsp_brake_pc
 #'  
 #'  where:
 #'  - EF_tsp_brake_hdv  = heavy-duty vehicle emission factor for TSP, 
 #'  - LCF_brake         = load correction factor for brake wear,
-#'  - EF_tsp_brake_pc   = passenger car emission factor for TSP,
+#'  - EF_tsp_brake_pc   = passenger car (ICE) emission factor for TSP, 0.0122 g/km
+#'    (EMEP/EEA guidebook 2019, Table 3-6),
 #'   
 #' and
 #'  LCF_brake = 1 + (0.79 x LF),
@@ -304,8 +304,10 @@ emi_europe_emep_wear <- function(dist,speed,pollutant,veh_type,
       # mass fraction
       mass_bw <- size_class[pol %in% pollutant,mf_bw]
       # emission factor
-      ef_tsp_pc_bw <-  0.0075 # g/km
-      ef_tsp_bus_bw <- 3.13 * lcf_bw * ef_tsp_pc_bw
+      # EMEP/EEA guidebook 2019, 1.A.3.b.vi, Table 3-6 (passenger cars, ICE) and eq. 6.
+      # The chapter's text and HDV range still use 3.13 x 0.0075; we follow eq. 6 as printed.
+      ef_tsp_pc_bw <-  0.0122 # g/km
+      ef_tsp_bus_bw <- 1.956 * lcf_bw * ef_tsp_pc_bw
       #ef_tsp_bus_bw <- units::set_units(ef_tsp_bus_bw,'g/km')
       # speed corrections
       speed_cor_bw <- speed_cor_bw_f(speed)

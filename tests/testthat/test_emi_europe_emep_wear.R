@@ -60,10 +60,11 @@ test_that("emi_europe_emep_wear brake wear follows EMEP/EEA HDV factor (#113)", 
                               load = 0.5,
                               process = "brake")
   
-  # EMEP/EEA 1.A.3.b.vi brake wear: EF_HDV = 3.13 * LCF_b * EF_TSP_PC, with
-  # LCF_b = 1 + 0.79 * 0.5 = 1.395 and EF_TSP_PC = 0.0075 g/km (~0.0327 g/km);
-  # S_b(30 km/h) = 1.67 and S_b(60 km/h) = -0.0270 * 60 + 2.75 = 1.13
-  ef_hdv <- 3.13 * 1.395 * 0.0075
+  # EMEP/EEA guidebook 2019, 1.A.3.b.vi brake wear: EF_HDV = 1.956 * LCF_b * EF_TSP_PC
+  # (eq. 6), with LCF_b = 1 + 0.79 * 0.5 = 1.395 (eq. 7) and EF_TSP_PC = 0.0122 g/km
+  # (Table 3-6), so ~0.0333 g/km; S_b(30 km/h) = 1.67 and
+  # S_b(60 km/h) = -0.0270 * 60 + 2.75 = 1.13 (eq. 8); PM10 = 0.98 TSP (Table 3-7)
+  ef_hdv <- 1.956 * 1.395 * 0.0122
   tsp <- c(1, 2) * ef_hdv * c(1.67, 1.13)
   expect_equal(as.numeric(emi$emi$TSP_brake_veh_1), tsp)
   expect_equal(as.numeric(emi$emi$PM10_brake_veh_1), 0.98 * tsp)

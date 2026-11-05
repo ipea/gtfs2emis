@@ -125,14 +125,14 @@ The heavy-duty vehicle emission factor is derived by modifying the passenger
 car emission factor to conform to experimental data obtained from
 heavy-duty vehicles.
 
-EF_tsp_brake_hdv = 3.13 x LCF_brake x EF_tsp_brake_pc (EMEP/EEA guidebook,
-chapter 1.A.3.b.vi)
+EF_tsp_brake_hdv = 1.956 x LCF_brake x EF_tsp_brake_pc
 
 where:
 \itemize{
 \item EF_tsp_brake_hdv  = heavy-duty vehicle emission factor for TSP,
 \item LCF_brake         = load correction factor for brake wear,
-\item EF_tsp_brake_pc   = passenger car emission factor for TSP,
+\item EF_tsp_brake_pc   = passenger car (ICE) emission factor for TSP, 0.0122 g/km
+(EMEP/EEA guidebook 2019, Table 3-6),
 }
 
 and

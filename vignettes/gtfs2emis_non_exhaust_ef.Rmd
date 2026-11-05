@@ -102,13 +102,13 @@ The heavy-duty vehicle emission factor is derived by modifying the
 passenger car emission factor to conform to experimental data obtained
 from heavy-duty vehicles.
 
-$$EFTSP^{hdv}_{brake} = 3.13 \times LCF_{brake} \times EFTSP^{pc}_{brake}$$
+$$EFTSP^{hdv}_{brake} = 1.956 \times LCF_{brake} \times EFTSP^{pc}_{brake}$$
 
 where:
 
 -   $EFTSP^{hdv}_{brake}$ = heavy-duty vehicle emission factor for TSP,
 -   $LCF_{brake}$ = load correction factor for brake wear,
--   $EFTSP^{pc}_{brake}$ = passenger car emission factor for TSP.
+-   $EFTSP^{pc}_{brake}$ = passenger car emission factor for TSP, 0.0122 g/km.
 
 
 $$LCF_{brake} = 1 + (0.79 \times LF),$$
