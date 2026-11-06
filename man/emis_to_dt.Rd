@@ -55,8 +55,7 @@ tp_model <- transport_model(gtfs_data = gtfs_small,
                             min_speed = 2,
                             max_speed = 80,
                             new_speed = 20,
-                            spatial_resolution = 100,
-                            parallel = FALSE)
+                            spatial_resolution = 100)
 
 # Example using Brazilian emission model and fleet
 fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",

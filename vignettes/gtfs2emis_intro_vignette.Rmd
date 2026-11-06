@@ -121,8 +121,7 @@ progressr::with_progress(
   tp_model <- transport_model(gtfs_data = gtfs,
                               min_speed = 2,
                               max_speed = 80,
-                              spatial_resolution = 100,
-                              parallel = FALSE) 
+                              spatial_resolution = 100)
   )
 
 head(tp_model)

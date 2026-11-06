@@ -87,7 +87,7 @@ gtfs_file <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
 gtfs <- gtfstools::read_gtfs(gtfs_file)
 
 # generate transport model
-tp_model <- transport_model(gtfs_data = gtfs,spatial_resolution = 100,parallel = TRUE) 
+tp_model <- transport_model(gtfs_data = gtfs,spatial_resolution = 100) 
 ```
 
 ### 2. Prepare fleet data

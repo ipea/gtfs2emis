@@ -10,20 +10,19 @@ test_that("slope_class_europe_emep", {
                               min_speed = 2,
                               max_speed = 80,
                               new_speed = 20,
-                              spatial_resolution = 100,
-                              parallel = FALSE)
+                              spatial_resolution = 100)
   
   # read raster file
   raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")
   
   tp_model_slope <- slope_class_europe_emep(tp_model,raster_cur)
   
-  expect_equal(tp_model_slope$slope_class, c(0.0,0.0), 0.001)
-  expect_equivalent(nrow(tp_model_slope), 2)
+  expect_equal(tp_model_slope$slope_class, rep(0.0, nrow(tp_model)), 0.001)
+  expect_equivalent(nrow(tp_model_slope), nrow(tp_model))
   expect_equivalent(ncol(tp_model_slope), ncol(tp_model) + 1) # input columns + slope_class
   
   tp_model_slope_true <- slope_class_europe_emep(tp_model,raster_cur,keep = TRUE)
-  expect_equivalent(nrow(tp_model_slope_true), 2)
+  expect_equivalent(nrow(tp_model_slope_true), nrow(tp_model))
   expect_equivalent(ncol(tp_model_slope_true), ncol(tp_model) + 5)
   })
 

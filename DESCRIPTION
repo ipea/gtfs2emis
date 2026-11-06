@@ -37,6 +37,7 @@ Imports:
     furrr,
     future,
     gtfs2gps (>= 2.1-4),
+    gtfstools (>= 2.0.1),
     methods,
     sf (>= 0.9-0),
     terra,
@@ -44,7 +45,6 @@ Imports:
     parallelly,
     rlang (>= 1.0.0)
 Suggests: 
-    gtfstools (>= 2.0.0),
     ggplot2,
     knitr,
     lwgeom,

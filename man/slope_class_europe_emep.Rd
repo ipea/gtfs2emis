@@ -60,8 +60,7 @@ tp_model <- transport_model(gtfs_data = gtfs_small,
                             min_speed = 2,
                             max_speed = 80,
                             new_speed = 20,
-                            spatial_resolution = 100,
-                            parallel = FALSE)
+                            spatial_resolution = 100)
 
 # read raster file
 raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")

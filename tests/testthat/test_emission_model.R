@@ -91,7 +91,7 @@ test_that("output is correct", {
   gtfs_irl2 <- gtfstools::filter_by_shape_id(gtfs_irl_raw, 
                                              shape_id = irl_shapeids)
   
-  tp_model_irl2 <- transport_model(gtfs = gtfs_irl2, parallel = TRUE)
+  tp_model_irl2 <- transport_model(gtfs = gtfs_irl2)
   
   # fleet
   fleet_data_europe2 <- fleet_data_europe 
@@ -121,7 +121,7 @@ test_that("emission_model runs with heightfile and mixed slopes (G-20, G-32, G-4
   trips <- head(g$trips[shape_id == shape, trip_id], 2)
   tp <- suppressWarnings(suppressMessages(
     transport_model(gtfs_data = gtfstools::filter_by_trip_id(g, trip_id = trips)
-                    , new_speed = 20, parallel = FALSE)))
+                    , new_speed = 20)))
   bb <- sf::st_bbox(tp)
   dem <- make_test_dem(c(xmin = bb[["xmin"]] - 0.01, xmax = bb[["xmax"]] + 0.01
                          , ymin = bb[["ymin"]] - 0.01, ymax = bb[["ymax"]] + 0.01))

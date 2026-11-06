@@ -2,6 +2,12 @@
 
 - Errors and messages now use {cli}. All errors have class `gtfs2emis_error`, and a missing emission-factor combination has class `gtfs2emis_missing_ef`, so they can be caught with `tryCatch()`. Input checks still use {checkmate}. Error and message wording changed, so code that matches the old text with a regular expression may need updating. New dependencies: cli, rlang.
 - `emis_summary()` no longer calls a {testthat} function at run time, so it works without {testthat} installed.
+- `transport_model()` was rewritten for the new {gtfs2gps} interface. It runs `gtfs2gps::gtfs2gps()` once on the whole feed, in memory, after limiting speeds with `gtfstools::set_min_speed()` and `gtfstools::set_max_speed()`. Results change:
+  - The parts of a shape before the first stop and after the last stop of a trip are no longer returned (about 19% less distance on the Curitiba example feed).
+  - Missing or out-of-range segment speeds are replaced by `new_speed` or, when `new_speed = NULL`, by the distance-weighted mean speed of the whole feed (before, of each shape).
+  - `parallel` and `continue` are deprecated: they are ignored and give a warning (class `gtfs2emis_deprecated`). Set the number of threads with `ncores`, which now defaults to `2` and accepts `Inf`.
+  - With `output_path`, one `.rds` file is saved per `shape_id`, as before, but the whole feed is processed in memory.
+  - A GTFS path is read with `gtfstools::read_gtfs()`, and {gtfstools} (>= 2.0.1) moves from Suggests to Imports.
 
 ## Bug fixes
 
@@ -15,7 +21,6 @@
 - `ef_usa_moves()` returned wrong emission factors, without warning, when `fuel` had more than one value (mixed-fuel fleets): the fuel filter used the `fuel` argument instead of the `fuel_type` column. Results change for mixed-fuel fleets (#111).
 - `emi_europe_emep_wear()` underestimated bus brake wear by about 38%: it applied the heavy-duty factor of the EMEP/EEA 2019 guidebook (1.956, chapter 1.A.3.b.vi, equation 6) to the passenger-car brake-wear factor of earlier editions (0.0075 g/km) instead of the 2019 value (0.0122 g/km). Brake-wear emissions of all pollutants increase by about 63% (#113).
 - `emi_europe_emep_wear()` assigned tyre axle counts in the order of its internal lookup table rather than the order of `veh_type`, so articulated and standard buses could swap axle counts. Tyre-wear results change when `veh_type` is not in table order or repeats a type (#112).
-- `transport_model()` no longer merges shapes left over in `tempdir()` by a previous interrupted or failed run into its output. Intermediate files from earlier runs are now removed unless `continue = TRUE`.
 - `transport_model()` now respects the `ncores` argument. Previously, it always used all available cores minus one when `parallel = TRUE`.
 - `emission_model(quiet = TRUE)` now also suppresses messages when `tp_model` is an `sf` object.
 - `emission_model()` now checks upfront that `fleet_data` has a `veh_type` column for `ef_europe_emep`, and a `fuel` column for `ef_usa_moves` and `ef_usa_emfac`, instead of failing later with an unclear error.
