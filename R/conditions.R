@@ -38,6 +38,7 @@ assert_list             <- make_assert("check_list")
 assert_logical          <- make_assert("check_logical")
 assert_numeric          <- make_assert("check_numeric")
 assert_string           <- make_assert("check_string")
+assert_subset           <- make_assert("check_subset")
 assert_true             <- make_assert("check_true")
 assert_vector           <- make_assert("check_vector")
 

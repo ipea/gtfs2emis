@@ -164,14 +164,14 @@ test_that("ef_europe_emep", {
                    ,speed = units::set_units(c(1,2,20),"km/h")
                    ,veh_type = "Ubus Midi <=15 t"
                    ,tech = "SCR"
-                   ,euro = "III",slope = rep(0.3,2))
+                   ,euro = "III",slope = rep(0.02,2))
   )
   expect_error(
     ef_europe_emep(pollutant = c("CO")
                    ,speed = units::set_units(c(1,2,20),"km/h")
                    ,veh_type = "Ubus Midi <=15 t"
                    ,tech = "SCR"
-                   ,euro = "III",load = rep(0.3,2))
+                   ,euro = "III",load = rep(1,2))
   )
 })
 
@@ -205,4 +205,62 @@ test_that("EMEP FC is g/km and keys are unique (#110)", {
 
   key <- c("Fuel", "Segment", "Euro", "Technology", "Pol", "Slope", "Load")
   expect_equal(anyDuplicated(ef_europe_emep_db, by = key), 0L)
+})
+
+test_that("ef_europe_emep accepts slope and load vectors (G-20, G-24, G-28)", {
+  ef <- function(pollutant, speed, slope = 0, load = 0.5){
+    suppressMessages(
+      ef_europe_emep(speed = units::set_units(speed, "km/h")
+                     , veh_type = "Ubus Std 15 - 18 t"
+                     , euro = "V"
+                     , pollutant = pollutant
+                     , slope = slope
+                     , load = load)
+    )$EF[[1]]
+  }
+  
+  # vectors with repeated values used to crash; they equal element-wise calls
+  speed <- c(20, 30, 40, 50, 15, 60)
+  slope <- c(0, 0.02, 0, 0.02, -0.06, 0.06)
+  load <- c(0.5, 0.5, 1, 0, 0.5, 1)
+  for(p in c("NOx", "FC")){
+    vec <- as.numeric(ef(p, speed, slope, load))
+    one <- vapply(seq_along(speed)
+                  , function(k) as.numeric(ef(p, speed[k], slope[k], load[k]))
+                  , numeric(1))
+    expect_equal(vec, one)
+  }
+  
+  # CH4 exists only at slope 0 / load 0.5: that value is used, with a message
+  expect_message(
+    ef_europe_emep(speed = units::set_units(30, "km/h"), veh_type = "Ubus Std 15 - 18 t"
+                   , euro = "V", pollutant = "CH4", slope = 0.02)
+    , "only at slope 0"
+  )
+  expect_equal(ef("CH4", 30, slope = 0.02), ef("CH4", 30))
+  
+  # slope and load outside the EMEP/EEA grid are errors
+  expect_error(ef("NOx", 30, slope = 0.03), class = "gtfs2emis_error")
+  expect_error(ef("NOx", 30, load = 0.3), class = "gtfs2emis_error")
+})
+
+test_that("ef_europe_emep uses the EF row of the requested slope and load (G-20)", {
+  # known value: EMEP/EEA 2019 hot-exhaust equation (Function_ID "2019_1"),
+  # EF = (a V^2 + b V + c + d / V) / (e V^2 + f V + g) * (1 - RF) * k,
+  # with the coefficients of the database row at slope 0.06 and load 1
+  row <- ef_europe_emep_db[Pol == "NOx" & Fuel == "D" & Segment == "Ubus Std 15 - 18 t" &
+                             Euro == "V" & Technology == "SCR" & Slope == 0.06 & Load == 1]
+  expect_equal(nrow(row), 1L)
+  expect_equal(row$Function_ID, "2019_1")
+  v <- 30
+  known <- with(row, (Alpha * v^2 + Beta * v + Gamma + Delta / v) /
+                  (Epsilon * v^2 + Zita * v + Hta) * (1 - RF) * k)
+  ef <- function(slope, load){
+    as.numeric(ef_europe_emep(speed = units::set_units(c(v, v), "km/h")
+                              , veh_type = "Ubus Std 15 - 18 t", euro = "V"
+                              , pollutant = "NOx", slope = slope, load = load)$EF[[1]])
+  }
+  res <- ef(slope = c(0.06, 0), load = c(1, 0.5))
+  expect_equal(res[1], known, tolerance = 1e-6)
+  expect_false(isTRUE(all.equal(res[1], res[2])))
 })

@@ -37,9 +37,13 @@ for every combination (e.g. there is no CO2 for "BD" or for "Conventional" diese
 no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III".}
 
 \item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and
-0.06. Negative gradients means downhills and positive uphills. Default is 0.0.}
+0.06. Negative gradients means downhills and positive uphills. Default is 0.0. Either one
+value or one value per \code{speed}. Values are rounded to two decimals; other values are an
+error. Some pollutants (e.g. "CH4", "NH3", "N2O") and some CNG and hybrid combinations are
+only available at slope 0.00 and load 0.5; for them, that value is used with a message.}
 
-\item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.}
+\item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5. Either one
+value or one value per \code{speed}.}
 
 \item{fcorr}{numeric; Correction based on fuel composition. The length must be one per
 each euro standards. Default is 1.0.}

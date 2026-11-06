@@ -29,9 +29,10 @@
 #'        report.
 #' @param slope numeric. Slope gradient, categorized in -0.06, -0.04, -0.02, 
 #'        0.00, 0.02, 0.04 and 0.06. Negative gradients means downhills and 
-#'        positive uphills. Default is 0.0.
-#' @param load numeric. Passenger load ratio, classified in 0.0, 0.5 and 1.0. 
-#'        Default is 0.5.
+#'        positive uphills. Default is 0.0. Either one value or one per `speed`.
+#' @param load numeric. Passenger load ratio, classified in 0.0, 0.5 and 1.0.
+#'        Default is 0.5. `slope` and `load` change only the speed-dependent
+#'        EMEP/EEA factor; the reference at `SDC` always uses slope 0 and load 0.5.
 #' @param fcorr numeric. Correction based on fuel composition. The length must 
 #'        be one per each euro standards. Default is 1.0.
 #' 
@@ -179,14 +180,17 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
   # ef_europe with SDC (urban driving speed condition)
   #
   
-  ef_sdc <- ef_europe_emep(speed = units::set_units(SDC, "km/h"), 
+  # local factors (e.g. CETESB) stand for flat roads at reference load, so the
+  # reference is taken at slope 0 / load 0.5; a per-slope reference would cancel
+  # the gradient effect
+  ef_sdc <- ef_europe_emep(speed = units::set_units(SDC, "km/h"),
                       veh_type = veh_type,
                       euro = euro,
                       pollutant = pollutant,
                       fuel = fuel,
                       tech = tech,
-                      slope = slope,
-                      load = load, 
+                      slope = 0,
+                      load = 0.5,
                       fcorr = fcorr,
                       as_list = FALSE)
   
