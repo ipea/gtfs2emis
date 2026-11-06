@@ -4,6 +4,7 @@
 - `emis_summary()` no longer calls a {testthat} function at run time, so it works without {testthat} installed.
 - `transport_model()` was rewritten for the new {gtfs2gps} interface. It runs `gtfs2gps::gtfs2gps()` once on the whole feed, in memory, after limiting speeds with `gtfstools::set_min_speed()` and `gtfstools::set_max_speed()`. Results change:
   - It requires the development version of {gtfs2gps} (>= 2.1-4.9000, installed from GitHub through `Remotes: ipea/gtfs2gps`): with gtfs2gps 2.1-4, some trips lost segments or got segments joining two trips (608 segments instead of 632 on the Detroit example feed), and an empty feed crashed R. Until that version of {gtfs2gps} is on CRAN, this version of gtfs2emis can't be released there.
+  - Blank stop times are filled with `gtfstools::interpolate_stop_times()` before the speed limits are applied; the feed's own times are kept.
   - The parts of a shape before the first stop and after the last stop of a trip are no longer returned (about 19% less distance on the Curitiba example feed).
   - Segment speeds still outside `min_speed`–`max_speed` are set to the nearest limit; their timestamps are not changed. Missing speeds are replaced by `new_speed` or, when `new_speed = NULL`, by the distance-weighted mean speed of the whole feed (before, out-of-range speeds were also replaced, with the mean of each shape).
   - A feed with nothing to convert (for example, empty after filtering) gives a `gtfs2emis_error`.

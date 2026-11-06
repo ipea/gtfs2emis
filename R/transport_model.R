@@ -168,12 +168,14 @@ transport_model <- function(
   city_gtfs <- gtfstools::remove_duplicates(city_gtfs)
   city_gtfs <- gtfstools::remove_unused_ids(city_gtfs)
 
-  city_gtfs <- gtfstools::set_min_speed(gtfs = city_gtfs, min_speed = min_speed)
-  city_gtfs <- gtfstools::set_max_speed(gtfs = city_gtfs, max_speed = max_speed)
+  # fill blank stop times (the schedule's own times are kept), then limit
+  # the speeds between stops, so the limits also apply to the filled times
   city_gtfs <- gtfstools::interpolate_stop_times(
     gtfs = city_gtfs,
-    overwrite = TRUE
+    overwrite = FALSE
   )
+  city_gtfs <- gtfstools::set_min_speed(gtfs = city_gtfs, min_speed = min_speed)
+  city_gtfs <- gtfstools::set_max_speed(gtfs = city_gtfs, max_speed = max_speed)
 
   # gtfs2gps ------------
   temp_gps <- tryCatch(
