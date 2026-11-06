@@ -21,6 +21,8 @@ Compared with gtfs2emis 0.1.2 (CRAN), single-threaded, on the example feeds:
 - `transport_model()` is 18–33 times faster and allocates 12–14 times less memory (Dublin: 57 s and 3.2 GB down to 1.7 s and 0.24 GB).
 - `ef_europe_emep()` computes each emission factor once per distinct speed, slope and load, instead of once per road segment: 6 times faster and 8 times less memory with 10^6 speeds. `emission_model(ef_model = "ef_europe_emep")` allocates 25–35% less memory than in 0.1.2 on the Dublin feed. Results are identical.
 - `emis_grid()` no longer builds a dense grid-by-segment matrix, which could need several GB on large grids. It also intersects each road segment with the grid once, instead of once per time bin: with `time_resolution = "hour"` it is 3 times faster and allocates 2.7 times less memory (Dublin: 45 s and 860 MB down to 14 s and 315 MB), and with `"minute"` 3.5 times faster and 3 times less memory. Results are identical, up to floating-point rounding for `"hour"` and `"minute"`.
+- `emis_to_dt()` builds its long table in one pass, and `emission_model()` multiplies emission factors by distances without intermediate copies: on 160,000 Dublin segments, `emis_to_dt()` is 1.65 times faster and allocates 37% less memory, `emis_summary()` 1.2–1.45 times faster and 17% less, and `emission_model()` 1.25 times faster with 26% less memory for EMEP (52% less for CETESB). `ef_usa_moves()` and `ef_usa_emfac()` find the speed bin in one pass: 1.2 times faster and 23% less memory with 10^6 speeds. Results are identical.
+- `emis_to_dt()` now gives a {cli} error when the emission columns have different lengths or a `segment_vars` column has the wrong length.
 
 ## Bug fixes
 

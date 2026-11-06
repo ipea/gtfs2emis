@@ -84,14 +84,15 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
   
   # emissions----
   
-  emi <- lapply(seq_along(tmpEf), function(i){ # i = 1 
-    temp_emis <- tmpEf[[i]] * fleet_composition[[i]] * dist
-    return(temp_emis)
+  # plain numbers: 'ef' is in g/km and 'dist' in km (checked above), so the
+  # products are in g; units are set once, at the end
+  n_emi <- max(length(dist), length(tmpEf[[1]]))
+  emi <- lapply(seq_along(tmpEf), function(i){ # i = 1
+    temp_emis <- as.numeric(tmpEf[[i]]) * fleet_composition[[i]] * as.numeric(dist)
+    return(rep_len(temp_emis, n_emi))
   })
-  
-  emi <- do.call(cbind, emi) 
-  emi <- data.table::as.data.table(emi)
-  colnames(emi) <- colnames(tmpEf)
+  names(emi) <- colnames(tmpEf)
+  data.table::setDT(emi)
   
   #
   # aggregate condition----
