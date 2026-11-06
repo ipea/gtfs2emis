@@ -50,10 +50,11 @@ report.}
 
 \item{slope}{numeric. Slope gradient, categorized in -0.06, -0.04, -0.02,
 0.00, 0.02, 0.04 and 0.06. Negative gradients means downhills and
-positive uphills. Default is 0.0.}
+positive uphills. Default is 0.0. Either one value or one per \code{speed}.}
 
 \item{load}{numeric. Passenger load ratio, classified in 0.0, 0.5 and 1.0.
-Default is 0.5.}
+Default is 0.5. \code{slope} and \code{load} change only the speed-dependent
+EMEP/EEA factor; the reference at \code{SDC} always uses slope 0 and load 0.5.}
 
 \item{fcorr}{numeric. Correction based on fuel composition. The length must
 be one per each euro standards. Default is 1.0.}

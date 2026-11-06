@@ -7,15 +7,17 @@
 slope_class_europe_emep(tp_model, heightfile, keep = FALSE)
 }
 \arguments{
-\item{tp_model}{LineString Simple Feature; transport model output.}
+\item{tp_model}{LineString Simple Feature; transport model output. Geometries must be
+LINESTRING and have a coordinate reference system; \code{dist} is in km.}
 
-\item{heightfile}{character or raster data; The raster file with height data, or its filepath.}
+\item{heightfile}{character or raster data; The raster file with height data, or its filepath.
+Its coordinate reference system may differ from the one of \code{tp_model}.}
 
 \item{keep}{A logical. Whether the columns related height and slope to the consecutive bus stops
 should be kept or dropped (defaults to FALSE, which keeps only the slope classification).}
 }
 \value{
-The transport model with slope information.
+The transport model (\code{sf}) with all its columns and a \code{slope_class} column.
 }
 \description{
 Based on the input height data, the function returns the slope class between two consecutive
@@ -37,7 +39,11 @@ available on the European Environmental Agency (EEA) database, which is -0.06,
 | slope > +0.010 & slope <= +0.030 |        +0.02     |
 | slope > +0.030 & slope <= +0.050 |        +0.04     |
 | slope > +0.050 & slope <= +0.070 |        +0.06     |
-| slope > +0.070                   |        -0.06     |
+| slope > +0.070                   |        +0.06     |
+
+Heights are read at the first and last vertex of each segment, after projecting
+them to the coordinate reference system of \code{heightfile}. Segments with no height
+(outside the raster) are treated as flat (slope 0), with a warning.
 }
 
 \examples{
