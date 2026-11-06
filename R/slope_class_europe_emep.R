@@ -9,11 +9,13 @@
 #'  -0.04,-0.02, 0.00, 0.02, 0.04, and 0.06. The classifications is described in
 #'  @details .
 #'  
-#' @param tp_model LineString Simple Feature; transport model output.
+#' @param tp_model LineString Simple Feature; transport model output. Geometries must be
+#' LINESTRING and have a coordinate reference system; `dist` is in km.
 #' @param heightfile character or raster data; The raster file with height data, or its filepath.
+#' Its coordinate reference system may differ from the one of `tp_model`.
 #' @param keep A logical. Whether the columns related height and slope to the consecutive bus stops 
 #' should be kept or dropped (defaults to FALSE, which keeps only the slope classification).
-#' @return The transport model with slope information.
+#' @return The transport model (`sf`) with all its columns and a `slope_class` column.
 #'
 #' @details 
 #' # Slopes classification:
@@ -26,7 +28,11 @@
 #' | slope > +0.010 & slope <= +0.030 |        +0.02     |
 #' | slope > +0.030 & slope <= +0.050 |        +0.04     |
 #' | slope > +0.050 & slope <= +0.070 |        +0.06     |
-#' | slope > +0.070                   |        -0.06     |
+#' | slope > +0.070                   |        +0.06     |
+#'
+#' Heights are read at the first and last vertex of each segment, after projecting
+#' them to the coordinate reference system of `heightfile`. Segments with no height
+#' (outside the raster) are treated as flat (slope 0), with a warning.
 #' @examples
 #' \donttest{
 #'  if (requireNamespace("gtfstools", quietly=TRUE)) {
@@ -63,53 +69,69 @@ slope_class_europe_emep <- function(tp_model,heightfile,keep = FALSE){
   if(is.character(heightfile)) assert_file_exists(heightfile)
   assert_logical(keep, null.ok = FALSE)
   
-  # transport model
+  # transport model: first and last vertex of each segment
   
-  tmpGps <- sfheaders::sf_cast(tp_model,to = "POINT")
-  data.table::setDT(tmpGps)
-  tmpGps <- tmpGps[,.SD[c(1,.N)],by = .(stop_sequence)]
-  tmpGps <- sf::st_as_sf(tmpGps)
-  tmpGps <- sf::st_coordinates(tmpGps)
+  tp_model <- sf::st_as_sf(as.data.frame(tp_model))
+  if(any(as.character(sf::st_geometry_type(tp_model)) != "LINESTRING")){
+    cli::cli_abort("{.arg tp_model} must have LINESTRING geometries."
+                   , class = "gtfs2emis_error")
+  }
+  if(is.na(sf::st_crs(tp_model))){
+    cli::cli_abort("{.arg tp_model} must have a coordinate reference system."
+                   , class = "gtfs2emis_error")
+  }
+  xy <- sf::st_coordinates(tp_model)
+  first <- xy[!duplicated(xy[, "L1"]), , drop = FALSE]
+  last <- xy[!duplicated(xy[, "L1"], fromLast = TRUE), , drop = FALSE]
   
-  # extract height
+  # extract height, in the coordinate reference system of the raster
   myraster <- terra::rast(heightfile)
-  result <- terra::extract(x = myraster,y = tmpGps)
-  tp_model$from_height <- result[[1]][seq(1,nrow(result),2)]
-  tp_model$to_height <- result[[1]][seq(2,nrow(result),2)]
-  data.table::setDT(tp_model)
+  pts <- sf::st_as_sf(as.data.frame(rbind(first, last)[, c("X", "Y"), drop = FALSE])
+                      , coords = c("X", "Y"), crs = sf::st_crs(tp_model))
+  if(nzchar(terra::crs(myraster))){
+    pts <- sf::st_transform(pts, sf::st_crs(terra::crs(myraster)))
+  }
+  height <- terra::extract(x = myraster, y = sf::st_coordinates(pts))[[1]]
+  
+  # heights by segment (empty geometries keep NA)
+  n_pts <- nrow(first)
+  from_height <- to_height <- rep(NA_real_, nrow(tp_model))
+  from_height[first[, "L1"]] <- height[seq_len(n_pts)]
+  to_height[last[, "L1"]] <- height[n_pts + seq_len(n_pts)]
   
   # estimate slope
-  tp_model <- tp_model[,{
-    dh = to_height - from_height
-    ds = 1000 * as.numeric(dist)
-    
-    slope = dh / ds
-    slope[is.infinite(slope)] <- 0 
-    slope[is.nan(slope)] <- 0 
-    
-    slope_class <- data.table::fcase(
-      #slope <= -0.070,NA_real_,
-      slope <= -0.070, -0.06,
-      slope > -0.070 & slope <= -0.050, -0.06,
-      slope > -0.050 & slope <= -0.030, -0.04,
-      slope > -0.030 & slope <= -0.010, -0.02,
-      slope > -0.010 & slope <= +0.010, +0.00,
-      slope > +0.010 & slope <= +0.030, +0.02,
-      slope > +0.030 & slope <= +0.050, +0.04,
-      slope > +0.050 & slope <= +0.070, +0.06,
-      slope > +0.070,-0.06
-      # slope > +0.070,NA_real_
-    )  
-    
-    list(speed, dist,
-         cumdist, cumtime, trip_number,
-         from_stop_id, to_stop_id, from_timestamp, to_timestamp,
-         from_height, to_height, dh,slope, slope_class, geometry)
-  },by = .(shape_id, trip_id, route_type,stop_sequence)]
+  dh <- to_height - from_height
+  slope <- dh / (1000 * as.numeric(tp_model$dist))
+  n_na <- sum(is.na(dh))
+  if(n_na > 0){
+    cli::cli_warn(c(paste0("{n_na} segment{?s} {?has/have} no height in {.arg heightfile} "
+                           , "(outside the raster or empty geometry).")
+                    , "i" = "Their slope is set to 0 (flat)."))
+  }
+  slope[!is.finite(slope)] <- 0
+  
+  slope_class <- data.table::fcase(
+    slope <= -0.070, -0.06,
+    slope > -0.070 & slope <= -0.050, -0.06,
+    slope > -0.050 & slope <= -0.030, -0.04,
+    slope > -0.030 & slope <= -0.010, -0.02,
+    slope > -0.010 & slope <= +0.010, +0.00,
+    slope > +0.010 & slope <= +0.030, +0.02,
+    slope > +0.030 & slope <= +0.050, +0.04,
+    slope > +0.050 & slope <= +0.070, +0.06,
+    slope > +0.070, +0.06
+  )
+  
+  # add columns, keeping the input columns and row order
+  tp_model$from_height <- from_height
+  tp_model$to_height <- to_height
+  tp_model$dh <- dh
+  tp_model$slope <- slope
+  tp_model$slope_class <- slope_class
   
   if(keep == FALSE){
-    tp_model <- tp_model[,.SD,.SDcols = !c( "from_height", "to_height", "dh","slope")]
+    tp_model <- tp_model[, setdiff(names(tp_model), c("from_height", "to_height", "dh", "slope"))]
   }
   
-  return(sf::st_as_sf(tp_model))
+  return(tp_model)
 }

@@ -114,3 +114,31 @@ test_that("output is correct", {
 })
 
 
+
+test_that("emission_model runs with heightfile and mixed slopes (G-20, G-32, G-45)", {
+  g <- gtfstools::read_gtfs(system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis"))
+  shape <- g$trips[trip_id == "4451136", shape_id]
+  trips <- head(g$trips[shape_id == shape, trip_id], 2)
+  tp <- suppressWarnings(suppressMessages(
+    transport_model(gtfs_data = gtfstools::filter_by_trip_id(g, trip_id = trips)
+                    , new_speed = 20, parallel = FALSE)))
+  bb <- sf::st_bbox(tp)
+  dem <- make_test_dem(c(xmin = bb[["xmin"]] - 0.01, xmax = bb[["xmax"]] + 0.01
+                         , ymin = bb[["ymin"]] - 0.01, ymax = bb[["ymax"]] + 0.01))
+  
+  fleet_europe <- data.frame(veh_type = "Ubus Std 15 - 18 t", euro = "V", fuel = "D"
+                             , tech = "SCR", fleet_composition = 1)
+  emi <- suppressMessages(emission_model(tp_model = tp, ef_model = "ef_europe_emep"
+                                         , fleet_data = fleet_europe, heightfile = dem
+                                         , pollutant = c("NOx", "CH4"), parallel = FALSE))
+  expect_false(all(emi$tp_model$slope_class == 0))
+  expect_false(anyNA(as.numeric(emi$emi[[1]])))
+  
+  fleet_scaled <- data.frame(veh_type = "BUS_URBAN_D", type_name_eu = "Ubus Std 15 - 18 t"
+                             , model_year = 2015, euro = "V", fuel = "D", tech = "SCR"
+                             , fleet_composition = 1)
+  emi_scaled <- suppressMessages(emission_model(tp_model = tp, ef_model = "ef_brazil_scaled_euro"
+                                                , fleet_data = fleet_scaled, heightfile = dem
+                                                , pollutant = "NOx", parallel = FALSE))
+  expect_false(anyNA(as.numeric(emi_scaled$emi[[1]])))
+})

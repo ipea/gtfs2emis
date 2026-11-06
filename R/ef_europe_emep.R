@@ -19,9 +19,13 @@
 #' @param tech character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
 #' "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are 
 #' no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III". 
-#' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and 
-#' 0.06. Negative gradients means downhills and positive uphills. Default is 0.0.
-#' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
+#' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and
+#' 0.06. Negative gradients means downhills and positive uphills. Default is 0.0. Either one
+#' value or one value per `speed`. Values are rounded to two decimals; other values are an
+#' error. Some pollutants (e.g. "CH4", "NH3", "N2O") and some CNG and hybrid combinations are
+#' only available at slope 0.00 and load 0.5; for them, that value is used with a message.
+#' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5. Either one
+#' value or one value per `speed`.
 #' @param fcorr numeric; Correction based on fuel composition. The length must be one per
 #' each euro standards. Default is 1.0.
 #' @param as_list logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.
@@ -123,11 +127,16 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   for(i in tech) assert_choice(i,unique(temp_ef$Technology),null.ok = FALSE, .var.name = "tech")
   # as_list
   assert_logical(as_list, any.missing = FALSE) 
+  # slope and load (only the grid of the EMEP/EEA database)
+  assert_numeric(slope, any.missing = FALSE, min.len = 1)
+  assert_numeric(load, any.missing = FALSE, min.len = 1)
+  slope <- round(slope, 2)
+  assert_subset(slope, c(-0.06, -0.04, -0.02, 0, 0.02, 0.04, 0.06))
+  assert_subset(load, c(0, 0.5, 1))
   
   # speed----
   
   speed <- round(as.numeric(speed))
-  tmpSpeed <- unique(speed)
   
   # check lengths----
   
@@ -232,119 +241,76 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
         tech[j] = "DPF+SCR"
       }
       
-      # fix load and slope
+      # select EF rows and match them to slope and load
       
-      if(length(unique(slope)) > 1 | length(unique(load)) > 1){
-        #slope_input <- slope 
-        temp_ef3 <- lapply(seq_along(slope),function(k){ # k = 1
-          as.data.frame(temp_ef)[ temp_ef$Pol %in% pollutant[i] &  
-                                    temp_ef$Fuel %in% fuel[j] & 
-                                    temp_ef$Segment %in% veh_type[j] & 
-                                    temp_ef$Technology %in% tech[j] &
-                                    temp_ef$Euro %in% euro[j] & 
-                                    temp_ef$Slope == slope[k] & 
-                                    temp_ef$Load == load[k], ]
-        }) 
-        temp_ef3 <- data.table::rbindlist(temp_ef3)
-        
+      temp_ef3 <- temp_ef[Pol == pollutant[i] & Fuel == fuel[j] & 
+                            Segment == veh_type[j] & Technology == tech[j] &
+                            Euro == euro[j], ]
+      fallback <- FALSE
+      if(nrow(temp_ef3) == 1){
+        # tabulated at a single slope / load only (e.g. CH4, NH3, N2O); in
+        # ef_europe_emep_db all such rows are at slope 0 / load 0.5
+        fallback <- any(slope != temp_ef3$Slope | load != temp_ef3$Load)
+        temp_ef3 <- temp_ef3[rep(1L, length(speed))]
       }else{
-        temp_ef3 <- temp_ef[ Pol %in% pollutant[i] &  
-                               Fuel %in% fuel[j] & 
-                               Segment %in% veh_type[j] & 
-                               Technology %in% tech[j] &
-                               Euro %in% euro[j] & 
-                               Slope == slope[1] & 
-                               Load == load[1], ]
+        temp_ef3 <- temp_ef3[data.table::data.table(Slope = slope, Load = load)
+                             , on = c("Slope", "Load")]
       }
       
       #
       # no EF case
       #
       
-      if(nrow(temp_ef3) == 0){
+      if(nrow(temp_ef3) != length(speed) || anyNA(temp_ef3$Function_ID)){
+        pairs <- data.table::data.table(Slope = slope, Load = load)
+        if(nrow(temp_ef3) == length(speed)) pairs <- pairs[is.na(temp_ef3$Function_ID)]
+        pairs <- unique(pairs)
         cli::cli_abort(c("No available emission factor for this combination of parameters:"
                          , "*" = "Pol: {.val {pollutant[i]}}"
                          , "*" = "Fuel: {.val {fuel[j]}}"
                          , "*" = "Segment: {.val {veh_type[j]}}"
                          , "*" = "Technology: {.val {tech[j]}}"
                          , "*" = "Euro: {.val {euro[j]}}"
-                         , "*" = "Slope: {.val {slope[1]}}"
-                         , "*" = "Load: {.val {load[1]}}"
+                         , "*" = "Slope: {.val {pairs$Slope}}"
+                         , "*" = "Load: {.val {pairs$Load}}"
                          , "i" = "Check {.code data(ef_europe_emep_db)} for available data.")
                        , class = c("gtfs2emis_missing_ef", "gtfs2emis_error")
                        , call = call)
       }
       
-      
-      
       #
       # Ef estimates
       #
-      if(length(unique(slope)) > 1 | length(unique(load)) > 1){
-        
-        data_speed <- lapply(seq_along(slope),function(k){ # k =1
-          
-          # select slope specific
-          temp_ef4 <- as.data.frame(temp_ef3)[temp_ef3$Slope == slope[k] & 
-                                                temp_ef3$Load == load[k], ]
-          
-          # fix speed
-          tmpSpeedPol <- speed[k]
-          tmpSpeedPol[tmpSpeedPol < temp_ef4$Vmin] <- temp_ef4$Vmin
-          tmpSpeedPol[tmpSpeedPol > temp_ef4$Vmax] <- temp_ef4$Vmax
-          
-          tmp_eq <- eq_num(Alpha = temp_ef4$Alpha
-                           , Beta = temp_ef4$Beta
-                           , Gamma = temp_ef4$Gamma
-                           , Delta = temp_ef4$Delta
-                           , Epsilon = temp_ef4$Epsilon
-                           , Zita = temp_ef4$Zita
-                           , Hta = temp_ef4$Hta
-                           , RF = temp_ef4$RF
-                           , Speed = tmpSpeedPol
-                           , Function_ID = temp_ef4$Function_ID
-                           , k = temp_ef4$k
-                           , fcorr = fcorr[j])
-          
-          eq_output <- data.table::data.table("ef" = tmp_eq, "tmpSpeed" = tmpSpeedPol)
-          
-          return(eq_output)
-          
-        }) 
-        eq_output <- data.table::rbindlist(data_speed)
-        eq_output <- eq_output$ef
       
-        }else{
-        
-        # fix speed
-        tmpSpeedPol <- tmpSpeed
-        tmpSpeedPol[tmpSpeedPol < temp_ef3$Vmin] <- temp_ef3$Vmin
-        tmpSpeedPol[tmpSpeedPol > temp_ef3$Vmax] <- temp_ef3$Vmax
-        
-        tmp_eq <- eq_num(Alpha = temp_ef3$Alpha
-                         , Beta = temp_ef3$Beta
-                         , Gamma = temp_ef3$Gamma
-                         , Delta = temp_ef3$Delta
-                         , Epsilon = temp_ef3$Epsilon
-                         , Zita = temp_ef3$Zita
-                         , Hta = temp_ef3$Hta
-                         , RF = temp_ef3$RF
-                         , Speed = tmpSpeedPol
-                         , Function_ID = temp_ef3$Function_ID
-                         , k = temp_ef3$k
-                         , fcorr = fcorr[j])
-        
-        data_speed <- data.table::data.table("ef" = tmp_eq, "tmpSpeed" = tmpSpeed)
-        
-        # expands speed---
-        
-        data.table::setkey(data_speed,tmpSpeed)
-        eq_output <- data_speed[data.table::data.table(speed)]$ef
-        
+      # speeds outside the validity range of each row are set to its limits
+      tmpSpeedPol <- pmin(pmax(speed, temp_ef3$Vmin), temp_ef3$Vmax)
+      eq_output <- numeric(length(speed))
+      # Function_ID (and Vmin/Vmax) can differ between slopes
+      for(f in unique(temp_ef3$Function_ID)){
+        r <- temp_ef3$Function_ID == f
+        eq_output[r] <- eq_num(Alpha = temp_ef3$Alpha[r]
+                               , Beta = temp_ef3$Beta[r]
+                               , Gamma = temp_ef3$Gamma[r]
+                               , Delta = temp_ef3$Delta[r]
+                               , Epsilon = temp_ef3$Epsilon[r]
+                               , Zita = temp_ef3$Zita[r]
+                               , Hta = temp_ef3$Hta[r]
+                               , RF = temp_ef3$RF[r]
+                               , Speed = tmpSpeedPol[r]
+                               , Function_ID = f
+                               , k = temp_ef3$k[r]
+                               , fcorr = fcorr[j])
       }
 
-      return(eq_output)
+      return(list(ef = eq_output, fallback = fallback))
     })
+    
+    if(any(vapply(temp_ef2, `[[`, logical(1), "fallback"))){
+      cli::cli_inform(c(paste0("{.val {pollutant[i]}} emission factors for some vehicles are "
+                               , "available only at slope 0 and load 0.5.")
+                        , "i" = "That value is used for every requested slope and load."))
+    }
+    temp_ef2 <- lapply(temp_ef2, `[[`, "ef")
     
     #
     # do not aggregate EF

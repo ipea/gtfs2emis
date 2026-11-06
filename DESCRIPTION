@@ -39,7 +39,6 @@ Imports:
     gtfs2gps (>= 2.1-4),
     methods,
     sf (>= 0.9-0),
-    sfheaders,
     terra,
     units,
     parallelly,
