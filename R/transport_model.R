@@ -84,7 +84,7 @@ transport_model <- function(
   max_speed = 80,
   new_speed = NULL,
   parallel = TRUE,
-  ncores = NULL,
+  ncores = 2,
   spatial_resolution = 100,
   output_path = NULL,
   continue = FALSE
@@ -117,37 +117,36 @@ transport_model <- function(
   )
   assert_true(min_speed < max_speed, .var.name = "min_speed < max_speed")
 
-  if (parallel) {
-    assert_integerish(
-      ncores,
-      lower = 1,
-      upper = parallelly::availableCores(omit = 1),
-      null.ok = TRUE
-    )
-  }
+  assert_integerish(
+    ncores,
+    lower = 1,
+    upper = data.table::getDTthreads(),
+    null.ok = FALSE
+  )
 
   assert_logical(continue, null.ok = FALSE, any.missing = FALSE)
+
   # Read GTFS ------------
 
   if (is.character(gtfs_data)) {
-    city_gtfs <- gtfstools::read_gtfs(path = gtfs_data)
+    city_gtfs <- gtfs2gps::read_gtfs(gtfszip = gtfs_data, quiet = TRUE)
   } else {
     city_gtfs <- data.table::copy(gtfs_data)
   }
 
-  # parallel condition
-
-  if (parallel) {
-    # number of cores
-    if (is.null(ncores)) {
-      ncores <- parallelly::availableCores(omit = 1)
-
-      cli::cli_inform('Using {ncores} CPU cores')
-    }
-
-    oplan <- future::plan("multisession", workers = ncores)
-    on.exit(future::plan(oplan), add = TRUE)
+  # number of cores
+  if (is.null(ncores)) {
+    ncores <- parallelly::availableCores(omit = 1)
+    cli::cli_inform('Using {ncores} CPU cores')
   }
+
+  # Fix GTFS speed ------------
+
+  city_gtfs <- gtfstools::remove_duplicates(city_gtfs)
+  city_gtfs <- gtfstools::remove_unused_ids(city_gtfs)
+
+  city_gtfs <- gtfstools::set_min_speed(gtfs = city_gtfs, min_speed = min_speed)
+  city_gtfs <- gtfstools::set_max_speed(gtfs = city_gtfs, max_speed = max_speed)
 
   # gtfs2gps ------------
 
@@ -162,59 +161,11 @@ transport_model <- function(
   gtfs2gps::gtfs2gps(
     gtfs_data = city_gtfs,
     spatial_resolution = spatial_resolution,
-    parallel = parallel,
     ncores = ncores,
     filepath = gps_path,
     compress = TRUE,
     continue = continue
   )
-
-  #  Adjusting the speeds of a gps-like table ---------
-
-  # create new dirs
-  gps_adjust_path <- paste0(tempdir(), "//gps_adjust//")
-  if (!continue) {
-    unlink(gps_adjust_path, recursive = TRUE)
-  }
-  suppressWarnings(dir.create(tempdir()))
-  suppressWarnings(dir.create(gps_adjust_path))
-
-  # find gps files
-  files_gps <- list.files(gps_path, full.names = TRUE)
-  files_gps_names <- list.files(gps_path, full.names = FALSE)
-
-  gps_speed_fix <- function(i) {
-    # i =1
-
-    outputfile_path <- paste0(gps_adjust_path, "//", files_gps_names[i])
-    if (continue) {
-      if (file.exists(outputfile_path)) return(NULL)
-    }
-
-    tmp_gps <- readRDS(files_gps[i])
-    tmp_gps_fix <- gtfs2gps::adjust_speed(
-      gps_data = tmp_gps,
-      min_speed = min_speed,
-      max_speed = max_speed,
-      new_speed = new_speed
-    )
-    saveRDS(object = tmp_gps_fix, file = outputfile_path)
-    return(NULL)
-  }
-  if (parallel) {
-    requiredPackages <- c('data.table', 'sf', 'units')
-    furrr::future_map(
-      .x = seq_along(files_gps),
-      .f = gps_speed_fix,
-      .options = furrr::furrr_options(
-        seed = TRUE,
-        packages = requiredPackages
-      )
-    )
-    #lapply(seq_along(files_gps),gps_speed_fix)
-  } else {
-    lapply(seq_along(files_gps), gps_speed_fix)
-  }
 
   # GPS as Sf_Linestring ------
   # Converting a GPS-like data.table to a LineString Simple Feature (sf)
