@@ -142,3 +142,13 @@ test_that("emission_model runs with heightfile and mixed slopes (G-20, G-32, G-4
                                                 , pollutant = "NOx", parallel = FALSE))
   expect_false(anyNA(as.numeric(emi_scaled$emi[[1]])))
 })
+
+test_that("emission_model rejects EC, which is in MJ/km (G-70)", {
+  expect_error(
+    suppressMessages(emission_model(tp_model = tp_model_irl
+                                    , ef_model = "ef_europe_emep"
+                                    , fleet_data = fleet_data_europe
+                                    , pollutant = "EC"
+                                    , parallel = FALSE))
+    , regexp = "g/km", class = "gtfs2emis_error")
+})

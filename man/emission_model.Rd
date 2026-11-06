@@ -36,7 +36,8 @@ characteristics. The required columns depend on the
 \item{pollutant}{character. Vector with one or more pollutants to be estimated.
 Example: \code{c("CO", "CO2", "PM10", "NOx")}. See the documentation to check which
 pollutants are available for each emission factor model (\code{ef_usa_moves}, \code{ef_usa_emfac},
-\code{ef_europe_emep}, or \code{ef_brazil_cetesb}).}
+\code{ef_europe_emep}, or \code{ef_brazil_cetesb}). With \code{ef_europe_emep}, energy consumption
+("EC", in MJ/km) is not a mass and cannot be used.}
 
 \item{reference_year}{numeric. Year of reference considered to calculate the
 emissions inventory. Defaults to \code{2020}. This

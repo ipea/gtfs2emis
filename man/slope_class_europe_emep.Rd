@@ -8,7 +8,7 @@ slope_class_europe_emep(tp_model, heightfile, keep = FALSE)
 }
 \arguments{
 \item{tp_model}{LineString Simple Feature; transport model output. Geometries must be
-LINESTRING and have a coordinate reference system; \code{dist} is in km.}
+LINESTRING and have a coordinate reference system; \code{dist} is in km (or a \code{units} length).}
 
 \item{heightfile}{character or raster data; The raster file with height data, or its filepath.
 Its coordinate reference system may differ from the one of \code{tp_model}.}

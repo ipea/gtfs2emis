@@ -15,8 +15,9 @@
 #'       "Coaches Artic >18 t".
 #' @param euro character. Euro period of vehicle, classified in "Conventional", 
 #'        "I", "II", "III", "IV", "V", "VI", and "EEV".
-#' @param pollutant character. Pollutant: "FC", "CO2", "CO", "NOx", "VOC", 
-#'        "PM10", "EC", "CH4", "NH3", "N2O", "FC" (fuel consumption). 
+#' @param pollutant character. Pollutant: "FC" (fuel consumption), "CO2", "CO",
+#'        "NOx", "VOC", "PM10", "CH4", "NH3" or "N2O". "EC" (energy consumption,
+#'        MJ/km) is not supported.
 #' @param fuel character. Fuel type, classified in "D" (Diesel), "DHD" (Diesel 
 #'        Hybrid ~ Diesel), "DHE" (Diesel Hybrid ~ Electricity), "CNG" 
 #'        (Compressed Natural Gas), "BD" (Biodiesel). Default is "D". 
@@ -129,7 +130,9 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
   # pollutant
   assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_character(pollutant,any.missing = FALSE,min.len = 1)
-  for(i in pollutant) assert_choice(i,unique(temp_ef$Pol),null.ok = FALSE, .var.name = "pollutant")
+  # EC (MJ/km) and SPN23 (#/kWh) cannot be scaled to a g/km local factor
+  for(i in pollutant) assert_choice(i,setdiff(unique(temp_ef$Pol), c("EC", "SPN23 [#/kWh]"))
+                                    ,null.ok = FALSE, .var.name = "pollutant")
   # fuel
   assert_vector(fuel,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_character(fuel,any.missing = FALSE,min.len = 1)

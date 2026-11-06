@@ -60,4 +60,10 @@ test_that("slope_class_europe_emep uses each segment's endpoints (G-44/45/46)", 
   dem_utm <- make_test_dem(sf::st_bbox(sf::st_buffer(tp_utm, 500)), crs = "EPSG:32722", res = 10)
   res_utm <- slope_class_europe_emep(tp[1:3, ], dem_utm)
   expect_equal(res_utm$slope_class, c(0.06, -0.06, 0))
+
+  # dist given in metres (units) gives the same classes; no rows is an error
+  tp_m <- tp[1:3, ]
+  tp_m$dist <- units::set_units(tp_m$dist, "m")
+  expect_equal(slope_class_europe_emep(tp_m, dem)$slope_class, c(0.06, -0.06, 0))
+  expect_error(slope_class_europe_emep(tp[0, ], dem), class = "gtfs2emis_error")
 })

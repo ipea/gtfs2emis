@@ -18,6 +18,13 @@
   - `slope_class_europe_emep()` classed slopes above 7% as -6% instead of +6%, and mixed segment endpoints across trips and shapes. It now reads the first and last point of each segment, projects them to the raster's coordinate reference system, keeps all input columns, and treats segments outside the raster as flat, with a warning. It returns a plain `sf` object (no longer also a `data.table`) and errors if `tp_model` has non-LINESTRING geometries or no coordinate reference system.
   - `ef_scaled_euro()` (and `emission_model(ef_model = "ef_brazil_scaled_euro", heightfile = )`) no longer crashes with a `slope` vector. The reference factor at `SDC` now always uses slope 0 and load 0.5, so results also change for a non-default scalar `slope` or `load`.
 
+- `slope_class_europe_emep()` now errors when `tp_model` has no rows, and uses the units of `dist` when it has them (it assumed km).
+- `ef_europe_emep()` argument checks:
+  - `veh_type`, `euro`, `fuel`, `tech` and `fcorr` must each have length 1 or one common length. Before, lengths were matched against `euro` only, so extra vehicle types were silently dropped and a single `euro` returned only the first `veh_type`. Unequal lengths now give an error, and a length-1 `euro` is used for every `veh_type` (the output columns then share a name). `fcorr` must be non-negative.
+  - CNG Euro EEV buses now work with the default `tech = "SCR"`; `"-"` is used, with a message, as for Euro I–III.
+  - `"SPN23 [#/kWh]"` (a particle number per kWh, not a g/km factor) is no longer accepted as a pollutant.
+  - `"EC"` (energy consumption) is now returned in MJ/km instead of being labelled g/km. It can no longer be converted to mass units and is rejected by `emission_model(ef_model = "ef_europe_emep")` and `ef_scaled_euro()`.
+
 - `ef_usa_moves()` returned wrong emission factors, without warning, when `fuel` had more than one value (mixed-fuel fleets): the fuel filter used the `fuel` argument instead of the `fuel_type` column. Results change for mixed-fuel fleets (#111).
 - `emi_europe_emep_wear()` underestimated bus brake wear by about 38%: it applied the heavy-duty factor of the EMEP/EEA 2019 guidebook (1.956, chapter 1.A.3.b.vi, equation 6) to the passenger-car brake-wear factor of earlier editions (0.0075 g/km) instead of the 2019 value (0.0122 g/km). Brake-wear emissions of all pollutants increase by about 63% (#113).
 - `emi_europe_emep_wear()` assigned tyre axle counts in the order of its internal lookup table rather than the order of `veh_type`, so articulated and standard buses could swap axle counts. Tyre-wear results change when `veh_type` is not in table order or repeats a type (#112).

@@ -21,12 +21,15 @@ ef_europe_emep(
 \item{speed}{units; Speed in 'km/h'.}
 
 \item{veh_type}{character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
-"Coaches Std <=18 t","Coaches Artic >18 t".}
+"Coaches Std <=18 t","Coaches Artic >18 t". \code{veh_type}, \code{euro}, \code{fuel}, \code{tech} and
+\code{fcorr} describe the same vehicles: each has length 1 (used for every vehicle) or one
+common length; other lengths are an error.}
 
 \item{euro}{character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".}
 
 \item{pollutant}{character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" is fuel consumption (g/km).
-"EC" is energy consumption in MJ/km, although it is returned with g/km units. FC and CO2 are not available
+"EC" is energy consumption, returned in MJ/km; it cannot be used in \code{\link[=emission_model]{emission_model()}}.
+\code{"SPN23 [#/kWh]"} in \code{ef_europe_emep_db} is not supported. FC and CO2 are not available
 for every combination (e.g. there is no CO2 for "BD" or for "Conventional" diesel buses).}
 
 \item{fuel}{character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
@@ -34,7 +37,8 @@ for every combination (e.g. there is no CO2 for "BD" or for "Conventional" diese
 
 \item{tech}{character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction),
 "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are
-no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III".}
+no available after treatment technology associated with euro standards "Conventional", "I", "II", "III",
+"EEV" and "PRE"; for them "-" is used, with a message.}
 
 \item{slope}{numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and
 0.06. Negative gradients means downhills and positive uphills. Default is 0.0. Either one
@@ -45,13 +49,13 @@ only available at slope 0.00 and load 0.5; for them, that value is used with a m
 \item{load}{numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5. Either one
 value or one value per \code{speed}.}
 
-\item{fcorr}{numeric; Correction based on fuel composition. The length must be one per
-each euro standards. Default is 1.0.}
+\item{fcorr}{numeric; Correction based on fuel composition, non-negative. Length 1 or
+one value per vehicle (see \code{veh_type}). Default is 1.0.}
 
 \item{as_list}{logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.}
 }
 \value{
-List. emission factors in units 'g/km' (list or a data.table).
+List. emission factors in units 'g/km' (list or a data.table); "EC" is in 'MJ/km'.
 }
 \description{
 Returns a list or data.table of emission factors for buses based on EMEP/EEA air pollutant
@@ -95,7 +99,7 @@ EMEP/EEA data and reports can be accessed in the following links:
 \examples{
 ef_europe_emep( speed = units::set_units(1:100,"km/h"),
                 veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
-                euro = c("IV","V"),
+                euro = c("IV","V","V"),
                 fuel = "D",
                 pollutant = c("CO","PM10","CH4","NOx"),
                 as_list = FALSE) 

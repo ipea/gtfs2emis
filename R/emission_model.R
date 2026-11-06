@@ -16,7 +16,8 @@
 #' @param pollutant character. Vector with one or more pollutants to be estimated.
 #'        Example: `c("CO", "CO2", "PM10", "NOx")`. See the documentation to check which 
 #'        pollutants are available for each emission factor model (`ef_usa_moves`, `ef_usa_emfac`,
-#'        `ef_europe_emep`, or `ef_brazil_cetesb`).
+#'        `ef_europe_emep`, or `ef_brazil_cetesb`). With `ef_europe_emep`, energy consumption
+#'        ("EC", in MJ/km) is not a mass and cannot be used.
 #' @param reference_year numeric. Year of reference considered to calculate the
 #'        emissions inventory. Defaults to `2020`. This
 #'        argument is only used when the `ef_model`

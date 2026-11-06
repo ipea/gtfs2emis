@@ -172,7 +172,7 @@ emission factor models:
 |--------------|----------------------------------------------------------|
 | CETESB         | CH4, CO, CO2, ETOH, FC (Fuel Consumption), FS (Fuel Sales), gCO2/KWH, gD/KWH, HC, KML, N2O, NH3, NMHC, NO, NO2, NOx, PM10 and RCHO |
 | EMFAC2017/CARB | CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX, and TOG (Total Organic Gases)                               |
-| EMEP/EEA       | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (#kWh), and VOC                                                                   |
+| EMEP/EEA       | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, and VOC                                                                                  |
 | MOVES3/EPA     | CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG, and VOC                                       |
 
 #### Fleet characteristics required by each emission factor model
