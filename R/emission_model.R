@@ -26,7 +26,8 @@
 #' @param process character; Emission process, classified in "hot_exhaust" (Default),
 #'        and wear processes (identified as "tyre","brake" and/or "road" wear). 
 #'        Note that wear processes are only available when `ef_model` is
-#'        `ef_europe_emep`. Details on wear emissions are presented in
+#'        `ef_europe_emep`, and that `"hot_exhaust"` cannot be combined with
+#'        wear processes in the same call. Details on wear emissions are presented in
 #'        \code{\link{emi_europe_emep_wear}}.
 #' @param heightfile character or raster data. The raster file with height data,
 #'        or its filepath, used to estimate emissions considering the effect of 
@@ -39,7 +40,8 @@
 #'        argument is ignored if parallel is `FALSE`. Default (`NULL`) selects 
 #'        the total number of available cores minus one.                
 #' @param output_path character. File path where the function output is exported.
-#'        If `NULL` (Default), the function returns the output to user.
+#'        If `NULL` (Default), the function returns the output to user. When
+#'        `tp_model` is a folder, `output_path` must be a different folder.
 #' @param continue logical. Argument that can be used only with output_path When TRUE,
 #'        it skips processing the shape identifiers that were already saved into 
 #'        files. It is useful to continue processing a GTFS file that was stopped
@@ -239,6 +241,16 @@ emission_model <- function(  tp_model
   if(is.character(tp_model)) assert_directory_exists(tp_model)
   assert_string(output_path, null.ok = TRUE)
   if(!is.null(output_path)) assert_directory_exists(output_path)
+  # writing into the input folder would overwrite the transport model files
+  if(is.character(tp_model) && !is.null(output_path)){
+    same_dir <- normalizePath(c(tp_model[1], output_path), winslash = "/", mustWork = TRUE)
+    if(.Platform$OS.type == "windows") same_dir <- tolower(same_dir)
+    if(same_dir[1] == same_dir[2]){
+      cli::cli_abort(c("{.arg output_path} must differ from the {.arg tp_model} folder."
+                       , "x" = "Writing to {.path {output_path}} would overwrite the transport model files.")
+                     , class = "gtfs2emis_error")
+    }
+  }
   
   ## height file ----
   assert_checks(
@@ -254,6 +266,19 @@ emission_model <- function(  tp_model
                               ,"ef_usa_moves","ef_europe_emep"
                               ,"ef_brazil_scaled_euro")
                            ,null.ok = FALSE)
+  ## process ----
+  assert_character(process, any.missing = FALSE, min.len = 1)
+  assert_subset(process, c("hot_exhaust", "tyre", "brake", "road"))
+  if(any(process != "hot_exhaust") && ef_model != "ef_europe_emep"){
+    cli::cli_abort(c("Wear processes ({.val tyre}, {.val brake}, {.val road}) are only available with {.code ef_model = \"ef_europe_emep\"}."
+                     , "x" = "{.arg process} is {.val {process}} and {.arg ef_model} is {.val {ef_model}}.")
+                   , class = "gtfs2emis_error")
+  }
+  if("hot_exhaust" %in% process && length(unique(process)) > 1){
+    cli::cli_abort(c("{.arg process} cannot mix {.val hot_exhaust} with wear processes."
+                     , "i" = "Run {.fn emission_model} once for {.val hot_exhaust} and once for the wear processes.")
+                   , class = "gtfs2emis_error")
+  }
   ## ii) Fleet data  | EF model ----
   if (ef_model != "ef_europe_emep"){
     assert_checks(
@@ -286,11 +311,6 @@ emission_model <- function(  tp_model
         , combine = "and", .var.name = "fleet_data"
       )
     }else{
-      # process
-      assert_vector(process,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-      assert_class(process,"character")
-      name_process <- c('tyre','brake','road')
-      for(i in process) assert_choice(i,name_process, .var.name = "process")
       # names fleet_data
       assert_checks(
         checkmate::check_choice('veh_type', names(fleet_data))
@@ -388,7 +408,7 @@ emission_model <- function(  tp_model
     }
     if(ef_model == "ef_usa_emfac"){
       
-      temp_ef <- ef_usa_emfac(pollutant = pollutant,
+      temp_ef <- ef_usa_emfac(pollutant = pollutant
                               , reference_year = reference_year
                               , model_year = fleet_data$model_year
                               , speed = temp_shape$speed
@@ -418,6 +438,7 @@ emission_model <- function(  tp_model
                                 , euro = fleet_data$euro
                                 , pollutant = pollutant
                                 , fuel = fleet_data$fuel
+                                , tech = fleet_data$tech
                                 , SDC = 19
                                 , slope = slope_input
                                 , load = 0.5

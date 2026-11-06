@@ -152,3 +152,66 @@ test_that("emission_model rejects EC, which is in MJ/km (G-70)", {
                                     , parallel = FALSE))
     , regexp = "g/km", class = "gtfs2emis_error")
 })
+
+test_that("ef_brazil_scaled_euro uses the tech column of fleet_data", {
+  fleet_egr <- data.frame(veh_type = "BUS_URBAN_D", type_name_eu = "Ubus Std 15 - 18 t"
+                          , model_year = 2015, euro = "V", fuel = "D", tech = "EGR"
+                          , fleet_composition = 1)
+  fleet_scr <- fleet_egr
+  fleet_scr$tech <- "SCR"
+  emi_egr <- suppressMessages(emission_model(tp_model = tp_model_irl
+                                             , ef_model = "ef_brazil_scaled_euro"
+                                             , fleet_data = fleet_egr
+                                             , pollutant = "NOx", parallel = FALSE))
+  emi_scr <- suppressMessages(emission_model(tp_model = tp_model_irl
+                                             , ef_model = "ef_brazil_scaled_euro"
+                                             , fleet_data = fleet_scr
+                                             , pollutant = "NOx", parallel = FALSE))
+  expect_false(isTRUE(all.equal(as.numeric(emi_egr$emi[[1]]), as.numeric(emi_scr$emi[[1]]))))
+  
+  # same as computing the EGR emissions step by step
+  ef_local <- ef_brazil_cetesb(pollutant = "NOx", veh_type = "BUS_URBAN_D"
+                               , model_year = 2015, as_list = TRUE)
+  ef_egr <- suppressMessages(ef_scaled_euro(ef_local = ef_local$EF, speed = tp_model_irl$speed
+                                            , veh_type = "Ubus Std 15 - 18 t", euro = "V"
+                                            , pollutant = "NOx", fuel = "D", tech = "EGR"))
+  expected <- suppressMessages(multiply_ef(fleet_composition = 1
+                                           , dist = units::set_units(tp_model_irl$dist, "km")
+                                           , ef = ef_egr, aggregate = FALSE, as_list = TRUE))
+  expect_equal(as.numeric(emi_egr$emi[[1]]), as.numeric(expected$emi[[1]]))
+})
+
+test_that("process is validated for every ef_model", {
+  fleet_cetesb <- data.frame(veh_type = "BUS_URBAN_D", model_year = 2015
+                             , fuel = "D", fleet_composition = 1)
+  expect_error(emission_model(tp_model = tp_model_irl, ef_model = "ef_brazil_cetesb"
+                              , fleet_data = fleet_cetesb, pollutant = "PM10"
+                              , process = "brake", parallel = FALSE)
+               , class = "gtfs2emis_error"
+               , regexp = "only available")
+  bad_process <- list(c("hot_exhaust", "tyre"), "banana", character(0))
+  messages <- c("cannot mix", "Invalid argument", "Invalid argument")
+  for (i in seq_along(bad_process)) {
+    expect_error(emission_model(tp_model = tp_model_irl, ef_model = "ef_europe_emep"
+                                , fleet_data = fleet_data_europe, pollutant = "PM10"
+                                , process = bad_process[[i]], parallel = FALSE)
+                 , class = "gtfs2emis_error"
+                 , regexp = messages[i])
+  }
+  # wear processes alone still run
+  emi_wear <- emission_model(tp_model = tp_model_irl, ef_model = "ef_europe_emep"
+                             , fleet_data = fleet_data_europe, pollutant = "PM10"
+                             , process = c("tyre", "brake", "road"), parallel = FALSE)
+  expect_true(all(c("emi", "tp_model", "process") %in% names(emi_wear)))
+})
+
+test_that("output_path cannot be the tp_model folder", {
+  tp_dir <- tempfile("tp_model_dir")
+  dir.create(tp_dir)
+  on.exit(unlink(tp_dir, recursive = TRUE), add = TRUE)
+  expect_error(emission_model(tp_model = tp_dir, ef_model = "ef_europe_emep"
+                              , fleet_data = fleet_data_europe, pollutant = "NOx"
+                              , output_path = tp_dir, parallel = FALSE)
+               , class = "gtfs2emis_error"
+               , regexp = "must differ")
+})

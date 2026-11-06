@@ -48,7 +48,8 @@ always taken from this argument, not from a column of \code{fleet_data}.}
 \item{process}{character; Emission process, classified in "hot_exhaust" (Default),
 and wear processes (identified as "tyre","brake" and/or "road" wear).
 Note that wear processes are only available when \code{ef_model} is
-\code{ef_europe_emep}. Details on wear emissions are presented in
+\code{ef_europe_emep}, and that \code{"hot_exhaust"} cannot be combined with
+wear processes in the same call. Details on wear emissions are presented in
 \code{\link{emi_europe_emep_wear}}.}
 
 \item{heightfile}{character or raster data. The raster file with height data,
@@ -65,7 +66,8 @@ argument is ignored if parallel is \code{FALSE}. Default (\code{NULL}) selects
 the total number of available cores minus one.}
 
 \item{output_path}{character. File path where the function output is exported.
-If \code{NULL} (Default), the function returns the output to user.}
+If \code{NULL} (Default), the function returns the output to user. When
+\code{tp_model} is a folder, \code{output_path} must be a different folder.}
 
 \item{continue}{logical. Argument that can be used only with output_path When TRUE,
 it skips processing the shape identifiers that were already saved into
