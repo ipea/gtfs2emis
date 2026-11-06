@@ -22,10 +22,13 @@ test_that("emis_grid", {
   dim(pol_gps_minute )
   dim(pol_gps_agr    )
   # Expect equal -----
-  expect_equal(dim(pol_gps), c(37,10))
-  expect_equal(dim(pol_gps_hour   ), c(144,11))
-  expect_equal(dim(pol_gps_minute ), c(294,11))
-  expect_equal(dim(pol_gps_agr    ), c(37,4))
+  # Values for gtfs2gps >= 2.1-4.9000: one segment per pair of consecutive
+  # stops (73). gtfs2gps 2.1-4 gave 90 segments and timed trip 3412
+  # (08:00-08:23) at 16:27-17:00, so it had no 08 h and 5 fewer cells.
+  expect_equal(dim(pol_gps), c(42,10))
+  expect_equal(dim(pol_gps_hour   ), c(188,11))
+  expect_equal(dim(pol_gps_minute ), c(306,11))
+  expect_equal(dim(pol_gps_agr    ), c(42,4))
   #expect_equal(as.numeric(sum(pol_gps$CO_total)), 544.01,0.01)
   #expect_equal(as.numeric(sum(pol_gps_hour$CO_total)), 544.01,0.01)
   #expect_equal(as.numeric(sum(pol_gps_hour_minute$CO_total)), 544.01,0.01)
