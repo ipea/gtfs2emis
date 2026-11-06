@@ -314,3 +314,29 @@ test_that("ef_europe_emep argument lengths, EEV, SPN23 and EC (G-22, G-23, G-25,
                               , pollutant = "EC")
                , class = "gtfs2emis_error")
 })
+
+test_that("ef_europe_emep: repeated speed/slope values give the per-element result", {
+  # EFs are computed once per unique (slope, load, speed) and expanded back;
+  # each element must equal a call with that single speed, slope and load
+  spd <- units::set_units(c(37.2, 15, 37, 80, 15, 140 / 2, 37.4), "km/h")
+  slp <- c(0.02, 0, 0.02, -0.04, 0, 0.06, 0.02)
+  lod <- c(0.5, 0, 0.5, 1, 0, 0.5, 1)
+  vt <- c("Ubus Std 15 - 18 t", "Ubus Artic >18 t")
+  pols <- c("CO", "NOx", "CH4", "EC")  # CH4: tabulated at slope 0 only
+  res <- suppressMessages(ef_europe_emep(speed = spd, veh_type = vt, euro = c("IV", "VI")
+                                         , tech = c("SCR", "DPF+SCR"), pollutant = pols
+                                         , slope = slp, load = lod, as_list = FALSE))
+  for(s in seq_along(spd)){
+    one <- suppressMessages(ef_europe_emep(speed = spd[s], veh_type = vt, euro = c("IV", "VI")
+                                           , tech = c("SCR", "DPF+SCR"), pollutant = pols
+                                           , slope = slp[s], load = lod[s]
+                                           , as_list = FALSE))
+    expect_identical(vapply(res, function(x) as.numeric(x)[s], numeric(1))
+                     , vapply(one, as.numeric, numeric(1)))
+  }
+  # a missing slope/load combination still names each pair once, in input order
+  expect_error(ef_europe_emep(speed = spd, veh_type = "Ubus Midi <=15 t", euro = "VI"
+                              , fuel = "CNG", tech = "-", pollutant = "NOx", slope = slp)
+               , "0.02, 0, -0.04, and 0.06"
+               , class = "gtfs2emis_missing_ef")
+})

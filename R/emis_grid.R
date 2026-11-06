@@ -144,10 +144,11 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
                        ,new = name_emi_new)
   
   # 3) Check units ----
-  # Working files
-  netdata <- data.table::copy(data.table::as.data.table(tmp_tp_emi))
-  net <- sf::st_as_sf(data.table::setDF(tmp_tp_emi))
-  
+  # Working file: an alias of 'tmp_tp_emi', a new table made by cbind(). Its
+  # columns are only replaced (step 5 overwrites 'timestamp' with the time
+  # bin), never modified in place, so the caller's 'emi_list' is unchanged
+  netdata <- tmp_tp_emi
+
   emi_units <- c()
   for(i in seq_along(name_emi_new)){ # i = 1
     if(is(netdata[, .SD, .SDcols = (name_emi_new[i])][[1]], "units")){
@@ -197,76 +198,66 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
   
   # 5) Estimate emissions -------
   
-  tmp_netdata <- data.table::copy(netdata)
-  data.table::setDT(tmp_netdata)
+  seg_keys <- c("shape_id", "stop_sequence", "from_stop_id", "to_stop_id")
+  by_vars <- seg_keys
   if(time_resolution != "day"){
+    by_vars <- c("timestamp", seg_keys)
     # 'hour' resolution
     if(time_resolution == "hour"){
-      tmp_netdata[, "timestamp" := data.table::hour(timestamp)]
+      netdata[, "timestamp" := data.table::hour(timestamp)]
     }
     # 'minute' resolution
     if(time_resolution == "minute"){
       
-      tmp_netdata[
+      netdata[
         , "timestamp" := sprintf("%02d:%02d"
                                  ,data.table::hour(timestamp) 
                                  ,data.table::minute(timestamp))]
     }
-    
-    # 'time_column' scenario 
-    tmp_netdata <- tmp_netdata[
-      , lapply(.SD, sum, na.rm = TRUE)
-      , .SDcols = name_emi_new
-      , by = .(timestamp
-               , shape_id
-               , stop_sequence
-               , from_stop_id
-               , to_stop_id)]
-    
-  }else{
-    
-    # No 'time_column' scenario 
-    tmp_netdata <- tmp_netdata[
-      , lapply(.SD, sum, na.rm = TRUE)
-      , .SDcols = name_emi_new
-      , by = .(shape_id
-               , stop_sequence
-               , from_stop_id
-               , to_stop_id)]
-    
   }
-  
-  # Add geometry into 'netdata' 
-  
-  tmp_netdata[netdata
-              ,on = c("shape_id"
-                      ,"stop_sequence"
-                      ,"from_stop_id"
-                      ,"to_stop_id")
-              ,geometry := i.geometry]
-  
-  # 'tmp_netdata' to net
-  net <- sf::st_as_sf(data.table::setDF(tmp_netdata))
-  
+
+  # emissions per segment (and time bin)
+  emi_seg <- netdata[
+    , lapply(.SD, sum, na.rm = TRUE)
+    , .SDcols = name_emi_new
+    , by = by_vars]
+
+  # one geometry per segment: the time bins of a segment share it, so the
+  # grid intersection is done once per segment, not once per time bin
+  # (when a segment key repeats, the last geometry is kept)
+  seg <- unique(netdata[, .SD, .SDcols = seg_keys])
+  seg[netdata, on = seg_keys, geometry := i.geometry]
+  data.table::set(seg, j = "seg_id", value = seq_len(nrow(seg)))
+  data.table::set(emi_seg, j = "seg_id"
+                  , value = seg[emi_seg, on = seg_keys, which = TRUE])
+
+  # 'seg' to net
+  net <- sf::st_as_sf(data.table::setDF(seg[, .SD, .SDcols = c("seg_id", "geometry")]))
+
   # 6) Reduce grid size  -----
   # Keep only polygons that intersect with lines
-  
-  intersect_index <- sf::st_intersects(grid, net,sparse = FALSE)
-  intersect_index <- rowSums(intersect_index)
+
+  # sparse index: a dense grid x segment matrix can take several GB
+  intersect_index <- lengths(sf::st_intersects(grid, net))
   intersect_index <- which(intersect_index>0)
   grid <- subset(grid, id %in% intersect_index)
   net$temp_lkm <- sf::st_length(net)
-  
+
   # 7) Intersection -----
   netg <- suppressMessages(suppressWarnings(
-    sf::st_intersection(net, grid)))
-  
+    sf::st_intersection(net, grid[, "id"])))
+
   netg$lkm_inter <- sf::st_length(netg)
-  
+
   # ratio of 'lkm'
-  data.table::setDT(netg)
-  netg[, ratio := lkm_inter / temp_lkm]
-  
+  netg <- data.table::data.table(
+    seg_id = netg$seg_id
+    , id = netg$id
+    , ratio = as.numeric(netg$lkm_inter / netg$temp_lkm))
+
+  # emissions of each segment piece (and time bin)
+  netg <- emi_seg[netg, on = "seg_id", allow.cartesian = TRUE]
+
   # adjust emissions by ratio
   for (i in name_emi_new) netg[, (i) := get(i) * ratio]
   

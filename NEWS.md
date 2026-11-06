@@ -14,6 +14,14 @@
   - With `output_path`, one `.rds` file is saved per `shape_id`, as before, but the whole feed is processed in memory. A `%` in a `shape_id` is now always encoded (as `%25`), so ids round-trip with `utils::URLdecode()`; ids containing a `%XX` sequence (e.g. `"x%20y"`) get new file names.
   - A GTFS path is read with `gtfstools::read_gtfs()`, and {gtfstools} (>= 2.0.1) moves from Suggests to Imports.
 
+## Performance
+
+Compared with gtfs2emis 0.1.2 (CRAN), single-threaded, on the example feeds:
+
+- `transport_model()` is 18–33 times faster and allocates 12–14 times less memory (Dublin: 57 s and 3.2 GB down to 1.7 s and 0.24 GB).
+- `ef_europe_emep()` computes each emission factor once per distinct speed, slope and load, instead of once per road segment: 6 times faster and 8 times less memory with 10^6 speeds. `emission_model(ef_model = "ef_europe_emep")` allocates 25–35% less memory than in 0.1.2 on the Dublin feed. Results are identical.
+- `emis_grid()` no longer builds a dense grid-by-segment matrix, which could need several GB on large grids. It also intersects each road segment with the grid once, instead of once per time bin: with `time_resolution = "hour"` it is 3 times faster and allocates 2.7 times less memory (Dublin: 45 s and 860 MB down to 14 s and 315 MB), and with `"minute"` 3.5 times faster and 3 times less memory. Results are identical, up to floating-point rounding for `"hour"` and `"minute"`.
+
 ## Bug fixes
 
 - `ef_europe_emep()`, `ef_scaled_euro()`, `emi_europe_emep_wear()` and `emission_model()` failed with an unclear base R error (e.g. "argument is of length zero") instead of their {cli} error when `speed`, `dist` or an emission factor had the wrong units, such as `m` instead of `km/h`.

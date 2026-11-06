@@ -177,6 +177,13 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
                    , class = "gtfs2emis_error")
   }
   
+  # the EF depends only on (slope, load, rounded speed): compute it once per
+  # unique combination (in order of first appearance), then expand with 'grp'
+  # (build 'ef_key' outside u[...]: inside it, 'speed' would be u's column)
+  ef_key <- data.table::data.table(Slope = slope, Load = load, speed = speed)
+  u <- unique(ef_key)
+  grp <- u[ef_key, on = c("Slope", "Load", "speed"), which = TRUE]
+  
   # polynomial expression----
   
   eq_num <- function(Alpha,Beta,Gamma,Delta,Epsilon,Zita,Hta,RF,Speed,Function_ID,k,fcorr){
@@ -264,10 +271,10 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       if(nrow(temp_ef3) == 1){
         # tabulated at a single slope / load only (e.g. CH4, NH3, N2O); in
         # ef_europe_emep_db all such rows are at slope 0 / load 0.5
-        fallback <- any(slope != temp_ef3$Slope | load != temp_ef3$Load)
-        temp_ef3 <- temp_ef3[rep(1L, length(speed))]
+        fallback <- any(u$Slope != temp_ef3$Slope | u$Load != temp_ef3$Load)
+        temp_ef3 <- temp_ef3[rep(1L, nrow(u))]
       }else{
-        temp_ef3 <- temp_ef3[data.table::data.table(Slope = slope, Load = load)
+        temp_ef3 <- temp_ef3[data.table::data.table(Slope = u$Slope, Load = u$Load)
                              , on = c("Slope", "Load")]
       }
       
@@ -275,9 +282,9 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       # no EF case
       #
       
-      if(nrow(temp_ef3) != length(speed) || anyNA(temp_ef3$Function_ID)){
-        pairs <- data.table::data.table(Slope = slope, Load = load)
-        if(nrow(temp_ef3) == length(speed)) pairs <- pairs[is.na(temp_ef3$Function_ID)]
+      if(nrow(temp_ef3) != nrow(u) || anyNA(temp_ef3$Function_ID)){
+        pairs <- data.table::data.table(Slope = u$Slope, Load = u$Load)
+        if(nrow(temp_ef3) == nrow(u)) pairs <- pairs[is.na(temp_ef3$Function_ID)]
         pairs <- unique(pairs)
         cli::cli_abort(c("No available emission factor for this combination of parameters:"
                          , "*" = "Pol: {.val {pollutant[i]}}"
@@ -297,8 +304,8 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       #
       
       # speeds outside the validity range of each row are set to its limits
-      tmpSpeedPol <- pmin(pmax(speed, temp_ef3$Vmin), temp_ef3$Vmax)
-      eq_output <- numeric(length(speed))
+      tmpSpeedPol <- pmin(pmax(u$speed, temp_ef3$Vmin), temp_ef3$Vmax)
+      eq_output <- numeric(nrow(u))
       # Function_ID (and Vmin/Vmax) can differ between slopes
       for(f in unique(temp_ef3$Function_ID)){
         r <- temp_ef3$Function_ID == f
@@ -316,7 +323,7 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
                                , fcorr = fcorr[j])
       }
 
-      return(list(ef = eq_output, fallback = fallback))
+      return(list(ef = eq_output[grp], fallback = fallback))
     })
     
     if(any(vapply(temp_ef2, `[[`, logical(1), "fallback"))){
