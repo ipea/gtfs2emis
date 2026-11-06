@@ -27,3 +27,5 @@ utils::globalVariables(c('.N','from_height','from_timestamp',
 # emission_model / transport_model
 utils::globalVariables(c("arrival_time", "cumdist", "cumtime", "departure_time",
                          "dist", "files_gps_names","speed","rm_path","rm_adj_path"))
+# retime_segments (transport_model)
+utils::globalVariables(c("cs", "cs_prev", "delta"))

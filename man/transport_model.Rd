@@ -24,19 +24,25 @@ transport_model(
 speed, at least 2 km/h. Defaults to \code{2} km/h. Stop times are first
 adjusted with \code{\link[gtfstools:set_min_speed]{gtfstools::set_min_speed()}}, which can change the
 arrival and departure times of vehicles at transit stops. Segment
-speeds that are still below \code{min_speed} are then set to \code{min_speed};
-their \code{speed} then no longer equals \code{dist} divided by their duration,
-and their timestamps are not changed.}
+speeds that are still below \code{min_speed} are then set to \code{min_speed}.
+The segment's duration becomes its distance divided by the new speed,
+and the later times of the trip are shifted by the difference (each
+trip keeps its first departure). Durations are rounded to whole
+seconds, so a very short segment (under about 11 m at 80 km/h) can
+keep 0 s.}
 
 \item{max_speed}{numeric (in km/h) or a speed units value. Maximum valid
 speed, at least 3 km/h. Defaults to \code{80} km/h. As for \code{min_speed},
 stop times are first adjusted with \code{\link[gtfstools:set_max_speed]{gtfstools::set_max_speed()}}, and
-segment speeds still above \code{max_speed} are set to \code{max_speed}.}
+segment speeds still above \code{max_speed} are set to \code{max_speed}, with
+the trip's times shifted in the same way.}
 
-\item{new_speed}{numeric (in km/h) or a speed units value. Speed used for
-segments without a speed. When \code{new_speed = NULL} (the default), the
-function uses the average speed of the entire GTFS data feed, weighted
-by distance.}
+\item{new_speed}{numeric (in km/h) or a speed units value, between
+\code{min_speed} and \code{max_speed}. Speed used for segments without a speed;
+the trip's times are shifted as for \code{min_speed}. When
+\code{new_speed = NULL} (the default), the function uses the average speed
+(total distance / total time) of the trips of the same \code{shape_id},
+after capping, or of the whole feed if the shape has none.}
 
 \item{parallel}{\strong{Deprecated.} This argument is ignored, and using it gives
 a warning. Use \code{ncores} instead.}

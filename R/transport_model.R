@@ -14,17 +14,23 @@
 #'        speed, at least 2 km/h. Defaults to `2` km/h. Stop times are first
 #'        adjusted with [gtfstools::set_min_speed()], which can change the
 #'        arrival and departure times of vehicles at transit stops. Segment
-#'        speeds that are still below `min_speed` are then set to `min_speed`;
-#'        their `speed` then no longer equals `dist` divided by their duration,
-#'        and their timestamps are not changed.
+#'        speeds that are still below `min_speed` are then set to `min_speed`.
+#'        The segment's duration becomes its distance divided by the new speed,
+#'        and the later times of the trip are shifted by the difference (each
+#'        trip keeps its first departure). Durations are rounded to whole
+#'        seconds, so a very short segment (under about 11 m at 80 km/h) can
+#'        keep 0 s.
 #' @param max_speed numeric (in km/h) or a speed units value. Maximum valid
 #'        speed, at least 3 km/h. Defaults to `80` km/h. As for `min_speed`,
 #'        stop times are first adjusted with [gtfstools::set_max_speed()], and
-#'        segment speeds still above `max_speed` are set to `max_speed`.
-#' @param new_speed numeric (in km/h) or a speed units value. Speed used for
-#'        segments without a speed. When `new_speed = NULL` (the default), the
-#'        function uses the average speed of the entire GTFS data feed, weighted
-#'        by distance.
+#'        segment speeds still above `max_speed` are set to `max_speed`, with
+#'        the trip's times shifted in the same way.
+#' @param new_speed numeric (in km/h) or a speed units value, between
+#'        `min_speed` and `max_speed`. Speed used for segments without a speed;
+#'        the trip's times are shifted as for `min_speed`. When
+#'        `new_speed = NULL` (the default), the function uses the average speed
+#'        (total distance / total time) of the trips of the same `shape_id`,
+#'        after capping, or of the whole feed if the shape has none.
 #' @param parallel **Deprecated.** This argument is ignored, and using it gives
 #'        a warning. Use `ncores` instead.
 #' @param ncores Number of threads used. Defaults to 2. If \code{Inf}, it uses
@@ -144,8 +150,14 @@ transport_model <- function(
   }
   assert_number(min_speed, lower = 2, finite = TRUE)
   assert_number(max_speed, lower = 3, finite = TRUE)
-  assert_number(new_speed, lower = 1, finite = TRUE, null.ok = TRUE)
   assert_true(min_speed < max_speed, .var.name = "min_speed < max_speed")
+  assert_number(
+    new_speed,
+    lower = min_speed,
+    upper = max_speed,
+    finite = TRUE,
+    null.ok = TRUE
+  )
 
   # number of threads
   assert_number(ncores, lower = 1)
@@ -203,14 +215,18 @@ transport_model <- function(
   temp_gps_sf <- gtfs2gps::gps_as_sflinestring(gps = temp_gps)
   class(temp_gps_sf) <- c("sf", "data.frame")
 
-  # replace missing and out-of-range speeds
+  # cap out-of-range speeds, fill missing ones, and shift the trips' times
+  speed_old <- as.numeric(units::set_units(temp_gps_sf$speed, "km/h"))
+  dist_m <- as.numeric(units::set_units(temp_gps_sf$dist, "m"))
   speed <- fill_speed(
-    speed = as.numeric(units::set_units(temp_gps_sf$speed, "km/h")),
-    dist = as.numeric(temp_gps_sf$dist),
+    speed = speed_old,
+    dist = dist_m,
     min_speed = min_speed,
     max_speed = max_speed,
-    new_speed = new_speed
+    new_speed = new_speed,
+    group = temp_gps_sf$shape_id
   )
+  temp_gps_sf <- retime_segments(temp_gps_sf, dist_m, speed_old, speed)
   temp_gps_sf$speed <- units::set_units(speed, "km/h")
   temp_gps_sf$dist <- units::set_units(temp_gps_sf$dist, "km")
 
@@ -247,11 +263,14 @@ transport_model <- function(
 
 #' Cap out-of-range speeds and fill missing ones
 #'
-#' @param speed,dist numeric; segment speeds (km/h) and distances.
+#' @param speed,dist numeric; segment speeds (km/h) and distances (m).
 #' @param min_speed,max_speed numeric; valid speed range (km/h). Speeds
-#'        outside it are set to the nearest limit.
+#'        outside it, including `Inf`, are set to the nearest limit.
 #' @param new_speed numeric or NULL; speed for missing (`NA`) values. If
-#'        `NULL`, the mean of the capped speeds weighted by distance.
+#'        `NULL`, the average speed (total distance / total time) of the
+#'        segments of the same `group` with a speed and a positive distance,
+#'        after capping; groups with none use that average over all segments.
+#' @param group vector; the group of each segment (the `shape_id`).
 #' @param call environment used in error messages.
 #' @return numeric; `speed` capped to the range, with missing values filled.
 #' @noRd
@@ -261,6 +280,7 @@ fill_speed <- function(
   min_speed,
   max_speed,
   new_speed = NULL,
+  group = 1L,
   call = rlang::caller_env()
 ) {
   miss <- is.na(speed)
@@ -268,20 +288,76 @@ fill_speed <- function(
   if (!any(miss)) {
     return(speed)
   }
-  if (is.null(new_speed)) {
-    w <- !miss & is.finite(dist)
-    if (sum(dist[w]) <= 0) {
-      cli::cli_abort(
-        c(
-          "Missing speeds can't be filled: no segment has both a speed and a distance.",
-          "i" = "Set {.arg new_speed} to replace them."
-        ),
-        class = "gtfs2emis_error",
-        call = call
-      )
-    }
-    new_speed <- sum(speed[w] * dist[w]) / sum(dist[w])
+  if (!is.null(new_speed)) {
+    speed[miss] <- new_speed
+    return(speed)
   }
-  speed[miss] <- new_speed
+  ok <- !miss & is.finite(dist) & dist > 0
+  if (!any(ok)) {
+    cli::cli_abort(
+      c(
+        "Missing speeds can't be filled: no segment has both a speed and a distance.",
+        "i" = "Set {.arg new_speed} to replace them."
+      ),
+      class = "gtfs2emis_error",
+      call = call
+    )
+  }
+  # average speed = total distance / total time
+  avg_speed <- function(i) sum(dist[i]) / sum(dist[i] / speed[i])
+  group <- rep_len(as.character(group), length(speed))
+  feed_avg <- avg_speed(ok)
+  for (g in unique(group[miss])) {
+    in_g <- group == g
+    fill <- if (any(ok & in_g)) avg_speed(ok & in_g) else feed_avg
+    speed[miss & in_g] <- fill
+  }
   return(speed)
+}
+
+#' Shift segment times after their speeds change
+#'
+#' The duration of each segment whose speed changed (and that has a positive
+#' distance and known times) becomes `3.6 * dist / speed_new` seconds. The
+#' difference is carried to every later segment of the same trip, so each
+#' trip keeps its first departure and its dwell times. Times are wrapped at
+#' midnight, as in gtfs2gps. Times are rounded through the cumulative shift,
+#' so durations are accurate to about 1 s (a very short segment can keep 0 s).
+#'
+#' @param x sf; output of `gtfs2gps::gps_as_sflinestring()`, in its row order.
+#' @param dist numeric; segment distances (m).
+#' @param speed_old,speed_new numeric; segment speeds (km/h) before and after
+#'        `fill_speed()`.
+#' @return `x` with `from_timestamp`, `to_timestamp`, `timestamp` and
+#'         `cumtime` shifted.
+#' @noRd
+retime_segments <- function(x, dist, speed_old, speed_new) {
+  changed <- is.na(speed_old) | speed_old != speed_new
+  if (!any(changed)) {
+    return(x)
+  }
+  from <- as.integer(x$from_timestamp)
+  to <- as.integer(x$to_timestamp)
+  d_old <- (to - from) %% 86400L
+  d_new <- d_old
+  redo <- changed & is.finite(dist) & dist > 0 & !is.na(d_old)
+  d_new[redo] <- 3.6 * dist[redo] / speed_new[redo]
+  delta <- d_new - d_old
+  delta[is.na(delta)] <- 0
+
+  dt <- data.table::data.table(
+    shape_id = x$shape_id,
+    trip_id = x$trip_id,
+    trip_number = x$trip_number,
+    delta = delta
+  )
+  dt[, cs := cumsum(delta), by = c("shape_id", "trip_id", "trip_number")]
+  dt[, cs_prev := c(0, cs[-.N]), by = c("shape_id", "trip_id", "trip_number")]
+
+  x$from_timestamp <- data.table::as.ITime((from + round(dt$cs_prev)) %% 86400L)
+  x$to_timestamp <- data.table::as.ITime((to + round(dt$cs)) %% 86400L)
+  x$timestamp <- x$from_timestamp
+  cumtime <- round(as.numeric(units::set_units(x$cumtime, "s")) + dt$cs, 3)
+  x$cumtime <- units::set_units(cumtime, "s")
+  return(x)
 }
