@@ -149,83 +149,23 @@ transport_model <- function(
   city_gtfs <- gtfstools::set_max_speed(gtfs = city_gtfs, max_speed = max_speed)
 
   # gtfs2gps ------------
-
-  gps_path <- paste0(tempdir(), "//gps//")
-  # remove leftovers from previous (e.g. interrupted) runs, unless resuming
-  if (!continue) {
-    unlink(gps_path, recursive = TRUE)
-  }
-  suppressWarnings(dir.create(tempdir()))
-  suppressWarnings(dir.create(gps_path))
-
-  gtfs2gps::gtfs2gps(
+  temp_gps <- gtfs2gps::gtfs2gps(
     gtfs_data = city_gtfs,
     spatial_resolution = spatial_resolution,
-    ncores = ncores,
-    filepath = gps_path,
-    compress = TRUE,
-    continue = continue
+    ncores = ncores
   )
 
   # GPS as Sf_Linestring ------
   # Converting a GPS-like data.table to a LineString Simple Feature (sf)
+  temp_gps_sf <- gtfs2gps::gps_as_sflinestring(gps = temp_gps)
+  temp_gps_sf$dist <- units::set_units(temp_gps_sf$dist, "km")
 
-  # create new dirs
-  gps_line_path <- paste0(output_path, "//")
-  if (!is.null(output_path)) {
-    suppressWarnings(dir.create(gps_line_path))
-  }
-
-  files_gps <- list.files(gps_adjust_path, full.names = TRUE)
-  files_gps_names <- list.files(gps_adjust_path, full.names = FALSE)
-
-  # function gps_as_sflinestring
-  f_gps_as_sflinestring <- function(i) {
-    # i = 1
-
-    outputfile_path <- paste0(gps_line_path, files_gps_names[i])
-    if (continue) {
-      if (file.exists(outputfile_path)) return(NULL)
-    }
-
-    tmp_gps <- readRDS(files_gps[i])
-    tmp_gps_fix <- gtfs2gps::gps_as_sflinestring(gps = tmp_gps)
-    tmp_gps_fix$dist <- units::set_units(tmp_gps_fix$dist, "km")
-
-    if (is.null(output_path)) {
-      return(tmp_gps_fix)
-    } else {
-      saveRDS(object = tmp_gps_fix, file = outputfile_path)
-      return(NULL)
-    }
-  }
-
-  # Return conditions ----
-  if (parallel) {
-    requiredPackages <- c('data.table', 'sf', 'units')
-    gpsLine <- furrr::future_map(
-      seq_along(files_gps),
-      f_gps_as_sflinestring,
-      .options = furrr::furrr_options(
-        seed = TRUE,
-        packages = requiredPackages
-      )
-    )
-  } else {
-    gpsLine <- lapply(seq_along(files_gps), f_gps_as_sflinestring)
-  }
-
-  ## This cleans up everything...
-  on.exit(unlink(list.files(gps_path, full.names = TRUE)), add = TRUE)
-  on.exit(unlink(list.files(gps_adjust_path, full.names = TRUE)), add = TRUE)
-
-  # output
   if (is.null(output_path)) {
-    gpsLine <- data.table::rbindlist(gpsLine)
-    suppressWarnings(gpsLine <- sf::st_sf(gpsLine, crs = 4326))
-    class(gpsLine) <- c("sf", "data.frame")
-    return(gpsLine)
+    return(temp_gps_sf)
   } else {
+    # create dir
+    suppressWarnings(dir.create(output_path))
+    saveRDS(object = temp_gps_sf, file = output_path)
     return(NULL)
   }
 }
