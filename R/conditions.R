@@ -61,3 +61,24 @@ assert_checks <- function(..., combine = c("or", "and"), .var.name, call = rlang
   }
   return(invisible(TRUE))
 }
+
+# TRUE when `x` is a units object with exactly the units `u` (as written by
+# units::deparse_unit(), e.g. "km h-1"). Safe inside if(): always TRUE/FALSE.
+has_units <- function(x, u) {
+  return(inherits(x, "units") && identical(units::deparse_unit(x), u))
+}
+
+# A speed as a plain number in km/h. Numbers are taken as km/h; units objects
+# are converted, with a cli error if they aren't a speed. Anything else
+# (NULL, character, ...) is returned unchanged for the asserts that follow.
+as_kmh <- function(x, var_name, call = rlang::caller_env()) {
+  if (!inherits(x, "units")) return(x)
+  u <- units::deparse_unit(x)
+  if (!units::ud_are_convertible(u, "km/h")) {
+    cli::cli_abort(c("Invalid argument {.arg {var_name}}."
+                     , "x" = "Must be a speed, but has units {.val {u}}.")
+                   , class = "gtfs2emis_error"
+                   , call = call)
+  }
+  return(as.numeric(units::set_units(x, "km/h")))
+}

@@ -133,15 +133,9 @@ transport_model <- function(
   }
 
   # speeds in km/h ----
-  to_kmh <- function(x) {
-    if (inherits(x, "units")) {
-      x <- as.numeric(units::set_units(x, "km/h"))
-    }
-    return(x)
-  }
-  min_speed <- to_kmh(min_speed)
-  max_speed <- to_kmh(max_speed)
-  new_speed <- to_kmh(new_speed)
+  min_speed <- as_kmh(min_speed, "min_speed")
+  max_speed <- as_kmh(max_speed, "max_speed")
+  new_speed <- as_kmh(new_speed, "new_speed")
 
   # check if required fields and files exist  ----
   assert_character(output_path, len = 1, null.ok = TRUE)

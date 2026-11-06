@@ -5,7 +5,9 @@
 - `transport_model()` was rewritten for the new {gtfs2gps} interface. It runs `gtfs2gps::gtfs2gps()` once on the whole feed, in memory, after limiting speeds with `gtfstools::set_min_speed()` and `gtfstools::set_max_speed()`. Results change:
   - It requires the development version of {gtfs2gps} (>= 2.1-4.9000, installed from GitHub through `Remotes: ipea/gtfs2gps`): with gtfs2gps 2.1-4, some trips lost segments or got segments joining two trips (608 segments instead of 632 on the Detroit example feed), and an empty feed crashed R. Until that version of {gtfs2gps} is on CRAN, this version of gtfs2emis can't be released there.
   - Blank stop times are filled with `gtfstools::interpolate_stop_times()` before the speed limits are applied; the feed's own times are kept.
-  - The parts of a shape before the first stop and after the last stop of a trip are no longer returned (about 19% less distance on the Curitiba example feed).
+  - Trips now end at their last timed stop. They also start at their first timed stop, so the parts of a shape before the first stop and after the last stop of a trip are no longer returned, and distances and emissions are lower (about 19% less distance on the Curitiba example feed).
+  - Trips on shapes shared by several routes are no longer dropped. All the trips of shapes shared by several routes or stop patterns are now converted, so emissions on those shapes are higher.
+  - Distances are spherical and rounded, so slightly shorter.
   - Segment speeds still outside `min_speed`–`max_speed` are set to the nearest limit. Missing speeds are replaced by `new_speed`, which must now be between `min_speed` and `max_speed`, or, when `new_speed = NULL`, by the average speed (total distance / total time) of the trips of the same `shape_id`, or of the whole feed if the shape has none. Before, out-of-range speeds were also replaced, with the distance-weighted mean speed of each shape. When a speed changes, the segment's duration and the later times of the trip (`from_timestamp`, `to_timestamp`, `timestamp`, `cumtime`) are shifted accordingly; each trip keeps its first departure.
   - A feed with nothing to convert (for example, empty after filtering) gives a `gtfs2emis_error`.
   - `parallel` and `continue` are deprecated: they are ignored and give a warning (class `gtfs2emis_deprecated`). Set the number of threads with `ncores`, which now defaults to `2` and accepts `Inf`.
@@ -13,6 +15,9 @@
   - A GTFS path is read with `gtfstools::read_gtfs()`, and {gtfstools} (>= 2.0.1) moves from Suggests to Imports.
 
 ## Bug fixes
+
+- `ef_europe_emep()`, `ef_scaled_euro()`, `emi_europe_emep_wear()` and `emission_model()` failed with an unclear base R error (e.g. "argument is of length zero") instead of their {cli} error when `speed`, `dist` or an emission factor had the wrong units, such as `m` instead of `km/h`.
+- `transport_model()`: `min_speed`, `max_speed` or `new_speed` given as a {units} object that isn't a speed (e.g. `m`) now raises a {cli} error instead of a {units} error.
 
 - `ef_europe_emep()`: 1138 fuel consumption (FC) rows of `ef_europe_emep_db` held energy consumption in MJ/km labelled g/km, so FC for Conventional diesel, biodiesel and CNG buses was about 21–27 times too low. They are now converted to g/km with the EMEP/EEA guidebook net calorific values. FC no longer crashes for diesel Euro I, II, III and V (duplicated rows; the 2007/2013 rows are kept), and CNG CO2 was about 18 times too low. `ef_europe_emep_db` now has 9388 rows instead of 9913, and `"EC"` is documented as MJ/km. Results change (#110).
 

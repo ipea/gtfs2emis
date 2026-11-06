@@ -114,7 +114,7 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
   assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_numeric(speed,lower = 1,upper = 130)
   assert_class(speed,"units")
-  if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
+  if(!has_units(speed, "km h-1")){
     cli::cli_abort(c("{.arg speed} must be in {.val km/h}."
                      , "x" = "It has units {.val {units::deparse_unit(speed)}}.")
                    , class = "gtfs2emis_error")
@@ -173,7 +173,7 @@ ef_scaled_euro <- function(ef_local, speed, veh_type, euro, pollutant, fuel = "D
       cli::cli_abort("{.arg ef_local} must have units {.val g/km}."
                      , class = "gtfs2emis_error", call = call)
     }
-    if(units(ef_local[[i]])$numerator != "g" | units(ef_local[[i]])$denominator != "km"){
+    if(!has_units(ef_local[[i]], "g km-1")){
       cli::cli_abort("{.arg ef_local} must have units {.val g/km}."
                      , class = "gtfs2emis_error", call = call)
     }

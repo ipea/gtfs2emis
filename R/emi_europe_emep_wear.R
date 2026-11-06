@@ -181,7 +181,7 @@ emi_europe_emep_wear <- function(dist,speed,pollutant,veh_type,
   assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_numeric(speed,lower = 1,upper = 130)
   assert_class(speed,"units")
-  if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
+  if(!has_units(speed, "km h-1")){
     cli::cli_abort(c("{.arg speed} must be in {.val km/h}."
                      , "x" = "It has units {.val {units::deparse_unit(speed)}}.")
                    , class = "gtfs2emis_error")
@@ -190,7 +190,7 @@ emi_europe_emep_wear <- function(dist,speed,pollutant,veh_type,
   assert_vector(dist,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_numeric(dist,any.missing = FALSE,min.len = 1)
   assert_class(dist,"units")
-  if(units(dist)$numerator != "km"){
+  if(!has_units(dist, "km")){
     cli::cli_abort(c("{.arg dist} must be in {.val km}."
                      , "x" = "It has units {.val {units::deparse_unit(dist)}}.")
                    , class = "gtfs2emis_error")
