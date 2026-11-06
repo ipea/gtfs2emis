@@ -103,10 +103,13 @@ transport_model <- function(
   output_path = NULL,
   continue = NULL
 ) {
-  call <- rlang::current_env()  # header for conditions raised inside handlers
+  call <- rlang::current_env() # header for conditions raised inside handlers
 
   # deprecated arguments ----
-  for (arg in c("parallel", "continue")[c(!missing(parallel), !missing(continue))]) {
+  for (arg in c("parallel", "continue")[c(
+    !missing(parallel),
+    !missing(continue)
+  )]) {
     cli::cli_warn(
       c(
         "!" = paste0(
@@ -125,7 +128,9 @@ transport_model <- function(
 
   # speeds in km/h ----
   to_kmh <- function(x) {
-    if (inherits(x, "units")) x <- as.numeric(units::set_units(x, "km/h"))
+    if (inherits(x, "units")) {
+      x <- as.numeric(units::set_units(x, "km/h"))
+    }
     return(x)
   }
   min_speed <- to_kmh(min_speed)
@@ -165,6 +170,10 @@ transport_model <- function(
 
   city_gtfs <- gtfstools::set_min_speed(gtfs = city_gtfs, min_speed = min_speed)
   city_gtfs <- gtfstools::set_max_speed(gtfs = city_gtfs, max_speed = max_speed)
+  city_gtfs <- gtfstools::interpolate_stop_times(
+    gtfs = city_gtfs,
+    overwrite = TRUE
+  )
 
   # gtfs2gps ------------
   temp_gps <- tryCatch(
@@ -192,17 +201,6 @@ transport_model <- function(
   temp_gps_sf <- gtfs2gps::gps_as_sflinestring(gps = temp_gps)
   class(temp_gps_sf) <- c("sf", "data.frame")
 
-  # keep the segments between the first and the last stop of each trip
-  # (the parts of the shape before and after them have no timestamps)
-  in_trip <- !is.na(temp_gps_sf$from_timestamp) & !is.na(temp_gps_sf$to_timestamp)
-  temp_gps_sf <- temp_gps_sf[in_trip, ]
-  if (nrow(temp_gps_sf) == 0) {
-    cli::cli_abort(
-      "No segment between the first and the last stop of a trip was found in {.arg gtfs_data}.",
-      class = "gtfs2emis_error"
-    )
-  }
-
   # replace missing and out-of-range speeds
   speed <- fill_speed(
     speed = as.numeric(units::set_units(temp_gps_sf$speed, "km/h")),
@@ -220,8 +218,13 @@ transport_model <- function(
 
   # one file per shape
   parts <- split(temp_gps_sf, as.character(temp_gps_sf$shape_id))
-  file_names <- vapply(names(parts), utils::URLencode, character(1)
-                       , reserved = TRUE, repeated = TRUE)
+  file_names <- vapply(
+    names(parts),
+    utils::URLencode,
+    character(1),
+    reserved = TRUE,
+    repeated = TRUE
+  )
   if (anyDuplicated(tolower(file_names))) {
     cli::cli_abort(
       c(
@@ -232,7 +235,10 @@ transport_model <- function(
     )
   }
   for (i in seq_along(parts)) {
-    saveRDS(object = parts[[i]], file = file.path(output_path, paste0(file_names[i], ".rds")))
+    saveRDS(
+      object = parts[[i]],
+      file = file.path(output_path, paste0(file_names[i], ".rds"))
+    )
   }
   return(invisible(NULL))
 }

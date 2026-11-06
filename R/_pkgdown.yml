@@ -8,7 +8,7 @@ development:
   mode: auto
 
 reference:
-- title: "Core fuctions"
+- title: "Core functions"
 - contents:
   - transport_model
   - emission_model
