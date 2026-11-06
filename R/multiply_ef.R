@@ -30,7 +30,7 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
   assert_vector(dist,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_numeric(dist,any.missing = FALSE,min.len = 1)
   assert_class(dist,"units")
-  if(units(dist)$numerator != "km"){
+  if(!has_units(dist, "km")){
     cli::cli_abort(c("{.arg dist} must be in {.val km}."
                      , "x" = "It has units {.val {units::deparse_unit(dist)}}.")
                    , class = "gtfs2emis_error")
@@ -55,7 +55,7 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
                        , "i" = "See the {.pkg units} package.")
                      , class = "gtfs2emis_error", call = call)
     }
-    if(units(tmpEf[[i]])$numerator != "g" | units(tmpEf[[i]])$denominator != "km"){
+    if(!has_units(tmpEf[[i]], "g km-1")){
       cli::cli_abort("{.arg ef} must have units {.val g/km}."
                      , class = "gtfs2emis_error", call = call)
     }

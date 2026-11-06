@@ -72,3 +72,38 @@ test_that("informative messages are cli message conditions", {
   expect_silent(suppressMessages(
     ef_europe_emep(speed_kmh, "Ubus Std 15 - 18 t", "III", "NOx", tech = "SCR")))
 })
+
+test_that("has_units() and as_kmh() never fail outside cli", {
+  expect_true(has_units(units::set_units(1, "km/h"), "km h-1"))
+  expect_false(has_units(units::set_units(1, "m"), "km h-1"))
+  expect_false(has_units(units::set_units(1, "km^2"), "km"))
+  expect_false(has_units(1, "km"))
+
+  expect_identical(as_kmh(20, "x"), 20)
+  expect_null(as_kmh(NULL, "x"))
+  expect_equal(as_kmh(units::set_units(10, "m/s"), "x"), 36)
+  e <- expect_error(as_kmh(units::set_units(10, "m"), "x"), class = "gtfs2emis_error")
+  expect_match(conditionMessage(e), "Must be a speed", fixed = TRUE)
+})
+
+test_that("speeds and distances with wrong units raise cli errors", {
+  # these used to fail in base R ("argument is of length zero")
+  expect_error(ef_europe_emep(speed = units::set_units(30, "m")
+                              , veh_type = "Ubus Std 15 - 18 t", euro = "IV"
+                              , pollutant = "CO", fuel = "D", tech = "SCR")
+               , class = "gtfs2emis_error")
+  expect_error(ef_scaled_euro(ef_local = units::set_units(c(1, 2), "g/km")
+                              , speed = units::set_units(30, "m")
+                              , veh_type = "Ubus Std 15 - 18 t", euro = "IV"
+                              , pollutant = "CO", fuel = "D", tech = "SCR")
+               , class = "gtfs2emis_error")
+})
+
+test_that("transport_model() converts speed units and rejects non-speeds", {
+  gtfs <- gtfstools::filter_by_shape_id(gtfs_irl_raw, shape_id = "60-123-b12-1.72.O")
+  expect_error(transport_model(gtfs, max_speed = units::set_units(80, "m"), ncores = 1)
+               , class = "gtfs2emis_error")
+  # 1 m/s is 3.6 km/h, a valid min_speed
+  tp <- transport_model(gtfs, min_speed = units::set_units(1, "m/s"), ncores = 1)
+  expect_true(all(as.numeric(tp$speed) >= 3.6 - 1e-9))
+})

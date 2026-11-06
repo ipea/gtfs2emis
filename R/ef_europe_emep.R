@@ -104,7 +104,7 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_numeric(speed,lower = 1,upper = 130)
   assert_class(speed,"units")
-  if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
+  if(!has_units(speed, "km h-1")){
     cli::cli_abort(c("{.arg speed} must be in {.val km/h}."
                      , "x" = "It has units {.val {units::deparse_unit(speed)}}.")
                    , class = "gtfs2emis_error")
