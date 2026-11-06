@@ -71,12 +71,13 @@ ef_scaled_euro(
 
   numeric. Slope gradient, categorized in -0.06, -0.04, -0.02, 0.00,
   0.02, 0.04 and 0.06. Negative gradients means downhills and positive
-  uphills. Default is 0.0.
+  uphills. Default is 0.0. Either one value or one per `speed`.
 
 - load:
 
   numeric. Passenger load ratio, classified in 0.0, 0.5 and 1.0. Default
-  is 0.5.
+  is 0.5. `slope` and `load` change only the speed-dependent EMEP/EEA
+  factor; the reference at `SDC` always uses slope 0 and load 0.5.
 
 - fcorr:
 

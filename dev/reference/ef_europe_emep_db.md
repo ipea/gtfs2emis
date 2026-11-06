@@ -13,7 +13,7 @@ ef_europe_emep_db
 
 ## Format
 
-A data.table with 6431 rows and 22 variables:
+A data.table with 9388 rows and 22 variables:
 
 - Category:
 
@@ -47,8 +47,8 @@ A data.table with 6431 rows and 22 variables:
 - Pol:
 
   character; Pollutant, classified in
-  "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means
-  Fuel Consumption.
+  "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" is
+  fuel consumption (g/km); "EC" is energy consumption (MJ/km).
 
 - Vmin:
 

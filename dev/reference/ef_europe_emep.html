@@ -92,7 +92,9 @@ Estimates are expressed in units 'g/km'. See more in @details.</p>
 
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
-<dd><p>character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means Fuel Consumption.</p></dd>
+<dd><p>character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" is fuel consumption (g/km).
+"EC" is energy consumption in MJ/km, although it is returned with g/km units. FC and CO2 are not available
+for every combination (e.g. there is no CO2 for "BD" or for "Conventional" diesel buses).</p></dd>
 
 
 <dt id="arg-fuel">fuel<a class="anchor" aria-label="anchor" href="#arg-fuel"></a></dt>
@@ -108,11 +110,15 @@ no available after treatment technology associated with euro standards "Conventi
 
 <dt id="arg-slope">slope<a class="anchor" aria-label="anchor" href="#arg-slope"></a></dt>
 <dd><p>numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and
-0.06. Negative gradients means downhills and positive uphills. Default is 0.0.</p></dd>
+0.06. Negative gradients means downhills and positive uphills. Default is 0.0. Either one
+value or one value per <code>speed</code>. Values are rounded to two decimals; other values are an
+error. Some pollutants (e.g. "CH4", "NH3", "N2O") and some CNG and hybrid combinations are
+only available at slope 0.00 and load 0.5; for them, that value is used with a message.</p></dd>
 
 
 <dt id="arg-load">load<a class="anchor" aria-label="anchor" href="#arg-load"></a></dt>
-<dd><p>numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.</p></dd>
+<dd><p>numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5. Either one
+value or one value per <code>speed</code>.</p></dd>
 
 
 <dt id="arg-fcorr">fcorr<a class="anchor" aria-label="anchor" href="#arg-fcorr"></a></dt>

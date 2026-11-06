@@ -80,11 +80,13 @@ available on the European Environmental Agency (EEA) database, which is -0.06,
 
 
 <dl><dt id="arg-tp-model">tp_model<a class="anchor" aria-label="anchor" href="#arg-tp-model"></a></dt>
-<dd><p>LineString Simple Feature; transport model output.</p></dd>
+<dd><p>LineString Simple Feature; transport model output. Geometries must be
+LINESTRING and have a coordinate reference system; <code>dist</code> is in km.</p></dd>
 
 
 <dt id="arg-heightfile">heightfile<a class="anchor" aria-label="anchor" href="#arg-heightfile"></a></dt>
-<dd><p>character or raster data; The raster file with height data, or its filepath.</p></dd>
+<dd><p>character or raster data; The raster file with height data, or its filepath.
+Its coordinate reference system may differ from the one of <code>tp_model</code>.</p></dd>
 
 
 <dt id="arg-keep">keep<a class="anchor" aria-label="anchor" href="#arg-keep"></a></dt>
@@ -94,7 +96,7 @@ should be kept or dropped (defaults to FALSE, which keeps only the slope classif
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>The transport model with slope information.</p>
+    <p>The transport model (<code>sf</code>) with all its columns and a <code>slope_class</code> column.</p>
     </div>
     <div class="section level2">
     <h2 id="slopes-classification-">Slopes classification:<a class="anchor" aria-label="anchor" href="#slopes-classification-"></a></h2>
@@ -107,7 +109,10 @@ should be kept or dropped (defaults to FALSE, which keeps only the slope classif
 | slope &gt; +0.010 &amp; slope &lt;= +0.030 |        +0.02     |
 | slope &gt; +0.030 &amp; slope &lt;= +0.050 |        +0.04     |
 | slope &gt; +0.050 &amp; slope &lt;= +0.070 |        +0.06     |
-| slope &gt; +0.070                   |        -0.06     |</p>
+| slope &gt; +0.070                   |        +0.06     |</p>
+<p>Heights are read at the first and last vertex of each segment, after projecting
+them to the coordinate reference system of <code>heightfile</code>. Segments with no height
+(outside the raster) are treated as flat (slope 0), with a warning.</p>
     </div>
 
     <div class="section level2">

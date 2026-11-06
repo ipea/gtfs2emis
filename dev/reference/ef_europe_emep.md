@@ -43,8 +43,11 @@ ef_europe_emep(
 - pollutant:
 
   character; Pollutant, classified in
-  "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" means
-  Fuel Consumption.
+  "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" is
+  fuel consumption (g/km). "EC" is energy consumption in MJ/km, although
+  it is returned with g/km units. FC and CO2 are not available for every
+  combination (e.g. there is no CO2 for "BD" or for "Conventional"
+  diesel buses).
 
 - fuel:
 
@@ -64,11 +67,16 @@ ef_europe_emep(
 
   numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00,
   0.02, 0.04 and 0.06. Negative gradients means downhills and positive
-  uphills. Default is 0.0.
+  uphills. Default is 0.0. Either one value or one value per `speed`.
+  Values are rounded to two decimals; other values are an error. Some
+  pollutants (e.g. "CH4", "NH3", "N2O") and some CNG and hybrid
+  combinations are only available at slope 0.00 and load 0.5; for them,
+  that value is used with a message.
 
 - load:
 
   numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.
+  Either one value or one value per `speed`.
 
 - fcorr:
 

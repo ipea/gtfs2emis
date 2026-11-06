@@ -164,7 +164,8 @@ where:
 
 - LCF_brake = load correction factor for brake wear,
 
-- EF_tsp_brake_pc = passenger car emission factor for TSP,
+- EF_tsp_brake_pc = passenger car (ICE) emission factor for TSP, 0.0122
+  g/km (EMEP/EEA guidebook 2019, Table 3-6),
 
 and LCF_brake = 1 + (0.79 x LF),
 
@@ -263,10 +264,10 @@ emi_europe_emep_wear(dist = units::set_units(1,"km"),
 #> $emi
 #>    PM10_brake_veh_1 PM10_brake_veh_2 TSP_brake_veh_1 TSP_brake_veh_2
 #>             <units>          <units>         <units>         <units>
-#> 1:   0.01674622 [g]   0.01674622 [g]  0.01708798 [g]  0.01708798 [g]
+#> 1:   0.02724052 [g]   0.02724052 [g]  0.02779645 [g]  0.02779645 [g]
 #>    PM2.5_brake_veh_1 PM2.5_brake_veh_2 PM10_tyre_veh_1 PM10_tyre_veh_2
 #>              <units>           <units>         <units>         <units>
-#> 1:   0.006664313 [g]   0.006664313 [g]  0.00936999 [g]  0.01405498 [g]
+#> 1:    0.01084062 [g]    0.01084062 [g]  0.00936999 [g]  0.01405498 [g]
 #>    TSP_tyre_veh_1 TSP_tyre_veh_2 PM2.5_tyre_veh_1 PM2.5_tyre_veh_2
 #>           <units>        <units>          <units>          <units>
 #> 1: 0.01561665 [g] 0.02342497 [g]  0.006558993 [g]  0.009838489 [g]

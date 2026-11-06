@@ -167,7 +167,8 @@ heavy-duty vehicles.</p>
 <p>EF_tsp_brake_hdv = 1.956 x LCF_brake x EF_tsp_brake_pc</p>
 <p>where:</p><ul><li><p>EF_tsp_brake_hdv  = heavy-duty vehicle emission factor for TSP,</p></li>
 <li><p>LCF_brake         = load correction factor for brake wear,</p></li>
-<li><p>EF_tsp_brake_pc   = passenger car emission factor for TSP,</p></li>
+<li><p>EF_tsp_brake_pc   = passenger car (ICE) emission factor for TSP, 0.0122 g/km
+(EMEP/EEA guidebook 2019, Table 3-6),</p></li>
 </ul><p>and
 LCF_brake = 1 + (0.79 x LF),</p>
 <p>where:</p><ul><li><p>LF = load factor (-), ranging from 0 for an empty bus to 1 for a fully laden one.</p></li>
@@ -224,10 +225,10 @@ class i (-).</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $emi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    PM10_brake_veh_1 PM10_brake_veh_2 TSP_brake_veh_1 TSP_brake_veh_2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             &lt;units&gt;          &lt;units&gt;         &lt;units&gt;         &lt;units&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   0.01674622 [g]   0.01674622 [g]  0.01708798 [g]  0.01708798 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   0.02724052 [g]   0.02724052 [g]  0.02779645 [g]  0.02779645 [g]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    PM2.5_brake_veh_1 PM2.5_brake_veh_2 PM10_tyre_veh_1 PM10_tyre_veh_2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;units&gt;           &lt;units&gt;         &lt;units&gt;         &lt;units&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   0.006664313 [g]   0.006664313 [g]  0.00936999 [g]  0.01405498 [g]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    0.01084062 [g]    0.01084062 [g]  0.00936999 [g]  0.01405498 [g]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    TSP_tyre_veh_1 TSP_tyre_veh_2 PM2.5_tyre_veh_1 PM2.5_tyre_veh_2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;units&gt;        &lt;units&gt;          &lt;units&gt;          &lt;units&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: 0.01561665 [g] 0.02342497 [g]  0.006558993 [g]  0.009838489 [g]</span>

@@ -19,12 +19,14 @@ slope_class_europe_emep(tp_model, heightfile, keep = FALSE)
 
 - tp_model:
 
-  LineString Simple Feature; transport model output.
+  LineString Simple Feature; transport model output. Geometries must be
+  LINESTRING and have a coordinate reference system; `dist` is in km.
 
 - heightfile:
 
   character or raster data; The raster file with height data, or its
-  filepath.
+  filepath. Its coordinate reference system may differ from the one of
+  `tp_model`.
 
 - keep:
 
@@ -34,7 +36,8 @@ slope_class_europe_emep(tp_model, heightfile, keep = FALSE)
 
 ## Value
 
-The transport model with slope information.
+The transport model (`sf`) with all its columns and a `slope_class`
+column.
 
 ## Slopes classification:
 
@@ -44,7 +47,12 @@ The transport model with slope information.
 -0.02 \| \| slope \> -0.010 & slope \<= +0.010 \| +0.00 \| \| slope \>
 +0.010 & slope \<= +0.030 \| +0.02 \| \| slope \> +0.030 & slope \<=
 +0.050 \| +0.04 \| \| slope \> +0.050 & slope \<= +0.070 \| +0.06 \| \|
-slope \> +0.070 \| -0.06 \|
+slope \> +0.070 \| +0.06 \|
+
+Heights are read at the first and last vertex of each segment, after
+projecting them to the coordinate reference system of `heightfile`.
+Segments with no height (outside the raster) are treated as flat (slope
+0), with a warning.
 
 ## Examples
 

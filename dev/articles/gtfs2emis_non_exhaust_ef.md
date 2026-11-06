@@ -129,7 +129,8 @@ where:
 
 - $`EFTSP^{hdv}_{brake}`$ = heavy-duty vehicle emission factor for TSP,
 - $`LCF_{brake}`$ = load correction factor for brake wear,
-- $`EFTSP^{pc}_{brake}`$ = passenger car emission factor for TSP.
+- $`EFTSP^{pc}_{brake}`$ = passenger car emission factor for TSP, 0.0122
+  g/km.
 
 ``` math
 LCF_{brake} = 1 + (0.79 \times LF),
@@ -185,7 +186,7 @@ emi_europe_emep_wear(dist = units::set_units(1,"km"),
 #> $emi
 #>    PM10_brake_veh_1 TSP_brake_veh_1 PM2.5_brake_veh_1
 #>             <units>         <units>           <units>
-#> 1:   0.03349245 [g]  0.03417597 [g]    0.01332863 [g]
+#> 1:   0.05448105 [g]   0.0555929 [g]    0.02168123 [g]
 #> 
 #> $process
 #> [1] "brake"
