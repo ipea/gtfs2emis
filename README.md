@@ -44,8 +44,9 @@ library(gtfs2emis)
 
 The `gtfs2emis` package has two core functions.
 
-1.  `transport_model()` converts GTFS data into a GPS-like table with
-    the space-time positions and speeds of public transport vehicles.
+1.  `transport_model()` converts GTFS data into an `sf` object of road
+    segments between consecutive stops, with the times, distances and
+    speeds of public transport vehicles.
     The only input required is a `GTFS.zip` feed.
 
 2.  `emission_model()` estimates hot-exhaust emissions based on four
@@ -77,9 +78,9 @@ follows.
 ### 1. Run transport model
 
 The first step is to use the `transport_model()` function to convert
-GTFS data into a GPS-like table, so that we can get the space-time
-position and speed of each vehicle of the public transport system at
-high spatial and temporal resolutions.
+GTFS data into road segments between consecutive stops, so that we
+get the time, distance and speed of each vehicle of the public
+transport system on every segment of its trips.
 
 ``` r
 # read GTFS.zip

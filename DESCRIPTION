@@ -36,7 +36,7 @@ Imports:
     data.table,
     furrr,
     future,
-    gtfs2gps (>= 2.1-4),
+    gtfs2gps (>= 2.1-4.9000),
     gtfstools (>= 2.0.1),
     methods,
     sf (>= 0.9-0),
@@ -51,6 +51,8 @@ Suggests:
     progressr,
     rmarkdown,
     testthat (>= 2.1.0)
+Remotes: 
+    ipea/gtfs2gps
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

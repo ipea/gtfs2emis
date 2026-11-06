@@ -20,21 +20,21 @@ transport_model(
 \item{gtfs_data}{A path to a GTFS file or a GTFS data organized as a list of
 \code{data.tables} created with \code{gtfstools::read_gtfs()}.}
 
-\item{min_speed}{numeric (in km/h) or a speed units value. Minimum speed to
-be considered as valid. Values below minimum speed will be updated
-according to the \code{new_speed} parameter, which can affect the arrival
-and  departure times of vehicles at  transit stops. Defaults to \code{2}
-km/h.}
+\item{min_speed}{numeric (in km/h) or a speed units value. Minimum valid
+speed, at least 2 km/h. Defaults to \code{2} km/h. Stop times are first
+adjusted with \code{\link[gtfstools:set_min_speed]{gtfstools::set_min_speed()}}, which can change the
+arrival and departure times of vehicles at transit stops. Segment
+speeds that are still below \code{min_speed} are then set to \code{min_speed};
+their \code{speed} then no longer equals \code{dist} divided by their duration,
+and their timestamps are not changed.}
 
-\item{max_speed}{numeric (in km/h) or a speed units value. Maximum speed to
-be considered as valid. Values above maximum speed will be  updated
-according to the \code{new_speed} parameter, which can affect the arrival
-and departure times of vehicles at transit stops. Defaults to \code{80}
-km/h.}
+\item{max_speed}{numeric (in km/h) or a speed units value. Maximum valid
+speed, at least 3 km/h. Defaults to \code{80} km/h. As for \code{min_speed},
+stop times are first adjusted with \code{\link[gtfstools:set_max_speed]{gtfstools::set_max_speed()}}, and
+segment speeds still above \code{max_speed} are set to \code{max_speed}.}
 
-\item{new_speed}{numeric (in km/h) or a speed units value. Speed value used
-to replace the speeds that fall outside the \code{min_speed} and \code{max_speed}
-range or which are missing. When \code{new_speed = NULL} (the default), the
+\item{new_speed}{numeric (in km/h) or a speed units value. Speed used for
+segments without a speed. When \code{new_speed = NULL} (the default), the
 function uses the average speed of the entire GTFS data feed, weighted
 by distance.}
 
@@ -67,17 +67,29 @@ should not contain files from other runs.}
 a warning. The whole feed is processed at once.}
 }
 \value{
-An \code{sf} object (class \code{c("sf", "data.frame")}) with one LINESTRING
-per segment between consecutive stops, from the first to the last
-stop of each trip, or \code{NULL} when \code{output_path} is provided (the
-outputs are then saved as files in \code{output_path}).
+An \code{sf} object (class \code{c("sf", "data.frame")}, CRS 4326) with one
+LINESTRING per segment between consecutive stops, from the first to
+the last stop of each trip, or \code{NULL} when \code{output_path} is provided
+(the outputs are then saved as files in \code{output_path}). Its columns
+are:
+\itemize{
+\item \code{shape_id}, \code{trip_id}, \code{route_type}, \code{trip_number}: the trip.
+For trips in \code{frequencies.txt}, \code{trip_id} gets a suffix for each
+departure (e.g. \code{"1054020_1"}, \code{"1054020_2"});
+\item \code{from_stop_id}, \code{to_stop_id}, \code{stop_sequence}: the segment's stops;
+\item \code{from_timestamp}, \code{to_timestamp} (class \code{ITime}), and \code{timestamp},
+equal to \code{from_timestamp};
+\item \code{dist} (km) and \code{speed} (km/h) of the segment, and \code{cumdist} (m) and
+\code{cumtime} (s), cumulative along the trip, all as \code{units} objects;
+\item \code{geometry}.
+}
 }
 \description{
-This function converts a public transport data set in GTFS format into a
-GPS-like table with the space-time positions and speeds of public transport
-vehicles. The function also allow users to set the spatial resolution of the
-output and to adjust the speed of public transport vehicles given a
-\code{min_speed} and \code{max_speed} range.
+This function converts a public transport data set in GTFS format into
+road segments between consecutive stops of each trip, with their times,
+distances and speeds, using the gtfs2gps package. The function also allows users to
+set the spatial resolution of the output and to keep the speed of public
+transport vehicles within a \code{min_speed} and \code{max_speed} range.
 }
 \examples{
 \donttest{

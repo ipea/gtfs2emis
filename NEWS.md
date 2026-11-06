@@ -3,10 +3,12 @@
 - Errors and messages now use {cli}. All errors have class `gtfs2emis_error`, and a missing emission-factor combination has class `gtfs2emis_missing_ef`, so they can be caught with `tryCatch()`. Input checks still use {checkmate}. Error and message wording changed, so code that matches the old text with a regular expression may need updating. New dependencies: cli, rlang.
 - `emis_summary()` no longer calls a {testthat} function at run time, so it works without {testthat} installed.
 - `transport_model()` was rewritten for the new {gtfs2gps} interface. It runs `gtfs2gps::gtfs2gps()` once on the whole feed, in memory, after limiting speeds with `gtfstools::set_min_speed()` and `gtfstools::set_max_speed()`. Results change:
+  - It requires the development version of {gtfs2gps} (>= 2.1-4.9000, installed from GitHub through `Remotes: ipea/gtfs2gps`): with gtfs2gps 2.1-4, some trips lost segments or got segments joining two trips (608 segments instead of 632 on the Detroit example feed), and an empty feed crashed R. Until that version of {gtfs2gps} is on CRAN, this version of gtfs2emis can't be released there.
   - The parts of a shape before the first stop and after the last stop of a trip are no longer returned (about 19% less distance on the Curitiba example feed).
-  - Missing or out-of-range segment speeds are replaced by `new_speed` or, when `new_speed = NULL`, by the distance-weighted mean speed of the whole feed (before, of each shape).
+  - Segment speeds still outside `min_speed`–`max_speed` are set to the nearest limit; their timestamps are not changed. Missing speeds are replaced by `new_speed` or, when `new_speed = NULL`, by the distance-weighted mean speed of the whole feed (before, out-of-range speeds were also replaced, with the mean of each shape).
+  - A feed with nothing to convert (for example, empty after filtering) gives a `gtfs2emis_error`.
   - `parallel` and `continue` are deprecated: they are ignored and give a warning (class `gtfs2emis_deprecated`). Set the number of threads with `ncores`, which now defaults to `2` and accepts `Inf`.
-  - With `output_path`, one `.rds` file is saved per `shape_id`, as before, but the whole feed is processed in memory.
+  - With `output_path`, one `.rds` file is saved per `shape_id`, as before, but the whole feed is processed in memory. A `%` in a `shape_id` is now always encoded (as `%25`), so ids round-trip with `utils::URLdecode()`; ids containing a `%XX` sequence (e.g. `"x%20y"`) get new file names.
   - A GTFS path is read with `gtfstools::read_gtfs()`, and {gtfstools} (>= 2.0.1) moves from Suggests to Imports.
 
 ## Bug fixes

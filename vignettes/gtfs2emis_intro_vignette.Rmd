@@ -60,7 +60,6 @@ Before we start, let's load a few packages we'll be using in this vignette:
 ```{r, message = FALSE}
 library(gtfs2emis)
 library(gtfstools)
-library(progressr)
 library(data.table)
 library(ggplot2)
 library(units)
@@ -69,7 +68,7 @@ library(sf)
 
 The `gtfs2emis` package has two core functions:
 
-1. `transport_model()`. This function converts GTFS data into a GPS-like `data.table` with the space-time positions and speeds of public transport vehicles.
+1. `transport_model()`. This function converts GTFS data into an `sf` object of road segments between consecutive stops, with the times, distances and speeds of public transport vehicles.
 2. `emission_model()`. This function estimates hot-exhaust emissions based on four inputs:     
     a) the result from the `transport_model()`;
     b) a `string` indicating which emission factor model should be considered;
@@ -93,7 +92,7 @@ To demonstrate how the `gtfs2emis` package works, we will be using a small sampl
 
 ## 5.1 Transport model
 
-The first step is to generate the transport model using `transport_model{gtfs2emis}`. This function converts GTFS data into a GPS-like `data.table`, transforming the output into a `sf-linestring`, which is the required input for emissions estimates. The user can input either a string with the file path where the a `gtfs.zip` file is stored or an object of class `"gtfs" "list"`, generated with `gtfstools::read_gtfs()`.
+The first step is to generate the transport model using `transport_model{gtfs2emis}`. This function converts GTFS data into an `sf` object with one linestring per segment between consecutive stops, which is the required input for emissions estimates. The user can input either a string with the file path where the a `gtfs.zip` file is stored or an object of class `"gtfs" "list"`, generated with `gtfstools::read_gtfs()`.
 
 First, let's read the GTFS data and filter only the transport services that run on weekdays.
 
@@ -111,18 +110,15 @@ gtfs <- gtfstools::filter_by_weekday(gtfs,
 ```
 
 
-Now let's generate the transport model. This is the most time-consuming part. If you want to, you can set a progress bar by calling the `transport_model()` function within `progressr::with_progress()`, as shown below.
+Now let's generate the transport model. This is the most time-consuming part.
 
 
 ```{r, message = FALSE}
 # generate transport model
-progressr::with_progress( 
-  
-  tp_model <- transport_model(gtfs_data = gtfs,
-                              min_speed = 2,
-                              max_speed = 80,
-                              spatial_resolution = 100)
-  )
+tp_model <- transport_model(gtfs_data = gtfs,
+                            min_speed = 2,
+                            max_speed = 80,
+                            spatial_resolution = 100)
 
 head(tp_model)
 ```
