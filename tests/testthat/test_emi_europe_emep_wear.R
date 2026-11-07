@@ -69,3 +69,43 @@ test_that("emi_europe_emep_wear brake wear follows EMEP/EEA HDV factor (#113)", 
   expect_equal(as.numeric(emi$emi$TSP_brake_veh_1), tsp)
   expect_equal(as.numeric(emi$emi$PM10_brake_veh_1), 0.98 * tsp)
 })
+
+test_that("emi_europe_emep_wear: lengths of speed, dist and load are checked", {
+  dist <- units::set_units(c(1, 2), "km")
+  veh <- "Ubus Std 15 - 18 t"
+  expect_error(emi_europe_emep_wear(dist, units::set_units(c(30, 50, 60), "km/h"), "PM10", veh, 1)
+               , class = "gtfs2emis_error")
+  expect_error(emi_europe_emep_wear(dist, units::set_units(c(30, 50), "km/h"), "PM10", veh, 1
+                                    , load = c(0.2, 0.5, 0.8))
+               , class = "gtfs2emis_error")
+  # a single speed is used for every segment
+  one <- emi_europe_emep_wear(dist, units::set_units(30, "km/h"), "PM10", veh, 1)
+  two <- emi_europe_emep_wear(dist, units::set_units(c(30, 30), "km/h"), "PM10", veh, 1)
+  expect_equal(one$emi, two$emi)
+})
+
+test_that("emi_europe_emep_wear: brake wear with one load per segment", {
+  dist <- units::set_units(c(1, 2), "km")
+  speed <- units::set_units(c(30, 50), "km/h")
+  veh <- c("Ubus Std 15 - 18 t", "Ubus Artic >18 t")
+  emi <- function(load, i) emi_europe_emep_wear(dist[i], speed[i], "PM10", veh, c(0.4, 0.6)
+                                                , load = load, process = "brake")$emi
+  both <- emi(c(0.2, 0.8), 1:2)
+  expect_equal(dim(both), c(2L, 2L))
+  expect_equal(both[1, ], emi(0.2, 1))
+  expect_equal(both[2, ], emi(0.8, 2))
+})
+
+test_that("emi_europe_emep_wear: PM1.0 tyre and brake wear", {
+  # EMEP/EEA 2019, 1.A.3.b.vi, size distributions: PM1.0 is 0.060 of TSP for
+  # tyre wear (PM10: 0.600) and 0.100 of TSP for brake wear (PM10: 0.980)
+  dist <- units::set_units(c(1, 2), "km")
+  speed <- units::set_units(c(30, 50), "km/h")
+  veh <- "Ubus Std 15 - 18 t"
+  for (p in c("tyre", "brake")) {
+    pm1 <- emi_europe_emep_wear(dist, speed, "PM1.0", veh, 1, process = p)$emi[[1]]
+    pm10 <- emi_europe_emep_wear(dist, speed, "PM10", veh, 1, process = p)$emi[[1]]
+    ratio <- if (p == "tyre") 0.060 / 0.600 else 0.100 / 0.980
+    expect_equal(as.numeric(pm1), as.numeric(pm10) * ratio)
+  }
+})

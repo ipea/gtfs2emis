@@ -27,7 +27,7 @@ units 'g/km'; Emission factors for buses based on estimates from the
 Environment Company of Sao Paulo, Brazil (CETESB) 2017,
 and obtained from \href{https://github.com/atmoschem/vein}{vein package}.
 The R script used to organize the CETESB database can be found in the repository
-<\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_brazil_cetesb_db.R}>.
+<\url{https://github.com/ipea/gtfs2emis/blob/master/data-raw/ef_brazil_cetesb_db.R}>.
 }
 \seealso{
 Other emission factor data:

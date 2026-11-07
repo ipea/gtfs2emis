@@ -16,7 +16,8 @@
 #' @param pollutant character. Vector with one or more pollutants to be estimated.
 #'        Example: `c("CO", "CO2", "PM10", "NOx")`. See the documentation to check which 
 #'        pollutants are available for each emission factor model (`ef_usa_moves`, `ef_usa_emfac`,
-#'        `ef_europe_emep`, or `ef_brazil_cetesb`).
+#'        `ef_europe_emep`, or `ef_brazil_cetesb`). With `ef_europe_emep`, energy consumption
+#'        ("EC", in MJ/km) is not a mass and cannot be used.
 #' @param reference_year numeric. Year of reference considered to calculate the
 #'        emissions inventory. Defaults to `2020`. This
 #'        argument is only used when the `ef_model`
@@ -25,20 +26,26 @@
 #' @param process character; Emission process, classified in "hot_exhaust" (Default),
 #'        and wear processes (identified as "tyre","brake" and/or "road" wear). 
 #'        Note that wear processes are only available when `ef_model` is
-#'        `ef_europe_emep`. Details on wear emissions are presented in
+#'        `ef_europe_emep`, and that `"hot_exhaust"` cannot be combined with
+#'        wear processes in the same call. Details on wear emissions are presented in
 #'        \code{\link{emi_europe_emep_wear}}.
 #' @param heightfile character or raster data. The raster file with height data,
 #'        or its filepath, used to estimate emissions considering the effect of 
 #'        street slope. This argument is used only when `ef_brazil_scaled_euro` or 
 #'        `ef_europe_emep` are selected. Default is `NULL`. Details are provided in
 #'        \code{\link{slope_class_europe_emep}}.
-#' @param parallel logical. Decides whether the function should run in parallel. 
-#'        Defaults is `TRUE`. 
-#' @param ncores integer. Number of cores to be used in parallel execution. This 
-#'        argument is ignored if parallel is `FALSE`. Default (`NULL`) selects 
-#'        the total number of available cores minus one.                
+#' @param parallel **Deprecated.** Using it gives a warning. `parallel = FALSE`
+#'        still runs sequentially; any other value is ignored. Use `ncores`
+#'        instead.
+#' @param ncores Number of parallel R processes used when `tp_model` is a
+#'        folder of files (each process loads the installed gtfs2emis).
+#'        Defaults to 2; `1` runs sequentially; `Inf` uses all available
+#'        cores, as given by `parallelly::availableCores()`, and larger values
+#'        are reduced to that number; `NULL` is treated as 2. Not used when
+#'        `tp_model` is an `sf` object.
 #' @param output_path character. File path where the function output is exported.
-#'        If `NULL` (Default), the function returns the output to user.
+#'        If `NULL` (Default), the function returns the output to user. When
+#'        `tp_model` is a folder, `output_path` must be a different folder.
 #' @param continue logical. Argument that can be used only with output_path When TRUE,
 #'        it skips processing the shape identifiers that were already saved into 
 #'        files. It is useful to continue processing a GTFS file that was stopped
@@ -77,7 +84,7 @@
 #'  set with the `reference_year` argument; `fleet_data` does not need a
 #'  reference year column.
 #'
-#'  Users can check the [gtfs2emis fleet data vignette](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html),
+#'  Users can check the [gtfs2emis fleet data vignette](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html),
 #'   for more examples. 
 #'  
 #'  Based on the input height data, the function returns the slope class between 
@@ -110,8 +117,7 @@
 #'                             min_speed = 2,
 #'                             max_speed = 80,
 #'                             new_speed = 20,
-#'                             spatial_resolution = 100,
-#'                             parallel = FALSE)
+#'                             spatial_resolution = 100)
 #' 
 #' # Example using Brazilian emission model and fleet
 #' fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",
@@ -203,31 +209,30 @@ emission_model <- function(  tp_model
                              , reference_year = 2020
                              , process = "hot_exhaust"
                              , heightfile = NULL
-                             , parallel = TRUE
-                             , ncores = NULL
+                             , parallel = NULL
+                             , ncores = 2
                              , output_path = NULL
                              , continue = FALSE
                              , quiet = TRUE){
-  #tp_model = tp_model
-  #ef_model = "ef_europe_emep"
-  #fleet_data = my_fleet
-  #pollutant = "PM10"
-  #reference_year = 2020
-  #process = c("tyre","brake","road")
-  #heightfile = NULL
-  #parallel = TRUE
-  #ncores = NULL
-  #output_path = NULL
-  #continue = FALSE
-  #quiet = TRUE
+  # deprecated arguments ----
+  if(!missing(parallel)){
+    cli::cli_warn(c("!" = "The {.arg parallel} argument of {.fn emission_model} is deprecated."
+                    , "i" = "Use {.arg ncores} instead ({.code ncores = 1} runs sequentially).")
+                  , class = "gtfs2emis_deprecated")
+    # old code with parallel = FALSE stays sequential
+    if(isFALSE(parallel)) ncores <- 1
+  }
+
   # A) Checking inputs -----
-  
+
+  # number of parallel processes (used only when tp_model is a folder)
+  if(is.null(ncores)) ncores <- 2
+  assert_number(ncores, lower = 1)
+  ncores <- min(ncores, parallelly::availableCores())
+  assert_integerish(ncores, lower = 1)
+
   assert_data_frame(fleet_data, null.ok = FALSE)
   assert_vector(pollutant, null.ok = FALSE)
-  assert_logical(parallel, null.ok = FALSE)
-  
-  if(parallel)  assert_integerish(ncores,lower = 1,upper = parallelly::availableCores(omit = 1),null.ok = TRUE)
-  
   assert_logical(continue, null.ok = FALSE)
   assert_logical(quiet, null.ok = FALSE)
   assert_numeric(reference_year, lower = 2000, finite = TRUE, any.missing = TRUE)
@@ -239,6 +244,16 @@ emission_model <- function(  tp_model
   if(is.character(tp_model)) assert_directory_exists(tp_model)
   assert_string(output_path, null.ok = TRUE)
   if(!is.null(output_path)) assert_directory_exists(output_path)
+  # writing into the input folder would overwrite the transport model files
+  if(is.character(tp_model) && !is.null(output_path)){
+    same_dir <- normalizePath(c(tp_model[1], output_path), winslash = "/", mustWork = TRUE)
+    if(.Platform$OS.type == "windows") same_dir <- tolower(same_dir)
+    if(same_dir[1] == same_dir[2]){
+      cli::cli_abort(c("{.arg output_path} must differ from the {.arg tp_model} folder."
+                       , "x" = "Writing to {.path {output_path}} would overwrite the transport model files.")
+                     , class = "gtfs2emis_error")
+    }
+  }
   
   ## height file ----
   assert_checks(
@@ -254,6 +269,19 @@ emission_model <- function(  tp_model
                               ,"ef_usa_moves","ef_europe_emep"
                               ,"ef_brazil_scaled_euro")
                            ,null.ok = FALSE)
+  ## process ----
+  assert_character(process, any.missing = FALSE, min.len = 1)
+  assert_subset(process, c("hot_exhaust", "tyre", "brake", "road"))
+  if(any(process != "hot_exhaust") && ef_model != "ef_europe_emep"){
+    cli::cli_abort(c("Wear processes ({.val tyre}, {.val brake}, {.val road}) are only available with {.code ef_model = \"ef_europe_emep\"}."
+                     , "x" = "{.arg process} is {.val {process}} and {.arg ef_model} is {.val {ef_model}}.")
+                   , class = "gtfs2emis_error")
+  }
+  if("hot_exhaust" %in% process && length(unique(process)) > 1){
+    cli::cli_abort(c("{.arg process} cannot mix {.val hot_exhaust} with wear processes."
+                     , "i" = "Run {.fn emission_model} once for {.val hot_exhaust} and once for the wear processes.")
+                   , class = "gtfs2emis_error")
+  }
   ## ii) Fleet data  | EF model ----
   if (ef_model != "ef_europe_emep"){
     assert_checks(
@@ -286,11 +314,6 @@ emission_model <- function(  tp_model
         , combine = "and", .var.name = "fleet_data"
       )
     }else{
-      # process
-      assert_vector(process,any.missing = FALSE,min.len = 1,null.ok = FALSE)
-      assert_class(process,"character")
-      name_process <- c('tyre','brake','road')
-      for(i in process) assert_choice(i,name_process, .var.name = "process")
       # names fleet_data
       assert_checks(
         checkmate::check_choice('veh_type', names(fleet_data))
@@ -318,21 +341,8 @@ emission_model <- function(  tp_model
     }
     
   }
-  
-  if(parallel){
-    # number of cores
-    if(is.null(ncores)){
-      ncores <- parallelly::availableCores(omit = 1)
 
-      if(!quiet) cli::cli_inform('Using {ncores} CPU cores')
-    }
-    
-    oplan <- future::plan("multisession", workers = ncores)
-    on.exit(future::plan(oplan), add = TRUE)
-    
-    
-  }
-  # B) EF function ---------------- 
+  # B) EF function ----------------
   
   # Generate EF cetesb_brazil before the loop
   # to avoid multiple runs in the loop
@@ -388,7 +398,7 @@ emission_model <- function(  tp_model
     }
     if(ef_model == "ef_usa_emfac"){
       
-      temp_ef <- ef_usa_emfac(pollutant = pollutant,
+      temp_ef <- ef_usa_emfac(pollutant = pollutant
                               , reference_year = reference_year
                               , model_year = fleet_data$model_year
                               , speed = temp_shape$speed
@@ -418,6 +428,7 @@ emission_model <- function(  tp_model
                                 , euro = fleet_data$euro
                                 , pollutant = pollutant
                                 , fuel = fleet_data$fuel
+                                , tech = fleet_data$tech
                                 , SDC = 19
                                 , slope = slope_input
                                 , load = 0.5
@@ -506,9 +517,11 @@ emission_model <- function(  tp_model
   ## E) IF 'tp_model' is character -----
   if(is.character(tp_model)){ 
     
-    # Check parallel condition
-    if(parallel){
-      
+    # parallel processes over the files
+    if(ncores > 1){
+      oplan <- future::plan("multisession", workers = ncores)
+      on.exit(future::plan(oplan), add = TRUE)
+
       requiredPackages = c("data.table", "sf", "units")
       emisLine <- furrr::future_map(.x = 1:length(tp_fname_files)
                                     ,.f = prepare_emis_output

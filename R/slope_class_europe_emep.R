@@ -10,7 +10,7 @@
 #'  @details .
 #'  
 #' @param tp_model LineString Simple Feature; transport model output. Geometries must be
-#' LINESTRING and have a coordinate reference system; `dist` is in km.
+#' LINESTRING and have a coordinate reference system; `dist` is in km (or a `units` length).
 #' @param heightfile character or raster data; The raster file with height data, or its filepath.
 #' Its coordinate reference system may differ from the one of `tp_model`.
 #' @param keep A logical. Whether the columns related height and slope to the consecutive bus stops 
@@ -47,8 +47,7 @@
 #'                             min_speed = 2,
 #'                             max_speed = 80,
 #'                             new_speed = 20,
-#'                             spatial_resolution = 100,
-#'                             parallel = FALSE)
+#'                             spatial_resolution = 100)
 #' 
 #' # read raster file
 #' raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")
@@ -72,6 +71,9 @@ slope_class_europe_emep <- function(tp_model,heightfile,keep = FALSE){
   # transport model: first and last vertex of each segment
   
   tp_model <- sf::st_as_sf(as.data.frame(tp_model))
+  if(nrow(tp_model) == 0){
+    cli::cli_abort("{.arg tp_model} has no rows.", class = "gtfs2emis_error")
+  }
   if(any(as.character(sf::st_geometry_type(tp_model)) != "LINESTRING")){
     cli::cli_abort("{.arg tp_model} must have LINESTRING geometries."
                    , class = "gtfs2emis_error")
@@ -101,7 +103,12 @@ slope_class_europe_emep <- function(tp_model,heightfile,keep = FALSE){
   
   # estimate slope
   dh <- to_height - from_height
-  slope <- dh / (1000 * as.numeric(tp_model$dist))
+  if(inherits(tp_model$dist, "units")){
+    dist_m <- as.numeric(units::set_units(tp_model$dist, "m"))
+  }else{
+    dist_m <- 1000 * as.numeric(tp_model$dist) # km, as in transport_model()
+  }
+  slope <- dh / dist_m
   n_na <- sum(is.na(dh))
   if(n_na > 0){
     cli::cli_warn(c(paste0("{n_na} segment{?s} {?has/have} no height in {.arg heightfile} "

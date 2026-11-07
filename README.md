@@ -4,11 +4,11 @@
 Version](https://www.r-pkg.org/badges/version/gtfs2emis)](https://CRAN.R-project.org/package=gtfs2emis)
 [![CRAN/METACRAN Total
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/gtfs2emis?color=blue)](https://CRAN.R-project.org/package=gtfs2emis)
-[![R-CMD-check](https://github.com/ipeaGIT/gtfs2emis/workflows/R-CMD-check/badge.svg)](https://github.com/ipeaGIT/gtfs2emis/actions)
+[![R-CMD-check](https://github.com/ipea/gtfs2emis/workflows/R-CMD-check/badge.svg)](https://github.com/ipea/gtfs2emis/actions)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Codecov test
-coverage](https://codecov.io/gh/ipeaGIT/gtfs2emis/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ipeaGIT/gtfs2emis?branch=master)
+coverage](https://codecov.io/gh/ipea/gtfs2emis/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ipea/gtfs2emis?branch=master)
 [![DOI](https://img.shields.io/badge/DOI-10.1016/j.trd.2023.103757-blue)](https://doi.org/10.1016/j.trd.2023.103757)
 
 **gtfs2emis** is an R package to estimate the emission levels of public
@@ -36,7 +36,7 @@ install.packages("gtfs2emis")
 library(gtfs2emis)
 
 # or use the development version with latest features
-devtools::install_github("ipeaGIT/gtfs2emis")
+devtools::install_github("ipea/gtfs2emis")
 library(gtfs2emis)
 ```
 
@@ -44,8 +44,9 @@ library(gtfs2emis)
 
 The `gtfs2emis` package has two core functions.
 
-1.  `transport_model()` converts GTFS data into a GPS-like table with
-    the space-time positions and speeds of public transport vehicles.
+1.  `transport_model()` converts GTFS data into an `sf` object of road
+    segments between consecutive stops, with the times, distances and
+    speeds of public transport vehicles.
     The only input required is a `GTFS.zip` feed.
 
 2.  `emission_model()` estimates hot-exhaust emissions based on four
@@ -77,9 +78,9 @@ follows.
 ### 1. Run transport model
 
 The first step is to use the `transport_model()` function to convert
-GTFS data into a GPS-like table, so that we can get the space-time
-position and speed of each vehicle of the public transport system at
-high spatial and temporal resolutions.
+GTFS data into road segments between consecutive stops, so that we
+get the time, distance and speed of each vehicle of the public
+transport system on every segment of its trips.
 
 ``` r
 # read GTFS.zip
@@ -87,7 +88,7 @@ gtfs_file <- system.file("extdata/irl_dub_gtfs.zip", package = "gtfs2emis")
 gtfs <- gtfstools::read_gtfs(gtfs_file)
 
 # generate transport model
-tp_model <- transport_model(gtfs_data = gtfs,spatial_resolution = 100,parallel = TRUE) 
+tp_model <- transport_model(gtfs_data = gtfs,spatial_resolution = 100) 
 ```
 
 ### 2. Prepare fleet data
@@ -170,9 +171,9 @@ emission factor models:
 
 | Source         | Pollutants                                                                                                                         |
 |--------------|----------------------------------------------------------|
-| CETESB         | CH4, CO, CO2, ETOH, FC (Fuel Consumption), FS (Fuel Sales), gCO2/KWH, gD/KWH, HC, KML, N2O, NH3, NMHC, NO, NO2, NOx, PM10 and RCHO |
+| CETESB         | CH4, CO, CO2, FC (Fuel Consumption), gCO2/KWH, gD/KWH, HC, KML, N2O, NH3, NMHC, NO, NO2, NOx and PM10 |
 | EMFAC2017/CARB | CH4, CO, CO2, N2O, NOx, PM10, PM25, ROG (Reactive Organic Gases), SOX, and TOG (Total Organic Gases)                               |
-| EMEP/EEA       | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, SPN23 (#kWh), and VOC                                                                   |
+| EMEP/EEA       | CH4, CO, CO2, EC, FC, N2O, NH3, NOx, PM10, and VOC                                                                                  |
 | MOVES3/EPA     | CH4, CO, CO2, EC, HONO, N2O, NH3, NH4, NO, NO2, NO3, NOx, PM10, PM25, SO2, THC, TOG, and VOC                                       |
 
 #### Fleet characteristics required by each emission factor model
@@ -201,13 +202,13 @@ Check out the guides for learning everything there is to know about all
 the different features:
 
 -   [Getting
-    started](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_intro_vignette.html)
+    started](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_intro_vignette.html)
 -   [Defining Fleet
-    data](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html)
+    data](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html)
 -   [Exploring Emission
-    Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
+    Factors](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
 -   [Exploring Non Exhaust Emission
-    Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html)
+    Factors](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html)
 
 ### **Related packages**
 

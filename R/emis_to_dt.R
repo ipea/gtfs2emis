@@ -38,8 +38,7 @@
 #'                             min_speed = 2,
 #'                             max_speed = 80,
 #'                             new_speed = 20,
-#'                             spatial_resolution = 100,
-#'                             parallel = FALSE)
+#'                             spatial_resolution = 100)
 #' 
 #' # Example using Brazilian emission model and fleet
 #' fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",
@@ -129,24 +128,42 @@ emis_to_dt <- function(emi_list, emi_vars = "emi", veh_vars = "veh_type"
     }
   }
   # merge------
-  tmp_dt <- lapply(seq_along(emi_list[[emi_vars]]),function(i){ # i = 1
-    
-    # variables (emi)
-    tmp_dt <- emi_list[[emi_vars]][,.SD,.SDcols = i]
-    names(tmp_dt) <- emi_vars
-    # variables (pol, veh)
-    if(!is.null(veh_vars))     for(j in seq_along(rep_veh)) tmp_dt[,(veh_vars[j]) := rep_veh[[j]][i]]
-    if(!is.null(pol_vars))     for(j in seq_along(rep_pol)) tmp_dt[,(pol_vars[j]) := rep_pol[[j]][i]]
-    if(!is.null(process_vars)) for(j in seq_along(rep_pro)) tmp_dt[,(process_vars[j]) := rep_pro[[j]][i]]
-    # variables (segment)
-    if(!is.null(segment_vars)){
-      for(j in seq_along(segment_vars)){
-        tmp_dt[,(segment_vars[j]) := emi_list[[segment_vars[j]]]]
-      }
+  # stack the K emission columns (N rows each) into one column, in one pass;
+  # label k is repeated over the N rows of column k
+  emi_cols <- emi_list[[emi_vars]]
+  n_col <- length(emi_cols)
+  n_row <- length(emi_cols[[1]])
+  if(any(lengths(emi_cols) != n_row)){
+    cli::cli_abort("All emission columns of {.arg emi_list${emi_vars}} must have the same length."
+                   , class = "gtfs2emis_error")
+  }
+  emi_values <- unlist(emi_cols, use.names = FALSE)
+  emi_attr <- attributes(emi_cols[[1]])   # keep the units of the emission columns
+  emi_attr$names <- NULL
+  attributes(emi_values) <- emi_attr
+  tmp_dt <- data.table::data.table(emi_values)
+  names(tmp_dt) <- emi_vars
+  add_labels <- function(vars, labels){
+    for(j in seq_along(labels)){
+      data.table::set(tmp_dt, j = vars[j]
+                      , value = rep(labels[[j]][seq_len(n_col)], each = n_row))
     }
-    return(tmp_dt)
-  })
-  tmp_dt <- data.table::rbindlist(tmp_dt)
+  }
+  # variables (pol, veh)
+  if(!is.null(veh_vars))     add_labels(veh_vars, rep_veh)
+  if(!is.null(pol_vars))     add_labels(pol_vars, rep_pol)
+  if(!is.null(process_vars)) add_labels(process_vars, rep_pro)
+  # variables (segment)
+  for(j in seq_along(segment_vars)){
+    seg_values <- emi_list[[segment_vars[j]]]
+    if(!length(seg_values) %in% c(1, n_row)){
+      cli::cli_abort(c("{.arg emi_list${segment_vars[j]}} must have length 1 or {n_row} (the number of segments)."
+                       , "x" = "It has length {length(seg_values)}.")
+                     , class = "gtfs2emis_error")
+    }
+    if(length(seg_values) != 1) seg_values <- rep(seg_values, n_col)
+    data.table::set(tmp_dt, j = segment_vars[j], value = seg_values)
+  }
   # rename
   all_vars = c(veh_vars, pol_vars,emi_vars,process_vars)
   data.table::setcolorder(tmp_dt,neworder = all_vars[!is.null(all_vars)])

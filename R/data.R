@@ -18,7 +18,7 @@
 #' The package presents a combination of emission factors from EMEP/EEA guidelines of 2007,
 #'  2013, 2016, and 2019, aiming to cover a greater number of pollutants and vehicle segments.
 #'  The script used to process the raw EMEP/EEA databases can be found in the repository
-#'  <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R>>.
+#'  <<https://github.com/ipea/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R>>.
 #'  
 #'  
 #' @format A data.table with 9388 rows and 22 variables:
@@ -59,7 +59,7 @@
 #' 
 #' The function returns the data in a data.frame format. The R script used to process 
 #' the raw EMFAC database can be found in the repository
-#' <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R>>.
+#' <<https://github.com/ipea/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R>>.
 #' 
 #'
 #' @format A data.table with 79198 rows and 8 variables:
@@ -120,7 +120,7 @@
 #' Environment Company of Sao Paulo, Brazil (CETESB) 2017,
 #' and obtained from [vein package](https://github.com/atmoschem/vein).
 #' The R script used to organize the CETESB database can be found in the repository
-#' <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_brazil_cetesb_db.R>>.
+#' <<https://github.com/ipea/gtfs2emis/blob/master/data-raw/ef_brazil_cetesb_db.R>>.
 #'
 #'
 #' @format  A data.table:

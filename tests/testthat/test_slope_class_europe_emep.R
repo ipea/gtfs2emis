@@ -10,20 +10,19 @@ test_that("slope_class_europe_emep", {
                               min_speed = 2,
                               max_speed = 80,
                               new_speed = 20,
-                              spatial_resolution = 100,
-                              parallel = FALSE)
+                              spatial_resolution = 100)
   
   # read raster file
   raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")
   
   tp_model_slope <- slope_class_europe_emep(tp_model,raster_cur)
   
-  expect_equal(tp_model_slope$slope_class, c(0.0,0.0), 0.001)
-  expect_equivalent(nrow(tp_model_slope), 2)
+  expect_equal(tp_model_slope$slope_class, rep(0.0, nrow(tp_model)), 0.001)
+  expect_equivalent(nrow(tp_model_slope), nrow(tp_model))
   expect_equivalent(ncol(tp_model_slope), ncol(tp_model) + 1) # input columns + slope_class
   
   tp_model_slope_true <- slope_class_europe_emep(tp_model,raster_cur,keep = TRUE)
-  expect_equivalent(nrow(tp_model_slope_true), 2)
+  expect_equivalent(nrow(tp_model_slope_true), nrow(tp_model))
   expect_equivalent(ncol(tp_model_slope_true), ncol(tp_model) + 5)
   })
 
@@ -61,4 +60,10 @@ test_that("slope_class_europe_emep uses each segment's endpoints (G-44/45/46)", 
   dem_utm <- make_test_dem(sf::st_bbox(sf::st_buffer(tp_utm, 500)), crs = "EPSG:32722", res = 10)
   res_utm <- slope_class_europe_emep(tp[1:3, ], dem_utm)
   expect_equal(res_utm$slope_class, c(0.06, -0.06, 0))
+
+  # dist given in metres (units) gives the same classes; no rows is an error
+  tp_m <- tp[1:3, ]
+  tp_m$dist <- units::set_units(tp_m$dist, "m")
+  expect_equal(slope_class_europe_emep(tp_m, dem)$slope_class, c(0.06, -0.06, 0))
+  expect_error(slope_class_europe_emep(tp[0, ], dem), class = "gtfs2emis_error")
 })

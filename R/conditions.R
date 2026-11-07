@@ -36,6 +36,7 @@ assert_file_exists      <- make_assert("check_file_exists")
 assert_integerish       <- make_assert("check_integerish")
 assert_list             <- make_assert("check_list")
 assert_logical          <- make_assert("check_logical")
+assert_number           <- make_assert("check_number")
 assert_numeric          <- make_assert("check_numeric")
 assert_string           <- make_assert("check_string")
 assert_subset           <- make_assert("check_subset")
@@ -59,4 +60,25 @@ assert_checks <- function(..., combine = c("or", "and"), .var.name, call = rlang
               , lead = if (combine == "or" && sum(!ok) > 1) "One of the following must apply:")
   }
   return(invisible(TRUE))
+}
+
+# TRUE when `x` is a units object with exactly the units `u` (as written by
+# units::deparse_unit(), e.g. "km h-1"). Safe inside if(): always TRUE/FALSE.
+has_units <- function(x, u) {
+  return(inherits(x, "units") && identical(units::deparse_unit(x), u))
+}
+
+# A speed as a plain number in km/h. Numbers are taken as km/h; units objects
+# are converted, with a cli error if they aren't a speed. Anything else
+# (NULL, character, ...) is returned unchanged for the asserts that follow.
+as_kmh <- function(x, var_name, call = rlang::caller_env()) {
+  if (!inherits(x, "units")) return(x)
+  u <- units::deparse_unit(x)
+  if (!units::ud_are_convertible(u, "km/h")) {
+    cli::cli_abort(c("Invalid argument {.arg {var_name}}."
+                     , "x" = "Must be a speed, but has units {.val {u}}.")
+                   , class = "gtfs2emis_error"
+                   , call = call)
+  }
+  return(as.numeric(units::set_units(x, "km/h")))
 }

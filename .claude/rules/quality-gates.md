@@ -25,7 +25,7 @@ All must hold for the files touched:
 | Docs regenerated | `Rscript -e "devtools::document()"` then `git diff --stat man/ NAMESPACE DESCRIPTION` | No unexpected content drift (use `git diff`, not `git status`: `core.autocrlf=true` can rewrite line endings only); intended changes staged with the source |
 | Targeted tests | `Rscript -e "devtools::test(filter = '<fn>')"` for every touched function (files are `test_<fn>.R`) | 0 failures, 0 new warnings |
 | Units / known values | for EF or emission math changes: a hand-checked value against the source table/equation | Matches within tolerance |
-| Parallel parity | if `transport_model()`/`emission_model()` worker code changed: run with `parallel = FALSE` and `parallel = TRUE, ncores = 2` (install the package first) | Identical results |
+| Parallel parity | if `transport_model()`/`emission_model()` worker code changed: run with `ncores = 1` and `ncores = 2` (install the package first) | Identical results |
 | Data | if `data/*.rda` changed | Rebuilt by the `data-raw/` script; `R/data.R` matches the columns |
 | Style | read the diff against the surrounding code | Matches the file (conventions A5) |
 | NEWS | user-facing change | Bullet under the development-version heading (conventions A9) |

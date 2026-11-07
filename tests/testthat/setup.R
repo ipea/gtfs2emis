@@ -10,7 +10,7 @@ gtfs_irl_raw <- gtfstools::read_gtfs(gtfs_irl_raw)
 gtfs_irl <- gtfstools::filter_by_shape_id(gtfs_irl_raw, shape_id = "60-123-b12-1.72.O")
 
 # transport model
-tp_model_irl <- transport_model(gtfs = gtfs_irl, parallel = TRUE)
+tp_model_irl <- transport_model(gtfs = gtfs_irl)
 
 # fleet data
 fleet_data_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t" 

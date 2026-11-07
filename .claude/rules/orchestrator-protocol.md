@@ -32,7 +32,7 @@ the plan and the relevant files:
 
 | Lens | Agent | Looks for |
 |---|---|---|
-| Correctness and emission math | `general-purpose` | Logic errors; EF formulas vs the source (EMEP/EEA, CETESB, MOVES, EMFAC, scaled Euro); speed validity ranges; units (km/h, km vs m, g/km, g); EF lookups that silently return `NA`/wrong rows; fleet composition not summing to 1; vector recycling between fleet and EF; joins/aggregations in `emis_summary()`/`emis_grid()`; CRS in `emis_grid()`; same result with `parallel = TRUE` and `FALSE` |
+| Correctness and emission math | `general-purpose` | Logic errors; EF formulas vs the source (EMEP/EEA, CETESB, MOVES, EMFAC, scaled Euro); speed validity ranges; units (km/h, km vs m, g/km, g); EF lookups that silently return `NA`/wrong rows; fleet composition not summing to 1; vector recycling between fleet and EF; joins/aggregations in `emis_summary()`/`emis_grid()`; CRS in `emis_grid()`; same result with `ncores = 1` and `ncores = 2` |
 | Performance and parallelism | `general-purpose` | Avoidable copies, row loops, repeated joins, slow `sf` operations, objects shipped to `future` workers, side effects (`<<-`, messages) lost in workers, temp files left behind; asks for `bench::mark` if a speed claim is made |
 | Package and CRAN | `r-package-reviewer` (local; if absent, `general-purpose` with `r-package-conventions.md`) | Conventions, roxygen, NAMESPACE, `data/` vs `data-raw/`, tests (including known values and "doesn't change input data"), CRAN policy (cores, writing outside `tempdir()`), back-compat |
 

@@ -22,7 +22,9 @@ test_that("emis_summary", {
   summary_pol <- emis_summary(emi_europe)
   
   # Expect equal-----
-  expect_equal(dim(summary_time),c(8,4)) # ncol
+  # 5 hours x 2 pollutants with gtfs2gps >= 2.1-4.9000; gtfs2gps 2.1-4 timed
+  # trip 3412 (08:00-08:23) at 16:27-17:00, so it had no 08 h (8 rows)
+  expect_equal(dim(summary_time),c(10,4)) # ncol
   expect_equal(dim(summary_veh),c(6,4))  # ncol
   expect_equal(dim(summary_pol),c(2,3))  # ncol
   #expect_equal(as.numeric(sum(summary_time$emi)),571.9754,0.01) # sum(emi)

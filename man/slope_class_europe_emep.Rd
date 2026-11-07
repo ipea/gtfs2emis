@@ -8,7 +8,7 @@ slope_class_europe_emep(tp_model, heightfile, keep = FALSE)
 }
 \arguments{
 \item{tp_model}{LineString Simple Feature; transport model output. Geometries must be
-LINESTRING and have a coordinate reference system; \code{dist} is in km.}
+LINESTRING and have a coordinate reference system; \code{dist} is in km (or a \code{units} length).}
 
 \item{heightfile}{character or raster data; The raster file with height data, or its filepath.
 Its coordinate reference system may differ from the one of \code{tp_model}.}
@@ -60,8 +60,7 @@ tp_model <- transport_model(gtfs_data = gtfs_small,
                             min_speed = 2,
                             max_speed = 80,
                             new_speed = 20,
-                            spatial_resolution = 100,
-                            parallel = FALSE)
+                            spatial_resolution = 100)
 
 # read raster file
 raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")

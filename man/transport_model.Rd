@@ -9,41 +9,47 @@ transport_model(
   min_speed = 2,
   max_speed = 80,
   new_speed = NULL,
-  parallel = TRUE,
-  ncores = NULL,
+  parallel = NULL,
+  ncores = 2,
   spatial_resolution = 100,
   output_path = NULL,
-  continue = FALSE
+  continue = NULL
 )
 }
 \arguments{
 \item{gtfs_data}{A path to a GTFS file or a GTFS data organized as a list of
 \code{data.tables} created with \code{gtfstools::read_gtfs()}.}
 
-\item{min_speed}{numeric (in km/h) or a speed units value. Minimum speed to
-be considered as valid. Values below minimum speed will be updated
-according to the \code{new_speed} parameter, which can affect the arrival
-and  departure times of vehicles at  transit stops. Defaults to \code{2}
-km/h.}
+\item{min_speed}{numeric (in km/h) or a speed units value. Minimum valid
+speed, at least 2 km/h. Defaults to \code{2} km/h. Stop times are first
+adjusted with \code{\link[gtfstools:set_min_speed]{gtfstools::set_min_speed()}}, which can change the
+arrival and departure times of vehicles at transit stops. Segment
+speeds that are still below \code{min_speed} are then set to \code{min_speed}.
+The segment's duration becomes its distance divided by the new speed,
+and the later times of the trip are shifted by the difference (each
+trip keeps its first departure). Durations are rounded to whole
+seconds, so a very short segment (under about 11 m at 80 km/h) can
+keep 0 s.}
 
-\item{max_speed}{numeric (in km/h) or a speed units value. Maximum speed to
-be considered as valid. Values above maximum speed will be  updated
-according to the \code{new_speed} parameter, which can affect the arrival
-and departure times of vehicles at transit stops. Defaults to \code{80}
-km/h.}
+\item{max_speed}{numeric (in km/h) or a speed units value. Maximum valid
+speed, at least 3 km/h. Defaults to \code{80} km/h. As for \code{min_speed},
+stop times are first adjusted with \code{\link[gtfstools:set_max_speed]{gtfstools::set_max_speed()}}, and
+segment speeds still above \code{max_speed} are set to \code{max_speed}, with
+the trip's times shifted in the same way.}
 
-\item{new_speed}{numeric (in km/h) or a speed units value. Speed value used
-to replace the speeds that fall outside the \code{min_speed} and \code{max_speed}
-range or which are missing from the GTFS input. When \code{new_speed = NULL}
-(the default), the function uses the average speed of the entire GTFS
-data feed.}
+\item{new_speed}{numeric (in km/h) or a speed units value, between
+\code{min_speed} and \code{max_speed}. Speed used for segments without a speed;
+the trip's times are shifted as for \code{min_speed}. When
+\code{new_speed = NULL} (the default), the function uses the average speed
+(total distance / total time) of the trips of the same \code{shape_id},
+after capping, or of the whole feed if the shape has none.}
 
-\item{parallel}{logical. Decides whether the function should run in parallel.
-Defaults is \code{TRUE}.}
+\item{parallel}{\strong{Deprecated.} This argument is ignored, and using it gives
+a warning. Use \code{ncores} instead.}
 
-\item{ncores}{integer. Number of cores to be used in parallel execution. This
-argument is ignored if parallel is \code{FALSE}. Default (\code{NULL}) selects
-the total number of available cores minus one.}
+\item{ncores}{Number of threads used. Defaults to 2. If \code{Inf}, it uses
+all threads available, as given by \code{data.table::getDTthreads()}.
+Values above that number are reduced to it.}
 
 \item{spatial_resolution}{The spatial resolution in meters. Defaults to \code{100}.
 The function only creates points in order to guarantee that the
@@ -52,30 +58,44 @@ maximum distance between two consecutive points will be at most the
 consecutive points with a distance smaller than the spatial resolution,
 the algorithm will not remove such points.}
 
-\item{output_path}{character. A directory path. If \code{NULL} (Default), the
-function returns the output. If the user passes a valid \code{output_path}, the
-output will be saved in the \code{output_path} dir. Note that the
-output of each public transport \code{shape_id} is saved separately in
-different files. Setting an \code{output_path} is recommended when working
-with large public transport system because the output of the function
-can be significantly large.}
+\item{output_path}{character. A directory path. If \code{NULL} (default), the
+output is returned. Otherwise, the output of each \code{shape_id} is saved
+in this directory as an \code{.rds} file named after its \code{shape_id}, and
+nothing is returned. Characters that can't be in a file name on some
+systems (such as \code{/}, \code{:} or \code{*}) and \code{\%} are
+written as \code{\%XX}, their hexadecimal code, so
+\code{utils::URLdecode()} gives the id back (e.g. \code{"a/b"} is saved
+as \code{a\%2Fb.rds}). The whole feed is still processed in memory.
+\code{\link[=emission_model]{emission_model()}} reads every \code{.rds} file in this directory, so it
+should not contain files from other runs.}
 
-\item{continue}{logical. Argument that can be used only with output_path When TRUE,
-it skips processing the shape identifiers that were already saved into
-files. It is useful to continue processing a GTFS file that was stopped
-for some reason. Default value is FALSE.}
+\item{continue}{\strong{Deprecated.} This argument is ignored, and using it gives
+a warning. The whole feed is processed at once.}
 }
 \value{
-An \code{sf} object (class \code{c("sf", "data.frame")}) with one LINESTRING
-per segment between consecutive stops, or \code{NULL} when \code{output_path}
-is provided (the outputs are then saved as files in \code{output_path}).
+An \code{sf} object (class \code{c("sf", "data.frame")}, CRS 4326) with one
+LINESTRING per segment between consecutive stops, from the first to
+the last stop of each trip, or \code{NULL} when \code{output_path} is provided
+(the outputs are then saved as files in \code{output_path}). Its columns
+are:
+\itemize{
+\item \code{shape_id}, \code{trip_id}, \code{route_type}, \code{trip_number}: the trip.
+For trips in \code{frequencies.txt}, \code{trip_id} gets a suffix for each
+departure (e.g. \code{"1054020_1"}, \code{"1054020_2"});
+\item \code{from_stop_id}, \code{to_stop_id}, \code{stop_sequence}: the segment's stops;
+\item \code{from_timestamp}, \code{to_timestamp} (class \code{ITime}), and \code{timestamp},
+equal to \code{from_timestamp};
+\item \code{dist} (km) and \code{speed} (km/h) of the segment, and \code{cumdist} (m) and
+\code{cumtime} (s), cumulative along the trip, all as \code{units} objects;
+\item \code{geometry}.
+}
 }
 \description{
-This function converts a public transport data set in GTFS format into a
-GPS-like table with the space-time positions and speeds of public transport
-vehicles. The function also allow users to set the spatial resolution of the
-output and to adjust the speed of public transport vehicles given a
-\code{min_speed} and \code{max_speed} range.
+This function converts a public transport data set in GTFS format into
+road segments between consecutive stops of each trip, with their times,
+distances and speeds, using the gtfs2gps package. The function also allows users to
+set the spatial resolution of the output and to keep the speed of public
+transport vehicles within a \code{min_speed} and \code{max_speed} range.
 }
 \examples{
 \donttest{
@@ -83,18 +103,22 @@ if (requireNamespace("gtfstools", quietly=TRUE)) {
 
 # read GTFS
 gtfs_file <- system.file("extdata/bra_cur_gtfs.zip", package = "gtfs2emis")
-gtfs <- gtfstools::read_gtfs(gtfs_file) 
+gtfs <- gtfstools::read_gtfs(gtfs_file)
 
 # keep a single trip_id to speed up this example
 gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4451136")
-  
+
 # run transport model
-tp_model <- transport_model(gtfs_data = gtfs_small,
-                            min_speed = 2,
-                            max_speed = 80,
-                            new_speed = 20,
-                            spatial_resolution = 100,
-                            parallel = FALSE)
+tp_model <- transport_model(
+  gtfs_data = gtfs_small,
+  min_speed = 2,
+  max_speed = 80,
+  new_speed = 20,
+  spatial_resolution = 100,
+  ncores = 2)
+
+head(tp_model)
+
   }
 }
 }

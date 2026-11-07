@@ -1,0 +1,34 @@
+url: https://ipea.github.io/gtfs2emis/
+
+template:
+  bootstrap: 5
+  light-switch: true
+
+development:
+  mode: auto
+
+reference:
+- title: "Core functions"
+- contents:
+  - transport_model
+  - emission_model
+- title: "Emission factor functions"
+- contents:
+  - ef_brazil_cetesb
+  - ef_usa_moves
+  - ef_usa_emfac
+  - ef_scaled_euro
+  - ef_europe_emep
+  - emi_europe_emep_wear
+  - slope_class_europe_emep
+- title: "Emission factor data sets"
+- contents:
+  - ef_brazil_cetesb_db
+  - ef_usa_moves_db
+  - ef_usa_emfac_db
+  - ef_europe_emep_db
+- title: "Support functions to analyze emission estimates"
+- contents:
+  - emis_summary()
+  - emis_grid()
+  - emis_to_dt()
