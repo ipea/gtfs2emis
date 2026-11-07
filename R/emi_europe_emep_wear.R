@@ -19,7 +19,7 @@
 #'  "PM10","PM2.5", "PM1.0","PM0.1". Please note that emissions factors for 
 #'  "PM1.0" and "PM0.1" are  not available for road surface wear process.
 #' @param veh_type character; Bus type, classified in "Ubus Midi <=15 t",
-#' "Ubus Std 15 - 18 t", "Ubus Artic >18 t", "Coaches Std >18 t", or "Coaches Artic >18 t".
+#' "Ubus Std 15 - 18 t", "Ubus Artic >18 t", "Coaches Std <=18 t", or "Coaches Artic >18 t".
 #' @param fleet_composition vector; Fleet composition, which is a distribution 
 #' of fleet based on frequency. If there is only one, 'fleet_composition' is 1.0.
 #' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5.

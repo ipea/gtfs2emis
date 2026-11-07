@@ -12,7 +12,7 @@ devtools::load_all()
 #  
 #  # Dev. version with latest features
 #  utils::remove.packages('gtfs2emis')
-#  devtools::install_github("ipeaGIT/gtfs2emis")
+#  devtools::install_github("ipea/gtfs2emis")
 #  
 
 ## ---- eval = TRUE, message = FALSE--------------------------------------------

@@ -80,7 +80,7 @@
 #'  set with the `reference_year` argument; `fleet_data` does not need a
 #'  reference year column.
 #'
-#'  Users can check the [gtfs2emis fleet data vignette](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html),
+#'  Users can check the [gtfs2emis fleet data vignette](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html),
 #'   for more examples. 
 #'  
 #'  Based on the input height data, the function returns the slope class between 

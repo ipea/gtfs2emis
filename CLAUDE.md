@@ -8,10 +8,9 @@ Brazil CETESB, USA MOVES and USA EMFAC, plus scaled-Euro local factors.
 `emission_model()` combines segments, fleet data and emission factors. The
 `emis_*()` helpers summarise the result by time, vehicle and pollutant, or on
 a spatial grid. It is built on `data.table`, `sf`, `units`, `checkmate`,
-`terra` and `future`/`furrr`. Published on CRAN; developed by Ipea (ipeaGIT).
+`terra` and `future`/`furrr`. Published on CRAN; developed by Ipea (GitHub: `ipea`).
 Maintainer (cre): Joao Bazzo; authors include Rafael H. M. Pereira and
-Pedro R. Andrade. License MIT. Docs: <https://ipea.github.io/gtfs2emis/> (DESCRIPTION still points to the
-dead `ipeagit` host; audit item #30).
+Pedro R. Andrade. License MIT. Docs: <https://ipea.github.io/gtfs2emis/>.
 Method paper: Vieira, Pereira & Andrade (2022), doi:10.31219/osf.io/8m2cy.
 Default branch: `master`.
 

@@ -54,7 +54,7 @@ estimating emissions from both anthropogenic and natural emission sources.
 The package presents a combination of emission factors from EMEP/EEA guidelines of 2007,
 2013, 2016, and 2019, aiming to cover a greater number of pollutants and vehicle segments.
 The script used to process the raw EMEP/EEA databases can be found in the repository
-<\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R}>.
+<\url{https://github.com/ipea/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R}>.
 }
 \seealso{
 Other emission factor data:

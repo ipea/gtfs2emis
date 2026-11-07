@@ -2,6 +2,9 @@
 
 - Errors and messages now use {cli}. All errors have class `gtfs2emis_error`, and a missing emission-factor combination has class `gtfs2emis_missing_ef`, so they can be caught with `tryCatch()`. Input checks still use {checkmate}. Error and message wording changed, so code that matches the old text with a regular expression may need updating. New dependencies: cli, rlang.
 - `emis_summary()` no longer calls a {testthat} function at run time, so it works without {testthat} installed.
+- The vignettes were rewritten for clarity, with consistently formatted code. They now state what `emission_model()` does with a detailed fleet table: it does not read `shape_id`, so route-specific fleets need one `emission_model()` call per group of shapes.
+- Links now point to the new GitHub organisation and website (`github.com/ipea/gtfs2emis`, <https://ipea.github.io/gtfs2emis/>), replacing the old `ipeaGIT` addresses.
+- `emi_europe_emep_wear()` documentation listed `"Coaches Std >18 t"` as a `veh_type`; the accepted value is `"Coaches Std <=18 t"`.
 - `transport_model()` was rewritten for the new {gtfs2gps} interface. It runs `gtfs2gps::gtfs2gps()` once on the whole feed, in memory, after limiting speeds with `gtfstools::set_min_speed()` and `gtfstools::set_max_speed()`. Results change:
   - It requires the development version of {gtfs2gps} (>= 2.1-4.9000, installed from GitHub through `Remotes: ipea/gtfs2gps`): with gtfs2gps 2.1-4, some trips lost segments or got segments joining two trips (608 segments instead of 632 on the Detroit example feed), and an empty feed crashed R. Until that version of {gtfs2gps} is on CRAN, this version of gtfs2emis can't be released there.
   - Blank stop times are filled with `gtfstools::interpolate_stop_times()` before the speed limits are applied; the feed's own times are kept.
@@ -80,7 +83,7 @@ Compared with gtfs2emis 0.1.2 (CRAN), single-threaded, on the example feeds:
 # gtfs2emis 0.1.1
 
 - New function `emi_europe_emep_wear()`, to estimate non-exhaust sources of 
-transit buses from EMEP model (detailed in [vignette non-exhaust](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html))
+transit buses from EMEP model (detailed in [vignette non-exhaust](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html))
 - Adjust the functions `emis_summary()`, `emis_grid()`, `emission_model()` to incorporate non-exhaust emissions estimates
 
 # gtfs2emis 0.1.0

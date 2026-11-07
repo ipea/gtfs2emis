@@ -4,11 +4,11 @@
 Version](https://www.r-pkg.org/badges/version/gtfs2emis)](https://CRAN.R-project.org/package=gtfs2emis)
 [![CRAN/METACRAN Total
 downloads](https://cranlogs.r-pkg.org/badges/grand-total/gtfs2emis?color=blue)](https://CRAN.R-project.org/package=gtfs2emis)
-[![R-CMD-check](https://github.com/ipeaGIT/gtfs2emis/workflows/R-CMD-check/badge.svg)](https://github.com/ipeaGIT/gtfs2emis/actions)
+[![R-CMD-check](https://github.com/ipea/gtfs2emis/workflows/R-CMD-check/badge.svg)](https://github.com/ipea/gtfs2emis/actions)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![Codecov test
-coverage](https://codecov.io/gh/ipeaGIT/gtfs2emis/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ipeaGIT/gtfs2emis?branch=master)
+coverage](https://codecov.io/gh/ipea/gtfs2emis/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ipea/gtfs2emis?branch=master)
 [![DOI](https://img.shields.io/badge/DOI-10.1016/j.trd.2023.103757-blue)](https://doi.org/10.1016/j.trd.2023.103757)
 
 **gtfs2emis** is an R package to estimate the emission levels of public
@@ -36,7 +36,7 @@ install.packages("gtfs2emis")
 library(gtfs2emis)
 
 # or use the development version with latest features
-devtools::install_github("ipeaGIT/gtfs2emis")
+devtools::install_github("ipea/gtfs2emis")
 library(gtfs2emis)
 ```
 
@@ -202,13 +202,13 @@ Check out the guides for learning everything there is to know about all
 the different features:
 
 -   [Getting
-    started](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_intro_vignette.html)
+    started](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_intro_vignette.html)
 -   [Defining Fleet
-    data](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html)
+    data](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html)
 -   [Exploring Emission
-    Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
+    Factors](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
 -   [Exploring Non Exhaust Emission
-    Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html)
+    Factors](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html)
 
 ### **Related packages**
 

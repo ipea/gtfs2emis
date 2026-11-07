@@ -25,8 +25,8 @@ Authors@R: c(
             person(given = "Ipea - Institute for Applied Economic Research",
                 role = c("cph", "fnd")))
 Description: A bottom up model to estimate the emission levels of public transport systems based on General Transit Feed Specification (GTFS) data. The package requires two main inputs: i) Public transport data in the GTFS standard format; and ii) Some basic information on fleet characteristics such as fleet age, technology, fuel and Euro stage. As it stands, the package estimates several pollutants at high spatial and temporal resolutions. Pollution levels can be calculated for specific transport routes, trips, time of the day or for the transport system as a whole. The output with emission estimates can be extracted in different formats, supporting analysis on how emission levels vary across space, time and by fleet characteristics. A full description of the methods used in the 'gtfs2emis' model is presented in Vieira, J. P. B.; Pereira, R. H. M.; Andrade, P. R. (2022) <doi:10.31219/osf.io/8m2cy>. 
-URL: https://ipeagit.github.io/gtfs2emis/ , https://github.com/ipeaGIT/gtfs2emis
-BugReports: https://github.com/ipeaGIT/gtfs2emis/issues
+URL: https://ipea.github.io/gtfs2emis/ , https://github.com/ipea/gtfs2emis
+BugReports: https://github.com/ipea/gtfs2emis/issues
 License: MIT + file LICENSE
 Depends:
     R (>= 4.1)

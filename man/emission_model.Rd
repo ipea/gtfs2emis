@@ -124,7 +124,7 @@ set with the \code{reference_year} argument; \code{fleet_data} does not need a
 reference year column.
 }
 
-Users can check the \href{https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html}{gtfs2emis fleet data vignette},
+Users can check the \href{https://ipea.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html}{gtfs2emis fleet data vignette},
 for more examples.
 
 Based on the input height data, the function returns the slope class between
