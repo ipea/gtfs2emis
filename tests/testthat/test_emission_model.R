@@ -7,16 +7,14 @@ default_tester <- function(tp_model = tp_model_bra,
                            fleet_data = fleet_data_usa,
                            pollutant = c("CO","PM10","CO2"),
                            reference_year = 2019,
-                           output_path = NULL,
-                           parallel = TRUE) {
-  
+                           output_path = NULL) {
+
   results <- gtfs2emis::emission_model(tp_model = tp_model,
                                        ef_model = ef_model,
                                        fleet_data = fleet_data,
                                        pollutant = pollutant,
                                        reference_year = reference_year,
-                                       output_path = output_path,
-                                       parallel = parallel
+                                       output_path = output_path
   )
   return(results)
 }
@@ -56,10 +54,21 @@ test_that("adequately raises errors", {
   expect_error(default_tester(pollutant = NULL))
   
   
-  # invalid parallel
-  expect_error(default_tester(parallel = 'banana'))
-  expect_error(default_tester(parallel = 123))
-  expect_error(default_tester(parallel = NULL))
+  # invalid ncores
+  expect_error(emission_model(tp_model = tp_model_irl, ef_model = "ef_europe_emep"
+                              , fleet_data = fleet_data_europe, pollutant = "NOx"
+                              , ncores = 0)
+               , class = "gtfs2emis_error")
+  # ncores = Inf is accepted (reduced to the available cores)
+  expect_is(emission_model(tp_model = tp_model_irl, ef_model = "ef_europe_emep"
+                           , fleet_data = fleet_data_europe, pollutant = "NOx"
+                           , ncores = Inf), "list")
+  # ncores = NULL (the old default) is accepted; parallel = TRUE warns and is ignored
+  expect_warning(emi_old <- emission_model(tp_model = tp_model_irl, ef_model = "ef_europe_emep"
+                                           , fleet_data = fleet_data_europe, pollutant = "NOx"
+                                           , parallel = TRUE, ncores = NULL)
+                 , class = "gtfs2emis_deprecated")
+  expect_is(emi_old, "list")
   
   # invalid reference_year
   expect_error(default_tester(reference_year = 'banana'))
@@ -130,7 +139,7 @@ test_that("emission_model runs with heightfile and mixed slopes (G-20, G-32, G-4
                              , tech = "SCR", fleet_composition = 1)
   emi <- suppressMessages(emission_model(tp_model = tp, ef_model = "ef_europe_emep"
                                          , fleet_data = fleet_europe, heightfile = dem
-                                         , pollutant = c("NOx", "CH4"), parallel = FALSE))
+                                         , pollutant = c("NOx", "CH4")))
   expect_false(all(emi$tp_model$slope_class == 0))
   expect_false(anyNA(as.numeric(emi$emi[[1]])))
   
@@ -139,7 +148,7 @@ test_that("emission_model runs with heightfile and mixed slopes (G-20, G-32, G-4
                              , fleet_composition = 1)
   emi_scaled <- suppressMessages(emission_model(tp_model = tp, ef_model = "ef_brazil_scaled_euro"
                                                 , fleet_data = fleet_scaled, heightfile = dem
-                                                , pollutant = "NOx", parallel = FALSE))
+                                                , pollutant = "NOx"))
   expect_false(anyNA(as.numeric(emi_scaled$emi[[1]])))
 })
 
@@ -148,8 +157,7 @@ test_that("emission_model rejects EC, which is in MJ/km (G-70)", {
     suppressMessages(emission_model(tp_model = tp_model_irl
                                     , ef_model = "ef_europe_emep"
                                     , fleet_data = fleet_data_europe
-                                    , pollutant = "EC"
-                                    , parallel = FALSE))
+                                    , pollutant = "EC"))
     , regexp = "g/km", class = "gtfs2emis_error")
 })
 
@@ -162,11 +170,11 @@ test_that("ef_brazil_scaled_euro uses the tech column of fleet_data", {
   emi_egr <- suppressMessages(emission_model(tp_model = tp_model_irl
                                              , ef_model = "ef_brazil_scaled_euro"
                                              , fleet_data = fleet_egr
-                                             , pollutant = "NOx", parallel = FALSE))
+                                             , pollutant = "NOx"))
   emi_scr <- suppressMessages(emission_model(tp_model = tp_model_irl
                                              , ef_model = "ef_brazil_scaled_euro"
                                              , fleet_data = fleet_scr
-                                             , pollutant = "NOx", parallel = FALSE))
+                                             , pollutant = "NOx"))
   expect_false(isTRUE(all.equal(as.numeric(emi_egr$emi[[1]]), as.numeric(emi_scr$emi[[1]]))))
   
   # same as computing the EGR emissions step by step
@@ -186,7 +194,7 @@ test_that("process is validated for every ef_model", {
                              , fuel = "D", fleet_composition = 1)
   expect_error(emission_model(tp_model = tp_model_irl, ef_model = "ef_brazil_cetesb"
                               , fleet_data = fleet_cetesb, pollutant = "PM10"
-                              , process = "brake", parallel = FALSE)
+                              , process = "brake")
                , class = "gtfs2emis_error"
                , regexp = "only available")
   bad_process <- list(c("hot_exhaust", "tyre"), "banana", character(0))
@@ -194,14 +202,14 @@ test_that("process is validated for every ef_model", {
   for (i in seq_along(bad_process)) {
     expect_error(emission_model(tp_model = tp_model_irl, ef_model = "ef_europe_emep"
                                 , fleet_data = fleet_data_europe, pollutant = "PM10"
-                                , process = bad_process[[i]], parallel = FALSE)
+                                , process = bad_process[[i]])
                  , class = "gtfs2emis_error"
                  , regexp = messages[i])
   }
   # wear processes alone still run
   emi_wear <- emission_model(tp_model = tp_model_irl, ef_model = "ef_europe_emep"
                              , fleet_data = fleet_data_europe, pollutant = "PM10"
-                             , process = c("tyre", "brake", "road"), parallel = FALSE)
+                             , process = c("tyre", "brake", "road"))
   expect_true(all(c("emi", "tp_model", "process") %in% names(emi_wear)))
 })
 
@@ -211,7 +219,40 @@ test_that("output_path cannot be the tp_model folder", {
   on.exit(unlink(tp_dir, recursive = TRUE), add = TRUE)
   expect_error(emission_model(tp_model = tp_dir, ef_model = "ef_europe_emep"
                               , fleet_data = fleet_data_europe, pollutant = "NOx"
-                              , output_path = tp_dir, parallel = FALSE)
+                              , output_path = tp_dir)
                , class = "gtfs2emis_error"
                , regexp = "must differ")
+})
+
+test_that("emission_model: same result with ncores = 1 and 2; parallel is deprecated", {
+  skip_on_cran()
+  skip_if(parallelly::availableCores() < 2)
+  # workers load the installed gtfs2emis, so install it before running this test
+  
+  # folder input: one .rds file per shape
+  irl_shapeids <- c("60-42-b12-1.250.I", "60-42-d12-1.249.O", "60-43-d12-1.252.I")
+  tp <- suppressMessages(transport_model(
+    gtfs_data = gtfstools::filter_by_shape_id(gtfs_irl_raw, shape_id = irl_shapeids)
+    , ncores = 1))
+  tp_dir <- tempfile("tp_model_dir")
+  dir.create(tp_dir)
+  on.exit(unlink(tp_dir, recursive = TRUE), add = TRUE)
+  for (i in irl_shapeids) {
+    saveRDS(tp[tp$shape_id == i, ], file.path(tp_dir, paste0(i, ".rds")))
+  }
+  
+  run <- function(...) emission_model(tp_model = tp_dir, ef_model = "ef_europe_emep"
+                                      , fleet_data = fleet_data_europe
+                                      , pollutant = c("NOx", "PM10"), ...)
+  old_plan <- class(future::plan())
+  emi_1 <- run(ncores = 1)
+  emi_2 <- run(ncores = 2)
+  expect_length(emi_1, 3)
+  expect_equal(emi_1, emi_2) # data.tables from workers differ only in their .internal.selfref
+  # the caller's future plan is restored
+  expect_identical(class(future::plan()), old_plan)
+  
+  # parallel gives a deprecation warning; parallel = FALSE still runs sequentially
+  expect_warning(emi_old <- run(parallel = FALSE), class = "gtfs2emis_deprecated")
+  expect_identical(emi_old, emi_1)
 })

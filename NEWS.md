@@ -16,6 +16,7 @@
   - `parallel` and `continue` are deprecated: they are ignored and give a warning (class `gtfs2emis_deprecated`). Set the number of threads with `ncores`, which now defaults to `2` and accepts `Inf`.
   - With `output_path`, one `.rds` file is saved per `shape_id`, as before, but the whole feed is processed in memory. A `%` in a `shape_id` is now always encoded (as `%25`), so ids round-trip with `utils::URLdecode()`; ids containing a `%XX` sequence (e.g. `"x%20y"`) get new file names.
   - A GTFS path is read with `gtfstools::read_gtfs()`, and {gtfstools} (>= 2.0.1) moves from Suggests to Imports.
+- `emission_model()`: `parallel` is deprecated and gives a warning (class `gtfs2emis_deprecated`); `parallel = FALSE` still runs sequentially. Use `ncores`, which now defaults to `2` (before: all available cores minus one) and accepts `Inf`. Parallel R processes are only started when `tp_model` is a folder of files, and never for an `sf` input.
 
 ## Performance
 
@@ -72,7 +73,7 @@ Compared with gtfs2emis 0.1.2 (CRAN), single-threaded, on the example feeds:
 
 - `emission_model()`: corrected function names (`ef_europe_emep`), the description of `quiet` and of the return value, and the list of required `fleet_data` columns. Clarified that the reference year of `ef_usa_moves` and `ef_usa_emfac` is set by the `reference_year` argument, not by a `fleet_data` column. Added an `ef_brazil_scaled_euro` example and removed the unused `progressr::with_progress()` wrappers from the examples.
 - `transport_model()`: corrected the `spatial_resolution` and `output_path` descriptions and the return class (`sf`).
-- Vignettes: fixed the swapped MOVES/EMFAC sources and fleet column names, the dataset names in `data()` calls, typos and stale output descriptions; `data.table` functions are now called with `data.table::`, and the intro vignette runs with `parallel = FALSE`.
+- Vignettes: fixed the swapped MOVES/EMFAC sources and fleet column names, the dataset names in `data()` calls, typos and stale output descriptions; `data.table` functions are now called with `data.table::`.
 - README and citation: updated the `emission_model()` output, cite the 2023 TRD article, and fixed the author names in `inst/CITATION`.
 
 # gtfs2emis 0.1.2

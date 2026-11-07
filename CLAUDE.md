@@ -26,7 +26,7 @@ Default branch: `master`.
 - **Never surprise the caller.** Functions don't modify the user's GTFS,
   `tp_model`, fleet data or `emi_list` (`data.table::copy()`).
 - **Parallel = sequential.** `transport_model()` and `emission_model()` must
-  give the same result with `parallel = TRUE` and `parallel = FALSE`.
+  give the same result with `ncores = 1` and `ncores = 2`.
 - **CRAN-ready at all times.** `R CMD check --as-cran`: 0 errors, 0 warnings.
   Examples and vignettes use ≤ 2 cores and write only to `tempdir()`.
 - **Plan first.** Enter plan mode before non-trivial tasks. Every plan is
@@ -52,8 +52,8 @@ gates are in [`.claude/rules/quality-gates.md`](.claude/rules/quality-gates.md).
 gtfs2emis/
 ├── DESCRIPTION, NAMESPACE        # NAMESPACE is roxygen-generated; never hand-edit
 ├── R/
-│   ├── transport_model.R         # GTFS → sf segments (gtfs2gps), parallel/output_path
-│   ├── emission_model.R          # tp_model + fleet + EF → emi_list, parallel
+│   ├── transport_model.R         # GTFS → sf segments (gtfs2gps), ncores/output_path
+│   ├── emission_model.R          # tp_model + fleet + EF → emi_list, ncores
 │   ├── ef_europe_emep.R, ef_brazil_cetesb.R, ef_usa_moves.R, ef_usa_emfac.R, ef_scaled_euro.R
 │   ├── emi_europe_emep_wear.R    # non-exhaust (tyre, brake, road wear)
 │   ├── slope_class_europe_emep.R # road slope from a DEM (terra)

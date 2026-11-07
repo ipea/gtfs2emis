@@ -34,11 +34,15 @@
 #'        street slope. This argument is used only when `ef_brazil_scaled_euro` or 
 #'        `ef_europe_emep` are selected. Default is `NULL`. Details are provided in
 #'        \code{\link{slope_class_europe_emep}}.
-#' @param parallel logical. Decides whether the function should run in parallel. 
-#'        Defaults is `TRUE`. 
-#' @param ncores integer. Number of cores to be used in parallel execution. This 
-#'        argument is ignored if parallel is `FALSE`. Default (`NULL`) selects 
-#'        the total number of available cores minus one.                
+#' @param parallel **Deprecated.** Using it gives a warning. `parallel = FALSE`
+#'        still runs sequentially; any other value is ignored. Use `ncores`
+#'        instead.
+#' @param ncores Number of parallel R processes used when `tp_model` is a
+#'        folder of files (each process loads the installed gtfs2emis).
+#'        Defaults to 2; `1` runs sequentially; `Inf` uses all available
+#'        cores, as given by `parallelly::availableCores()`, and larger values
+#'        are reduced to that number; `NULL` is treated as 2. Not used when
+#'        `tp_model` is an `sf` object.
 #' @param output_path character. File path where the function output is exported.
 #'        If `NULL` (Default), the function returns the output to user. When
 #'        `tp_model` is a folder, `output_path` must be a different folder.
@@ -205,31 +209,30 @@ emission_model <- function(  tp_model
                              , reference_year = 2020
                              , process = "hot_exhaust"
                              , heightfile = NULL
-                             , parallel = TRUE
-                             , ncores = NULL
+                             , parallel = NULL
+                             , ncores = 2
                              , output_path = NULL
                              , continue = FALSE
                              , quiet = TRUE){
-  #tp_model = tp_model
-  #ef_model = "ef_europe_emep"
-  #fleet_data = my_fleet
-  #pollutant = "PM10"
-  #reference_year = 2020
-  #process = c("tyre","brake","road")
-  #heightfile = NULL
-  #parallel = TRUE
-  #ncores = NULL
-  #output_path = NULL
-  #continue = FALSE
-  #quiet = TRUE
+  # deprecated arguments ----
+  if(!missing(parallel)){
+    cli::cli_warn(c("!" = "The {.arg parallel} argument of {.fn emission_model} is deprecated."
+                    , "i" = "Use {.arg ncores} instead ({.code ncores = 1} runs sequentially).")
+                  , class = "gtfs2emis_deprecated")
+    # old code with parallel = FALSE stays sequential
+    if(isFALSE(parallel)) ncores <- 1
+  }
+
   # A) Checking inputs -----
-  
+
+  # number of parallel processes (used only when tp_model is a folder)
+  if(is.null(ncores)) ncores <- 2
+  assert_number(ncores, lower = 1)
+  ncores <- min(ncores, parallelly::availableCores())
+  assert_integerish(ncores, lower = 1)
+
   assert_data_frame(fleet_data, null.ok = FALSE)
   assert_vector(pollutant, null.ok = FALSE)
-  assert_logical(parallel, null.ok = FALSE)
-  
-  if(parallel)  assert_integerish(ncores,lower = 1,upper = parallelly::availableCores(omit = 1),null.ok = TRUE)
-  
   assert_logical(continue, null.ok = FALSE)
   assert_logical(quiet, null.ok = FALSE)
   assert_numeric(reference_year, lower = 2000, finite = TRUE, any.missing = TRUE)
@@ -338,21 +341,8 @@ emission_model <- function(  tp_model
     }
     
   }
-  
-  if(parallel){
-    # number of cores
-    if(is.null(ncores)){
-      ncores <- parallelly::availableCores(omit = 1)
 
-      if(!quiet) cli::cli_inform('Using {ncores} CPU cores')
-    }
-    
-    oplan <- future::plan("multisession", workers = ncores)
-    on.exit(future::plan(oplan), add = TRUE)
-    
-    
-  }
-  # B) EF function ---------------- 
+  # B) EF function ----------------
   
   # Generate EF cetesb_brazil before the loop
   # to avoid multiple runs in the loop
@@ -527,9 +517,11 @@ emission_model <- function(  tp_model
   ## E) IF 'tp_model' is character -----
   if(is.character(tp_model)){ 
     
-    # Check parallel condition
-    if(parallel){
-      
+    # parallel processes over the files
+    if(ncores > 1){
+      oplan <- future::plan("multisession", workers = ncores)
+      on.exit(future::plan(oplan), add = TRUE)
+
       requiredPackages = c("data.table", "sf", "units")
       emisLine <- furrr::future_map(.x = 1:length(tp_fname_files)
                                     ,.f = prepare_emis_output

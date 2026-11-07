@@ -39,7 +39,7 @@ paths. They never see each other's output in the first round.
 | Reviewer | Mandate |
 |---|---|
 | **Minimalist** | Make it smaller. Which steps, files, abstractions, arguments or dependencies are unnecessary? Can an existing helper do this? What is the smallest diff that fully solves the problem? Is anything gold-plating? |
-| **Skeptic** | Make it right. What breaks? Edge cases (speeds outside EF validity ranges, unknown pollutant/vehicle/Euro/model-year combinations, fleet shares not summing to 1, `NA` speeds, empty tables, geographic vs projected CRS), caller mutation, `parallel = TRUE` vs `FALSE` divergence, units of outputs, performance regressions, back-compat for exported functions, CRAN issues, missing tests. |
+| **Skeptic** | Make it right. What breaks? Edge cases (speeds outside EF validity ranges, unknown pollutant/vehicle/Euro/model-year combinations, fleet shares not summing to 1, `NA` speeds, empty tables, geographic vs projected CRS), caller mutation, `ncores = 1` vs `ncores = 2` divergence, units of outputs, performance regressions, back-compat for exported functions, CRAN issues, missing tests. |
 
 Each returns findings as `{severity: CRITICAL|MAJOR|MINOR, finding, proposed_change}`
 and a verdict: `APPROVE` or `REVISE`.

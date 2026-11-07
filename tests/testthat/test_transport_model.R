@@ -171,7 +171,7 @@ test_that("transport_model saves one .rds per shape with output_path", {
                       , tech = "SCR", fleet_composition = 1)
   emi <- suppressMessages(emission_model(tp_model = out, ef_model = "ef_europe_emep"
                                          , fleet_data = fleet, pollutant = "NOx"
-                                         , parallel = FALSE))
+                                         , ncores = 1))
   expect_false(anyNA(as.numeric(emi$emi[[1]])))
 })
 
