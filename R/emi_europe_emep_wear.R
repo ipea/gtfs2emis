@@ -196,7 +196,11 @@ emi_europe_emep_wear <- function(dist,speed,pollutant,veh_type,
                    , class = "gtfs2emis_error")
   }
   # length dist and speed
-  checkmate::check_true(length(speed) == length(dist),na.ok = FALSE)
+  if(!length(speed) %in% c(1L, length(dist))){
+    cli::cli_abort(c("{.arg speed} must have length 1 or the length of {.arg dist} ({length(dist)})."
+                     , "x" = "It has length {length(speed)}.")
+                   , class = "gtfs2emis_error")
+  }
   # veh_type
   assert_vector(veh_type,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_class(veh_type,"character")
@@ -225,9 +229,10 @@ emi_europe_emep_wear <- function(dist,speed,pollutant,veh_type,
   assert_vector(load,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_numeric(load,lower = 0,upper = 1)
   assert_class(load,"numeric")
-  if(length(load) != 1){
-    checkmate::check_true(length(load) == length(dist),na.ok = FALSE)
-    checkmate::check_true(length(load) == length(speed),na.ok = FALSE)
+  if(!length(load) %in% c(1L, length(dist))){
+    cli::cli_abort(c("{.arg load} must have length 1 or the length of {.arg dist} ({length(dist)})."
+                     , "x" = "It has length {length(load)}.")
+                   , class = "gtfs2emis_error")
   }
   # as_list
   assert_logical(as_list, any.missing = FALSE) 
@@ -266,7 +271,7 @@ emi_europe_emep_wear <- function(dist,speed,pollutant,veh_type,
   }
   # internal tables from EMEP
   # tyre wear | break wear
-  size_class <- data.table::data.table("pol" = c('TSP','PM10','PM2.5','PM1','PM0.1')
+  size_class <- data.table::data.table("pol" = c('TSP','PM10','PM2.5','PM1.0','PM0.1')
                                        ,"mf_tw" = c(1.000,0.600,0.420,0.060,0.048)
                                        ,"mf_bw" = c(1.000,0.980,0.390,0.100,0.080)
                                        ,"mf_rs" = c(1.000,0.500,0.270,NA    ,NA  ))
@@ -314,7 +319,8 @@ emi_europe_emep_wear <- function(dist,speed,pollutant,veh_type,
       # emission
       tmp_emi <- as.matrix(ef_tsp_bus_bw) %*% as.matrix(t((fleet_composition * mass_bw)))
       tmp2 <- as.matrix(dist) * speed_cor_bw
-      tmp3 <- lapply(1:ncol(tmp_emi),function(i){tmp2 %*% tmp_emi[,i]})
+      # element-wise: tmp_emi[,i] has one value per load (1 or one per segment)
+      tmp3 <- lapply(1:ncol(tmp_emi),function(i){as.numeric(tmp2) * tmp_emi[,i]})
       tmp3 <- do.call(cbind,tmp3)
       tmp_emi <- units::set_units(tmp3,"g")
     }

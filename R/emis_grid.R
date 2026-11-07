@@ -7,6 +7,14 @@
 #' the input grid cells. User can also aggregate the emissions in the grid 
 #' by time of the day.
 #'
+#' @details
+#' Emissions of each road segment are split between grid cells in proportion
+#' to the length of the segment in each cell. With longitude/latitude data,
+#' segments are cut by the cells with planar geometry (straight cell edges in
+#' longitude/latitude, as drawn by [sf::st_make_grid()]), and lengths are
+#' geodesic. Grids or segments that cross the antimeridian (±180°) are not
+#' supported.
+#'
 #' @param emi_list list. A list containing the data of emissions 'emi' 
 #'        ("data.frame" class) and the transport model 'tp_model' ("sf" 
 #'        "data.frame" classes). 
@@ -186,7 +194,7 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
       round_sum <- ifelse(nzeros_after_decimal>0
                           ,round(sumofstreets,nzeros_after_decimal + 3)
                           ,round(sumofstreets,2))
-      cli::cli_inform("{name_old[j]} = {round_sum} {emi_units[j]}")
+      cli::cli_inform("{name_old[j]} = {round_sum} {if (is.na(emi_units[j])) '' else emi_units[j]}")
     })
     return(NULL)
   }
@@ -234,26 +242,56 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
   # 'seg' to net
   net <- sf::st_as_sf(data.table::setDF(seg[, .SD, .SDcols = c("seg_id", "geometry")]))
 
+  # segment lengths (geodesic for longitude/latitude data)
+  net$temp_lkm <- sf::st_length(net)
+
+  # cut segments into their straight edges (two points each): GEOS merges the
+  # parts of a line that overlap (a route that doubles back on itself), which
+  # would lose length; separate edges keep every part
+  if(inherits(sf::st_geometry(net), "sfc_GEOMETRY")){  # mixed line types
+    net <- sf::st_cast(net, "MULTILINESTRING")
+  }
+  xy <- sf::st_coordinates(net)
+  part_cols <- grep("^L", colnames(xy))
+  part_key <- do.call(paste, as.data.frame(xy[, part_cols, drop = FALSE]))
+  edge_from <- which(part_key[-1] == part_key[-nrow(xy)])
+  edge_wkt <- sprintf("LINESTRING (%.17g %.17g, %.17g %.17g)"
+                      , xy[edge_from, "X"], xy[edge_from, "Y"]
+                      , xy[edge_from + 1, "X"], xy[edge_from + 1, "Y"])
+  edges <- sf::st_sf(seg_id = net$seg_id[xy[edge_from, max(part_cols)]]
+                     , geometry = sf::st_as_sfc(edge_wkt, crs = sf::st_crs(net)))
+
+  # with longitude/latitude data, cells are selected and cut with planar
+  # (GEOS) geometry, which is much faster than spherical (s2) geometry and
+  # follows grid edges drawn straight in longitude/latitude, as
+  # sf::st_make_grid() draws them; lengths stay geodesic
+  planar <- isTRUE(sf::st_is_longlat(grid))
+  if(planar){
+    old_s2 <- suppressMessages(sf::sf_use_s2(FALSE))
+    on.exit(suppressMessages(sf::sf_use_s2(old_s2)), add = TRUE)  # if an error occurs
+  }
+
   # 6) Reduce grid size  -----
   # Keep only polygons that intersect with lines
 
   # sparse index: a dense grid x segment matrix can take several GB
-  intersect_index <- lengths(sf::st_intersects(grid, net))
+  intersect_index <- lengths(suppressMessages(sf::st_intersects(grid, edges)))
   intersect_index <- which(intersect_index>0)
   grid <- subset(grid, id %in% intersect_index)
-  net$temp_lkm <- sf::st_length(net)
 
   # 7) Intersection -----
   netg <- suppressMessages(suppressWarnings(
-    sf::st_intersection(net, grid[, "id"])))
+    sf::st_intersection(edges, grid[, "id"])))
+  if(planar) suppressMessages(sf::sf_use_s2(old_s2))
 
   netg$lkm_inter <- sf::st_length(netg)
 
-  # ratio of 'lkm'
+  # ratio of 'lkm': length of the segment in each cell / segment length
   netg <- data.table::data.table(
     seg_id = netg$seg_id
     , id = netg$id
-    , ratio = as.numeric(netg$lkm_inter / netg$temp_lkm))
+    , ratio = as.numeric(netg$lkm_inter) / as.numeric(net$temp_lkm[netg$seg_id]))
+  netg <- netg[, list(ratio = sum(ratio)), by = c("seg_id", "id")]
 
   # emissions of each segment piece (and time bin)
   netg <- emi_seg[netg, on = "seg_id", allow.cartesian = TRUE]
@@ -290,7 +328,7 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
     , (name_emi_new) := lapply(.SD, as.numeric)
     , .SDcols = name_emi_new
   ]
-  for(k in seq_along(emi_units)){ # k = 1
+  for(k in which(!is.na(emi_units))){ # k = 1 (unitless columns stay numeric)
     
     temp_output[
       , (name_emi_new[k]) := lapply(.SD, 

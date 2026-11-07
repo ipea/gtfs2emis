@@ -41,3 +41,34 @@ test_that("emis_grid", {
   
   
 })
+
+test_that("emis_grid: totals, CRS and units on geographic and projected grids", {
+  
+  my_emis <- emission_model(tp_model_irl, "ef_europe_emep", fleet_data_europe
+                            , pollutant = c("CO", "PM10"), quiet = TRUE)
+  street_total <- sum(sapply(my_emis$emi, function(x) sum(as.numeric(x))))
+  grid_total <- function(x) sum(sapply(names(my_emis$emi)
+                                       , function(i) sum(as.numeric(x[[i]]), na.rm = TRUE)))
+  s2_before <- sf::sf_use_s2()
+  for (crs in c(4326, 3857)) {
+    emis_crs <- my_emis
+    emis_crs$tp_model <- sf::st_transform(my_emis$tp_model, crs)
+    grid <- sf::st_make_grid(emis_crs$tp_model, n = c(8, 8))
+    out <- emis_grid(emis_crs, grid)
+    # each segment's emissions are split between cells, none lost or added
+    expect_equal(grid_total(out), street_total, tolerance = 1e-6)
+    expect_equal(sf::st_crs(out), sf::st_crs(grid))
+    expect_true(all(sf::st_geometry(out) %in% grid))
+    expect_identical(units::deparse_unit(out[[names(my_emis$emi)[1]]]), "g")
+  }
+  expect_identical(sf::sf_use_s2(), s2_before)
+  
+  # emission columns without units stay numeric
+  no_units <- my_emis
+  no_units$emi <- data.table::as.data.table(lapply(my_emis$emi, as.numeric))
+  out <- emis_grid(no_units, sf::st_make_grid(my_emis$tp_model, n = c(8, 8)))
+  expect_type(out[[names(my_emis$emi)[1]]], "double")
+  expect_message(emis_grid(no_units, sf::st_make_grid(my_emis$tp_model, n = c(8, 8)), quiet = FALSE)
+                 , "Sum of gridded emissions")
+  expect_equal(grid_total(out), street_total, tolerance = 1e-6)
+})

@@ -37,6 +37,14 @@ intersection operation between emissions data in \verb{sf linestring} format and
 the input grid cells. User can also aggregate the emissions in the grid
 by time of the day.
 }
+\details{
+Emissions of each road segment are split between grid cells in proportion
+to the length of the segment in each cell. With longitude/latitude data,
+segments are cut by the cells with planar geometry (straight cell edges in
+longitude/latitude, as drawn by \code{\link[sf:st_make_grid]{sf::st_make_grid()}}), and lengths are
+geodesic. Grids or segments that cross the antimeridian (±180°) are not
+supported.
+}
 \examples{
 \donttest{
 if (requireNamespace("gtfstools", quietly=TRUE)) {

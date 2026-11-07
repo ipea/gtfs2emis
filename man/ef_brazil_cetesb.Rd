@@ -8,15 +8,16 @@ ef_brazil_cetesb(pollutant, veh_type, model_year, as_list = TRUE)
 }
 \arguments{
 \item{pollutant}{character. Pollutants "CH4", "CO2", "PM10", "N2O", "NOx",
-"NO2", "NO", "RCHO", "ETOH" "KML" (Vehicle Kilometers Traveled), "FC" (Fuel Consumption),
+"NO2", "NO", "KML" (Vehicle Kilometers Traveled), "FC" (Fuel Consumption),
 "gD/KWH" (grams of Diesel per kWh), "gCO2/KWH" (grams of CO2 per per kWh),
-"CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane Hydrocarbon),
-"FS"(Fuel Sales) and "NH3".}
+"CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane Hydrocarbon) and "NH3".
+"RCHO", "ETOH" and "FS" (Fuel Sales) are in \code{ef_brazil_cetesb_db} but have no
+values for buses, so they give an error.}
 
 \item{veh_type}{character. Vehicle categories by fuel: "BUS_URBAN_D",
 "BUS_MICRO_D", "BUS_COACH_D" and "BUS_ARTIC_D".}
 
-\item{model_year}{numeric. Vehicle model year. Supports \code{model_year} from
+\item{model_year}{numeric. Vehicle model year, a whole number from
 1960 to 2020.}
 
 \item{as_list}{logical. If \code{TRUE} (default), the function returns the output
