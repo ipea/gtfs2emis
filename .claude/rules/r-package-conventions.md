@@ -83,14 +83,15 @@ emi_list ──emis_summary() / emis_to_dt() / emis_grid()──► tables / sf 
   do).
 - Use keyed / `on =` joins and `by =` grouping. No new row-wise loops.
 - **Parallelism:** `transport_model()` and `emission_model()` take
-  `parallel` / `ncores`, set `future::plan("multisession", workers = ncores)`,
-  restore the previous plan with `on.exit()`, and use `furrr::future_map()`.
-  Default `ncores` is `parallelly::availableCores(omit = 1)`.
+  `ncores` (default 2; `parallel` is deprecated). `transport_model()` passes
+  it to {gtfs2gps} as threads; `emission_model()`, for a folder `tp_model`,
+  sets `future::plan("multisession", workers = ncores)`, restores the
+  previous plan with `on.exit()`, and uses `furrr::future_map()`.
   - Worker code runs in separate R processes: no `<<-`; return values.
   - Under `load_all()`, workers load the **installed** gtfs2emis, so install
     before testing a changed worker path.
   - A worker-path change must give **identical results** with
-    `parallel = FALSE` and `parallel = TRUE, ncores = 2` (Gate 1).
+    `ncores = 1` and `ncores = 2` (Gate 1).
   - Never use more than 2 workers in tests, examples or vignettes.
 - `transport_model(output_path = )` writes files: only to the user's path or
   `tempdir()`.
@@ -144,7 +145,7 @@ emi_list ──emis_summary() / emis_to_dt() / emis_grid()──► tables / sf 
   `@return` (class, columns, units), `@family`/`@seealso` where useful, and
   `@examples`.
 - **Examples** use the bundled fixtures and stay small: one shape of
-  `irl_dub_gtfs.zip`, `parallel = FALSE`. Slow examples go in `\donttest{}`,
+  `irl_dub_gtfs.zip`, `ncores = 1`. Slow examples go in `\donttest{}`,
   never `\dontrun{}`.
 - Internal helpers (`multiply_ef()`, `fuel_correction()`): `@noRd` or
   `@keywords internal`, matching the file.
@@ -172,7 +173,7 @@ emi_list ──emis_summary() / emis_to_dt() / emis_grid()──► tables / sf 
   - a **known-value test** for EF functions (a value checked by hand against
     the source table/equation, with the source cited in a comment)
   - "doesn't change input data" when the function takes a data.table/sf
-  - `parallel = FALSE` vs `TRUE, ncores = 2` parity if the worker path changed
+  - `ncores = 1` vs `ncores = 2` parity if the worker path changed
 - When an algorithm change legitimately moves pinned values, re-derive them
   and explain the change in the plan; never paste new output blindly.
 
@@ -211,7 +212,7 @@ it at release. Credit external contributors and reference issues (`#123`).
 | Writing outside `tempdir()` | `tempdir()` or user-supplied `output_path` |
 | `<<-` | Return values |
 | `options()`/`future::plan()` changed, not restored | `on.exit(..., add = TRUE)` |
-| More than 2 cores in tests/examples/vignettes | `parallel = FALSE` or `ncores = 2` |
+| More than 2 cores in tests/examples/vignettes | `ncores = 1` or `ncores = 2` |
 | `T`/`F` | `TRUE`/`FALSE` |
 | Unvalidated enumerated arg | `checkmate::assert_choice()` |
 | `==` on doubles or `units` vs numeric | tolerance / `units::set_units()` |
@@ -228,7 +229,7 @@ it at release. Credit external contributors and reference issues (`#123`).
 [ ] new/changed args validated with checkmate
 [ ] units correct and preserved (km/h, km/m, g/km, g)
 [ ] EF lookups error on unknown combinations; known-value test cites the source
-[ ] worker path: identical results parallel = FALSE vs TRUE
+[ ] worker path: identical results ncores = 1 vs 2
 [ ] ≤ 2 cores and tempdir() only in tests/examples/vignettes
 [ ] conditions via cli / internal assert_* wrappers (A4); errors classed gtfs2emis_error
 [ ] style matches the file (leading commas, explicit return())

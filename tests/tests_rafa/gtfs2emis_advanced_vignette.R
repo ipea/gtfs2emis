@@ -9,7 +9,7 @@ knitr::opts_chunk$set(
 #  
 #  # or use the development version with latest features
 #  utils::remove.packages('gtfs2emis')
-#  devtools::install_github("ipeaGIT/gtfs2emis")
+#  devtools::install_github("ipea/gtfs2emis")
 #  
 
 ## ---- message = FALSE---------------------------------------------------------

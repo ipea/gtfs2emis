@@ -32,8 +32,9 @@ Local emission factors, in units 'g/km'.}
 \item{euro}{character. Euro period of vehicle, classified in "Conventional",
 "I", "II", "III", "IV", "V", "VI", and "EEV".}
 
-\item{pollutant}{character. Pollutant: "FC", "CO2", "CO", "NOx", "VOC",
-"PM10", "EC", "CH4", "NH3", "N2O", "FC" (fuel consumption).}
+\item{pollutant}{character. Pollutant: "FC" (fuel consumption), "CO2", "CO",
+"NOx", "VOC", "PM10", "CH4", "NH3" or "N2O". "EC" (energy consumption,
+MJ/km) is not supported.}
 
 \item{fuel}{character. Fuel type, classified in "D" (Diesel), "DHD" (Diesel
 Hybrid ~ Diesel), "DHE" (Diesel Hybrid ~ Electricity), "CNG"

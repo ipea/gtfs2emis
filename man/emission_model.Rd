@@ -12,8 +12,8 @@ emission_model(
   reference_year = 2020,
   process = "hot_exhaust",
   heightfile = NULL,
-  parallel = TRUE,
-  ncores = NULL,
+  parallel = NULL,
+  ncores = 2,
   output_path = NULL,
   continue = FALSE,
   quiet = TRUE
@@ -36,7 +36,8 @@ characteristics. The required columns depend on the
 \item{pollutant}{character. Vector with one or more pollutants to be estimated.
 Example: \code{c("CO", "CO2", "PM10", "NOx")}. See the documentation to check which
 pollutants are available for each emission factor model (\code{ef_usa_moves}, \code{ef_usa_emfac},
-\code{ef_europe_emep}, or \code{ef_brazil_cetesb}).}
+\code{ef_europe_emep}, or \code{ef_brazil_cetesb}). With \code{ef_europe_emep}, energy consumption
+("EC", in MJ/km) is not a mass and cannot be used.}
 
 \item{reference_year}{numeric. Year of reference considered to calculate the
 emissions inventory. Defaults to \code{2020}. This
@@ -47,7 +48,8 @@ always taken from this argument, not from a column of \code{fleet_data}.}
 \item{process}{character; Emission process, classified in "hot_exhaust" (Default),
 and wear processes (identified as "tyre","brake" and/or "road" wear).
 Note that wear processes are only available when \code{ef_model} is
-\code{ef_europe_emep}. Details on wear emissions are presented in
+\code{ef_europe_emep}, and that \code{"hot_exhaust"} cannot be combined with
+wear processes in the same call. Details on wear emissions are presented in
 \code{\link{emi_europe_emep_wear}}.}
 
 \item{heightfile}{character or raster data. The raster file with height data,
@@ -56,15 +58,20 @@ street slope. This argument is used only when \code{ef_brazil_scaled_euro} or
 \code{ef_europe_emep} are selected. Default is \code{NULL}. Details are provided in
 \code{\link{slope_class_europe_emep}}.}
 
-\item{parallel}{logical. Decides whether the function should run in parallel.
-Defaults is \code{TRUE}.}
+\item{parallel}{\strong{Deprecated.} Using it gives a warning. \code{parallel = FALSE}
+still runs sequentially; any other value is ignored. Use \code{ncores}
+instead.}
 
-\item{ncores}{integer. Number of cores to be used in parallel execution. This
-argument is ignored if parallel is \code{FALSE}. Default (\code{NULL}) selects
-the total number of available cores minus one.}
+\item{ncores}{Number of parallel R processes used when \code{tp_model} is a
+folder of files (each process loads the installed gtfs2emis).
+Defaults to 2; \code{1} runs sequentially; \code{Inf} uses all available
+cores, as given by \code{parallelly::availableCores()}, and larger values
+are reduced to that number; \code{NULL} is treated as 2. Not used when
+\code{tp_model} is an \code{sf} object.}
 
 \item{output_path}{character. File path where the function output is exported.
-If \code{NULL} (Default), the function returns the output to user.}
+If \code{NULL} (Default), the function returns the output to user. When
+\code{tp_model} is a folder, \code{output_path} must be a different folder.}
 
 \item{continue}{logical. Argument that can be used only with output_path When TRUE,
 it skips processing the shape identifiers that were already saved into
@@ -121,7 +128,7 @@ set with the \code{reference_year} argument; \code{fleet_data} does not need a
 reference year column.
 }
 
-Users can check the \href{https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html}{gtfs2emis fleet data vignette},
+Users can check the \href{https://ipea.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html}{gtfs2emis fleet data vignette},
 for more examples.
 
 Based on the input height data, the function returns the slope class between
@@ -148,8 +155,7 @@ tp_model <- transport_model(gtfs_data = gtfs_small,
                             min_speed = 2,
                             max_speed = 80,
                             new_speed = 20,
-                            spatial_resolution = 100,
-                            parallel = FALSE)
+                            spatial_resolution = 100)
 
 # Example using Brazilian emission model and fleet
 fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",

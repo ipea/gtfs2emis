@@ -26,7 +26,7 @@ emi_europe_emep_wear(
 "PM1.0" and "PM0.1" are  not available for road surface wear process.}
 
 \item{veh_type}{character; Bus type, classified in "Ubus Midi <=15 t",
-"Ubus Std 15 - 18 t", "Ubus Artic >18 t", "Coaches Std >18 t", or "Coaches Artic >18 t".}
+"Ubus Std 15 - 18 t", "Ubus Artic >18 t", "Coaches Std <=18 t", or "Coaches Artic >18 t".}
 
 \item{fleet_composition}{vector; Fleet composition, which is a distribution
 of fleet based on frequency. If there is only one, 'fleet_composition' is 1.0.}

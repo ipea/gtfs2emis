@@ -13,6 +13,7 @@ test_that("emis_to_dt", {
   emi_europe$tp_model <- tp_model_irl
 
 
+  emi_europe_before <- data.table::copy(emi_europe)
   # Expect equal -----
   names(emi_europe)
   emi_dt_europe0 <- emis_to_dt(emi_list = emi_europe
@@ -32,6 +33,9 @@ test_that("emis_to_dt", {
   expect_equal(ncol(emi_dt_europe1),4)
   expect_equal(ncol(emi_dt_europe2),7)
   expect_equal(ncol(emi_dt_europe3),4)
+  expect_identical(emi_europe, emi_europe_before)
+  expect_identical(units::deparse_unit(emi_dt_europe0$emi), "g")
+  expect_equal(sum(as.numeric(emi_dt_europe0$emi)), sum(sapply(emi_europe$emi, function(x) sum(as.numeric(x)))))
   #expect_equal(as.numeric(sum(emi_dt_europe0$emi,na.rm = TRUE)),571.9754,0.1) 
   #expect_equal(as.numeric(sum(emi_dt_europe1$emi,na.rm = TRUE)),571.9754,0.1) 
   #expect_equal(as.numeric(sum(emi_dt_europe2$emi,na.rm = TRUE)),571.9754,0.1) 

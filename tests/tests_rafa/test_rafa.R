@@ -121,7 +121,7 @@ pkgdown::build_site()
 
 
 utils::remove.packages('gtfs2gps')
-devtools::install_github("ipeaGIT/gtfs2gps")
+devtools::install_github("ipea/gtfs2gps")
 
 
 library(gtfs2emis)

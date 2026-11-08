@@ -7,6 +7,14 @@
 #' the input grid cells. User can also aggregate the emissions in the grid 
 #' by time of the day.
 #'
+#' @details
+#' Emissions of each road segment are split between grid cells in proportion
+#' to the length of the segment in each cell. With longitude/latitude data,
+#' segments are cut by the cells with planar geometry (straight cell edges in
+#' longitude/latitude, as drawn by [sf::st_make_grid()]), and lengths are
+#' geodesic. Grids or segments that cross the antimeridian (±180°) are not
+#' supported.
+#'
 #' @param emi_list list. A list containing the data of emissions 'emi' 
 #'        ("data.frame" class) and the transport model 'tp_model' ("sf" 
 #'        "data.frame" classes). 
@@ -36,8 +44,7 @@
 #'   
 #' # run transport model
 #' tp_model <- transport_model(gtfs_data = gtfs_small,
-#'                             spatial_resolution = 100,
-#'                             parallel = FALSE)
+#'                             spatial_resolution = 100)
 #'
 #' # Fleet data, using Brazilian emission model and fleet
 #' fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",
@@ -145,10 +152,11 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
                        ,new = name_emi_new)
   
   # 3) Check units ----
-  # Working files
-  netdata <- data.table::copy(data.table::as.data.table(tmp_tp_emi))
-  net <- sf::st_as_sf(data.table::setDF(tmp_tp_emi))
-  
+  # Working file: an alias of 'tmp_tp_emi', a new table made by cbind(). Its
+  # columns are only replaced (step 5 overwrites 'timestamp' with the time
+  # bin), never modified in place, so the caller's 'emi_list' is unchanged
+  netdata <- tmp_tp_emi
+
   emi_units <- c()
   for(i in seq_along(name_emi_new)){ # i = 1
     if(is(netdata[, .SD, .SDcols = (name_emi_new[i])][[1]], "units")){
@@ -186,7 +194,7 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
       round_sum <- ifelse(nzeros_after_decimal>0
                           ,round(sumofstreets,nzeros_after_decimal + 3)
                           ,round(sumofstreets,2))
-      cli::cli_inform("{name_old[j]} = {round_sum} {emi_units[j]}")
+      cli::cli_inform("{name_old[j]} = {round_sum} {if (is.na(emi_units[j])) '' else emi_units[j]}")
     })
     return(NULL)
   }
@@ -198,76 +206,96 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
   
   # 5) Estimate emissions -------
   
-  tmp_netdata <- data.table::copy(netdata)
-  data.table::setDT(tmp_netdata)
+  seg_keys <- c("shape_id", "stop_sequence", "from_stop_id", "to_stop_id")
+  by_vars <- seg_keys
   if(time_resolution != "day"){
+    by_vars <- c("timestamp", seg_keys)
     # 'hour' resolution
     if(time_resolution == "hour"){
-      tmp_netdata[, "timestamp" := data.table::hour(timestamp)]
+      netdata[, "timestamp" := data.table::hour(timestamp)]
     }
     # 'minute' resolution
     if(time_resolution == "minute"){
       
-      tmp_netdata[
+      netdata[
         , "timestamp" := sprintf("%02d:%02d"
                                  ,data.table::hour(timestamp) 
                                  ,data.table::minute(timestamp))]
     }
-    
-    # 'time_column' scenario 
-    tmp_netdata <- tmp_netdata[
-      , lapply(.SD, sum, na.rm = TRUE)
-      , .SDcols = name_emi_new
-      , by = .(timestamp
-               , shape_id
-               , stop_sequence
-               , from_stop_id
-               , to_stop_id)]
-    
-  }else{
-    
-    # No 'time_column' scenario 
-    tmp_netdata <- tmp_netdata[
-      , lapply(.SD, sum, na.rm = TRUE)
-      , .SDcols = name_emi_new
-      , by = .(shape_id
-               , stop_sequence
-               , from_stop_id
-               , to_stop_id)]
-    
   }
-  
-  # Add geometry into 'netdata' 
-  
-  tmp_netdata[netdata
-              ,on = c("shape_id"
-                      ,"stop_sequence"
-                      ,"from_stop_id"
-                      ,"to_stop_id")
-              ,geometry := i.geometry]
-  
-  # 'tmp_netdata' to net
-  net <- sf::st_as_sf(data.table::setDF(tmp_netdata))
-  
+
+  # emissions per segment (and time bin)
+  emi_seg <- netdata[
+    , lapply(.SD, sum, na.rm = TRUE)
+    , .SDcols = name_emi_new
+    , by = by_vars]
+
+  # one geometry per segment: the time bins of a segment share it, so the
+  # grid intersection is done once per segment, not once per time bin
+  # (when a segment key repeats, the last geometry is kept)
+  seg <- unique(netdata[, .SD, .SDcols = seg_keys])
+  seg[netdata, on = seg_keys, geometry := i.geometry]
+  data.table::set(seg, j = "seg_id", value = seq_len(nrow(seg)))
+  data.table::set(emi_seg, j = "seg_id"
+                  , value = seg[emi_seg, on = seg_keys, which = TRUE])
+
+  # 'seg' to net
+  net <- sf::st_as_sf(data.table::setDF(seg[, .SD, .SDcols = c("seg_id", "geometry")]))
+
+  # segment lengths (geodesic for longitude/latitude data)
+  net$temp_lkm <- sf::st_length(net)
+
+  # cut segments into their straight edges (two points each): GEOS merges the
+  # parts of a line that overlap (a route that doubles back on itself), which
+  # would lose length; separate edges keep every part
+  if(inherits(sf::st_geometry(net), "sfc_GEOMETRY")){  # mixed line types
+    net <- sf::st_cast(net, "MULTILINESTRING")
+  }
+  xy <- sf::st_coordinates(net)
+  part_cols <- grep("^L", colnames(xy))
+  part_key <- do.call(paste, as.data.frame(xy[, part_cols, drop = FALSE]))
+  edge_from <- which(part_key[-1] == part_key[-nrow(xy)])
+  edge_wkt <- sprintf("LINESTRING (%.17g %.17g, %.17g %.17g)"
+                      , xy[edge_from, "X"], xy[edge_from, "Y"]
+                      , xy[edge_from + 1, "X"], xy[edge_from + 1, "Y"])
+  edges <- sf::st_sf(seg_id = net$seg_id[xy[edge_from, max(part_cols)]]
+                     , geometry = sf::st_as_sfc(edge_wkt, crs = sf::st_crs(net)))
+
+  # with longitude/latitude data, cells are selected and cut with planar
+  # (GEOS) geometry, which is much faster than spherical (s2) geometry and
+  # follows grid edges drawn straight in longitude/latitude, as
+  # sf::st_make_grid() draws them; lengths stay geodesic
+  planar <- isTRUE(sf::st_is_longlat(grid))
+  if(planar){
+    old_s2 <- suppressMessages(sf::sf_use_s2(FALSE))
+    on.exit(suppressMessages(sf::sf_use_s2(old_s2)), add = TRUE)  # if an error occurs
+  }
+
   # 6) Reduce grid size  -----
   # Keep only polygons that intersect with lines
-  
-  intersect_index <- sf::st_intersects(grid, net,sparse = FALSE)
-  intersect_index <- rowSums(intersect_index)
+
+  # sparse index: a dense grid x segment matrix can take several GB
+  intersect_index <- lengths(suppressMessages(sf::st_intersects(grid, edges)))
   intersect_index <- which(intersect_index>0)
   grid <- subset(grid, id %in% intersect_index)
-  net$temp_lkm <- sf::st_length(net)
-  
+
   # 7) Intersection -----
   netg <- suppressMessages(suppressWarnings(
-    sf::st_intersection(net, grid)))
-  
+    sf::st_intersection(edges, grid[, "id"])))
+  if(planar) suppressMessages(sf::sf_use_s2(old_s2))
+
   netg$lkm_inter <- sf::st_length(netg)
-  
-  # ratio of 'lkm'
-  data.table::setDT(netg)
-  netg[, ratio := lkm_inter / temp_lkm]
-  
+
+  # ratio of 'lkm': length of the segment in each cell / segment length
+  netg <- data.table::data.table(
+    seg_id = netg$seg_id
+    , id = netg$id
+    , ratio = as.numeric(netg$lkm_inter) / as.numeric(net$temp_lkm[netg$seg_id]))
+  netg <- netg[, list(ratio = sum(ratio)), by = c("seg_id", "id")]
+
+  # emissions of each segment piece (and time bin)
+  netg <- emi_seg[netg, on = "seg_id", allow.cartesian = TRUE]
+
   # adjust emissions by ratio
   for (i in name_emi_new) netg[, (i) := get(i) * ratio]
   
@@ -300,7 +328,7 @@ emis_grid <- function(emi_list, grid, time_resolution = 'day',quiet = TRUE,aggre
     , (name_emi_new) := lapply(.SD, as.numeric)
     , .SDcols = name_emi_new
   ]
-  for(k in seq_along(emi_units)){ # k = 1
+  for(k in which(!is.na(emi_units))){ # k = 1 (unitless columns stay numeric)
     
     temp_output[
       , (name_emi_new[k]) := lapply(.SD, 

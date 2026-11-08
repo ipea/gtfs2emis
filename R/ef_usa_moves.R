@@ -99,9 +99,9 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
     
     temp_ef0 <- sapply(seq_along(tmp_model_year), function(j){   # j = 1
       # Filter Model Year & Pollutant & Fuel
-      temp_moves2 <- data.table::copy(temp_moves)[pollutant %in% i & 
-                                                    model_year %in% tmp_model_year[j] & 
-                                                    fuel_type %in% tmp_fuel[j], ]
+      temp_moves2 <- temp_moves[pollutant %in% i & 
+                                model_year %in% tmp_model_year[j] & 
+                                fuel_type %in% tmp_fuel[j], ]
       # check condition
       if(dim(temp_moves2)[1] == 0){
         cli::cli_abort(c("No available emission factor for this combination of parameters:"
@@ -123,23 +123,12 @@ ef_usa_moves <- function(pollutant, model_year, reference_year = 2020, speed, fu
   ef_final <- do.call(cbind, ef_pol)
   
   # Filter Speed based on emission factor data.table speed interval-----------
-  tmp_speed2 <- rep(NA, length(tmp_speed))
-  
-  # data.table with upper_limit info
-  tmp_limit <-  unique(temp_moves$upper_speed_interval) 
-  tmp_limit <-  sort(as.numeric(tmp_limit),decreasing = TRUE)
-  
-  temp_order_dt <- data.table::data.table(
-    "limit" = tmp_limit
-    ,"id" = data.table::uniqueN(temp_moves$upper_speed_interval):1)
-  
-  for(t in 1:nrow(temp_order_dt)){ # t = 10
-    tmp_speed2[tmp_speed <= temp_order_dt$limit[t]] <- temp_order_dt$id[t]
-  }
-  
-  # case of speed lower than upper_limit_speed
-  tmp_speed2[tmp_speed2==0] <- 1
-  
+  # bin k is (limit[k-1], limit[k]]: the first upper limit >= speed
+  # (a speed above the top limit, ruled out by the checks above, gives NA)
+  tmp_limit <- sort(as.numeric(unique(temp_moves$upper_speed_interval)))
+  tmp_speed2 <- findInterval(tmp_speed, tmp_limit, left.open = TRUE) + 1L
+  tmp_speed2[tmp_speed2 > length(tmp_limit)] <- NA
+
   ef_final <- ef_final[tmp_speed2,]
   
   # add units

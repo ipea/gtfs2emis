@@ -9,16 +9,20 @@
 #' 
 #' @param speed units; Speed in 'km/h'.
 #' @param veh_type character; Bus type, classified in "Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t",
-#' "Coaches Std <=18 t","Coaches Artic >18 t".
+#' "Coaches Std <=18 t","Coaches Artic >18 t". `veh_type`, `euro`, `fuel`, `tech` and
+#' `fcorr` describe the same vehicles: each has length 1 (used for every vehicle) or one
+#' common length; other lengths are an error.
 #' @param euro character; Euro period of vehicle, classified in "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV".
 #' @param pollutant character; Pollutant, classified in "FC","CO2","CO","NOx","VOC","PM10","EC","CH4","NH3","N2O". "FC" is fuel consumption (g/km).
-#' "EC" is energy consumption in MJ/km, although it is returned with g/km units. FC and CO2 are not available
+#' "EC" is energy consumption, returned in MJ/km; it cannot be used in [emission_model()].
+#' `"SPN23 [#/kWh]"` in `ef_europe_emep_db` is not supported. FC and CO2 are not available
 #' for every combination (e.g. there is no CO2 for "BD" or for "Conventional" diesel buses).
 #' @param fuel character; Fuel type, classified in "D" (Diesel),"DHD" (Diesel Hybrid ~ Diesel),
 #' "DHE" (Diesel Hybrid ~ Electricity), "CNG" (Compressed Natural Gas), "BD" (Biodiesel).   
 #' @param tech character; After treatment technology, classified in "SCR" (Selective Catalytic Reduction), 
 #' "EGR" (Exhaust Gas Recirculation), and "DPF+SCR" (Diesel Particulate Filter + SCR, for Euro VI). Default is "SCR" for "IV" and "V". There are 
-#' no available after treatment technology associated with euro standards "Conventional", "I", "II" and "III". 
+#' no available after treatment technology associated with euro standards "Conventional", "I", "II", "III",
+#' "EEV" and "PRE"; for them "-" is used, with a message.
 #' @param slope numeric; Slope gradient, classified in -0.06, -0.04, -0.02, 0.00, 0.02, 0.04 and
 #' 0.06. Negative gradients means downhills and positive uphills. Default is 0.0. Either one
 #' value or one value per `speed`. Values are rounded to two decimals; other values are an
@@ -26,11 +30,11 @@
 #' only available at slope 0.00 and load 0.5; for them, that value is used with a message.
 #' @param load numeric; Load ratio, classified in 0.0, 0.5 and 1.0. Default is 0.5. Either one
 #' value or one value per `speed`.
-#' @param fcorr numeric; Correction based on fuel composition. The length must be one per
-#' each euro standards. Default is 1.0.
+#' @param fcorr numeric; Correction based on fuel composition, non-negative. Length 1 or
+#' one value per vehicle (see `veh_type`). Default is 1.0.
 #' @param as_list logical; Returns emission factors as a list, instead of data.table format. Default is TRUE.
 #' 
-#' @return List. emission factors in units 'g/km' (list or a data.table).
+#' @return List. emission factors in units 'g/km' (list or a data.table); "EC" is in 'MJ/km'.
 #' @details 
 #' 
 #' The new convention for vehicles names are translated from the EMEP/EEA report:
@@ -55,7 +59,7 @@
 #'  
 #' The R scripts used to download and pre-process 4 EMEP/EEA editions (2019, 2016, 2013 and 2007)
 #' can be accessed in the 'gtfs2emis' GitHub repository at
-#' <<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R>>  
+#' <<https://github.com/ipea/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R>>  
 #' 
 #' EMEP/EEA data and reports can be accessed in the following links:
 #'  - 2019 edition \url{https://www.eea.europa.eu/en/analysis/publications/emep-eea-guidebook-2019/part-b-sectoral-guidance-chapters/1-energy/},
@@ -70,7 +74,7 @@
 #' @examples
 #' ef_europe_emep( speed = units::set_units(1:100,"km/h"),
 #'                 veh_type = c("Ubus Midi <=15 t","Ubus Std 15 - 18 t","Ubus Artic >18 t"),
-#'                 euro = c("IV","V"),
+#'                 euro = c("IV","V","V"),
 #'                 fuel = "D",
 #'                 pollutant = c("CO","PM10","CH4","NOx"),
 #'                 as_list = FALSE) 
@@ -100,7 +104,7 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   assert_vector(speed,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_numeric(speed,lower = 1,upper = 130)
   assert_class(speed,"units")
-  if(units(speed)$numerator != "km" | units(speed)$denominator != "h"){
+  if(!has_units(speed, "km h-1")){
     cli::cli_abort(c("{.arg speed} must be in {.val km/h}."
                      , "x" = "It has units {.val {units::deparse_unit(speed)}}.")
                    , class = "gtfs2emis_error")
@@ -120,7 +124,9 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   # pollutant
   assert_vector(pollutant,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_character(pollutant,any.missing = FALSE,min.len = 1)
-  for(i in pollutant) assert_choice(i,unique(temp_ef$Pol),null.ok = FALSE, .var.name = "pollutant")
+  # SPN23 is a particle number per kWh, not a g/km factor
+  for(i in pollutant) assert_choice(i,setdiff(unique(temp_ef$Pol), "SPN23 [#/kWh]")
+                                    ,null.ok = FALSE, .var.name = "pollutant")
   # technology
   assert_vector(tech,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_character(tech,any.missing = FALSE,min.len = 1)
@@ -140,19 +146,27 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
   
   # check lengths----
   
-  if(length(euro) != length(veh_type) && length(veh_type) == 1){
-    veh_type <- rep(veh_type,length(euro))
+  # veh_type, euro, fuel, tech and fcorr: length 1 or one common length
+  assert_numeric(fcorr, any.missing = FALSE, lower = 0, min.len = 1)
+  n_veh <- max(lengths(list(veh_type, euro, fuel, tech)))
+  recycle_veh <- function(x, arg){
+    if(length(x) == 1) return(rep(x, n_veh))
+    if(length(x) != n_veh){
+      cli::cli_abort(c("{.arg {arg}} must have length 1 or {n_veh}, the number of vehicles."
+                       , "x" = "It has length {length(x)}."
+                       , "i" = paste0("{.arg veh_type}, {.arg euro}, {.arg fuel}, {.arg tech} "
+                                      , "and {.arg fcorr} describe the same vehicles."))
+                     , class = "gtfs2emis_error", call = call)
+    }
+    return(x)
   }
-  if(length(euro) != length(tech) && length(tech) == 1){
-    tech <- rep(tech,length(euro))
-  }
-  if(length(euro) != length(fuel) && length(fuel) == 1){
-    fuel <- rep(fuel,length(euro))
-  }
-  if(length(fcorr) == 1)  fcorr <- rep(fcorr,length(euro))
+  veh_type <- recycle_veh(veh_type, "veh_type")
+  euro <- recycle_veh(euro, "euro")
+  fuel <- recycle_veh(fuel, "fuel")
+  tech <- recycle_veh(tech, "tech")
+  fcorr <- recycle_veh(fcorr, "fcorr")
   if(length(slope) == 1)  slope <- rep(slope,length(speed))
   if(length(load)  == 1)  load  <- rep(load,length(speed))
-  if(length(fcorr) == 1)  fcorr <- rep(fcorr,length(euro))
   
   if(length(slope) > 1 & (length(slope) != length(speed)) ){
     cli::cli_abort("{.arg slope} and {.arg speed} must have the same length."
@@ -162,6 +176,13 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
     cli::cli_abort("{.arg load} and {.arg speed} must have the same length."
                    , class = "gtfs2emis_error")
   }
+  
+  # the EF depends only on (slope, load, rounded speed): compute it once per
+  # unique combination (in order of first appearance), then expand with 'grp'
+  # (build 'ef_key' outside u[...]: inside it, 'speed' would be u's column)
+  ef_key <- data.table::data.table(Slope = slope, Load = load, speed = speed)
+  u <- unique(ef_key)
+  grp <- u[ef_key, on = c("Slope", "Load", "speed"), which = TRUE]
   
   # polynomial expression----
   
@@ -198,7 +219,7 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       #message(sprintf("i=%s, j=%s",i,j))
       # condition for missing technologies
       
-      if(euro[j] %in%  c("Conventional","I","II","III") &  tech[j] != "-"){
+      if(euro[j] %in%  c("Conventional","I","II","III","EEV","PRE") &  tech[j] != "-"){
         cli::cli_inform(c(paste0("{.val {pollutant[i]}} emission factor not found for technology "
                                  , "{.val {tech[j]}} and Euro {.val {euro[j]}}.")
                         , "i" = paste0("The package assumes missing Technology entry. Check "
@@ -250,10 +271,10 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       if(nrow(temp_ef3) == 1){
         # tabulated at a single slope / load only (e.g. CH4, NH3, N2O); in
         # ef_europe_emep_db all such rows are at slope 0 / load 0.5
-        fallback <- any(slope != temp_ef3$Slope | load != temp_ef3$Load)
-        temp_ef3 <- temp_ef3[rep(1L, length(speed))]
+        fallback <- any(u$Slope != temp_ef3$Slope | u$Load != temp_ef3$Load)
+        temp_ef3 <- temp_ef3[rep(1L, nrow(u))]
       }else{
-        temp_ef3 <- temp_ef3[data.table::data.table(Slope = slope, Load = load)
+        temp_ef3 <- temp_ef3[data.table::data.table(Slope = u$Slope, Load = u$Load)
                              , on = c("Slope", "Load")]
       }
       
@@ -261,9 +282,9 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       # no EF case
       #
       
-      if(nrow(temp_ef3) != length(speed) || anyNA(temp_ef3$Function_ID)){
-        pairs <- data.table::data.table(Slope = slope, Load = load)
-        if(nrow(temp_ef3) == length(speed)) pairs <- pairs[is.na(temp_ef3$Function_ID)]
+      if(nrow(temp_ef3) != nrow(u) || anyNA(temp_ef3$Function_ID)){
+        pairs <- data.table::data.table(Slope = u$Slope, Load = u$Load)
+        if(nrow(temp_ef3) == nrow(u)) pairs <- pairs[is.na(temp_ef3$Function_ID)]
         pairs <- unique(pairs)
         cli::cli_abort(c("No available emission factor for this combination of parameters:"
                          , "*" = "Pol: {.val {pollutant[i]}}"
@@ -283,8 +304,8 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
       #
       
       # speeds outside the validity range of each row are set to its limits
-      tmpSpeedPol <- pmin(pmax(speed, temp_ef3$Vmin), temp_ef3$Vmax)
-      eq_output <- numeric(length(speed))
+      tmpSpeedPol <- pmin(pmax(u$speed, temp_ef3$Vmin), temp_ef3$Vmax)
+      eq_output <- numeric(nrow(u))
       # Function_ID (and Vmin/Vmax) can differ between slopes
       for(f in unique(temp_ef3$Function_ID)){
         r <- temp_ef3$Function_ID == f
@@ -302,7 +323,7 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
                                , fcorr = fcorr[j])
       }
 
-      return(list(ef = eq_output, fallback = fallback))
+      return(list(ef = eq_output[grp], fallback = fallback))
     })
     
     if(any(vapply(temp_ef2, `[[`, logical(1), "fallback"))){
@@ -317,7 +338,12 @@ ef_europe_emep <- function(speed, veh_type, euro,  pollutant, fuel = "D", tech =
     #
     
     temp_ef3 <- do.call(cbind, temp_ef2) 
-    temp_ef3 <- units::set_units(temp_ef3,'g/km') 
+    # EC is energy consumption (MJ/km); units must be literal strings here
+    if(pollutant[i] == "EC"){
+      temp_ef3 <- units::set_units(temp_ef3, "MJ/km")
+    }else{
+      temp_ef3 <- units::set_units(temp_ef3, "g/km")
+    }
     temp_ef3 <- data.table::as.data.table(temp_ef3)
     
     names(temp_ef3) <- sprintf("%s_Euro_%s",pollutant[i],rep(euro))

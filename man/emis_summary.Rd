@@ -49,8 +49,7 @@ gtfs <- gtfstools::filter_by_trip_id(gtfs
                                                    ,"7081.2.60-X27-b12-1.106.I"))
 # Transport model
 tp_model <- transport_model(gtfs_data = gtfs,
-                            spatial_resolution = 100,
-                            parallel = FALSE)
+                            spatial_resolution = 100)
 
 # fleet data
 fleet_df <- read.csv(system.file("extdata/irl_dub_fleet.txt"

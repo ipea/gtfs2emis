@@ -264,3 +264,79 @@ test_that("ef_europe_emep uses the EF row of the requested slope and load (G-20)
   expect_equal(res[1], known, tolerance = 1e-6)
   expect_false(isTRUE(all.equal(res[1], res[2])))
 })
+
+test_that("ef_europe_emep argument lengths, EEV, SPN23 and EC (G-22, G-23, G-25, G-70)", {
+  spd <- units::set_units(c(10, 30, 60), "km/h")
+  vt <- c("Ubus Midi <=15 t", "Ubus Std 15 - 18 t", "Ubus Artic >18 t")
+  ef <- function(...) suppressMessages(ef_europe_emep(speed = spd, ...))$EF
+
+  # G-22: lengths are 1 or one common length
+  expect_error(ef(veh_type = vt, euro = c("IV", "V"), pollutant = "CO")
+               , class = "gtfs2emis_error")
+  expect_error(ef(veh_type = vt, euro = "V", tech = c("SCR", "EGR"), pollutant = "CO")
+               , class = "gtfs2emis_error")
+  expect_error(ef(veh_type = vt, euro = "V", fcorr = c(1, 2), pollutant = "CO")
+               , class = "gtfs2emis_error")
+  expect_error(ef(veh_type = vt[1], euro = "V", fcorr = -1, pollutant = "CO")
+               , class = "gtfs2emis_error")
+  # a single euro is used for every veh_type
+  res <- ef(veh_type = vt, euro = "V", pollutant = "CO")
+  expect_equal(ncol(res), 3)
+  for(k in 1:3){
+    expect_equal(as.numeric(res[[k]])
+                 , as.numeric(ef(veh_type = vt[k], euro = "V", pollutant = "CO")[[1]]))
+  }
+  # fcorr is applied per vehicle
+  res <- ef(veh_type = vt[1], euro = c("IV", "V"), fcorr = c(1, 2), pollutant = "CO")
+  res1 <- ef(veh_type = vt[1], euro = c("IV", "V"), pollutant = "CO")
+  expect_equal(as.numeric(res[[1]]), as.numeric(res1[[1]]))
+  expect_equal(as.numeric(res[[2]]), 2 * as.numeric(res1[[2]]))
+
+  # G-23: CNG EEV with the default tech uses "-"
+  db <- ef_europe_emep_db
+  pols <- setdiff(unique(db[Fuel == "CNG" & Euro == "EEV"]$Pol), "SPN23 [#/kWh]")
+  expect_true(length(pols) > 0)
+  for(p in pols){
+    expect_equal(ef(veh_type = vt[2], euro = "EEV", fuel = "CNG", pollutant = p)
+                 , ef(veh_type = vt[2], euro = "EEV", fuel = "CNG", tech = "-", pollutant = p))
+  }
+
+  # G-25: SPN23 is not a g/km factor
+  expect_error(ef(veh_type = vt[2], euro = "V", pollutant = "SPN23 [#/kWh]")
+               , class = "gtfs2emis_error")
+
+  # G-70: EC is energy consumption in MJ/km
+  ec <- ef(veh_type = vt[2], euro = "V", pollutant = c("EC", "CO"))
+  expect_equal(units::deparse_unit(ec[[1]]), "MJ km-1")
+  expect_equal(units::deparse_unit(ec[[2]]), "g km-1")
+  expect_error(ef_scaled_euro(ef_local = units::set_units(0.5, "g/km")
+                              , speed = spd, veh_type = vt[2], euro = "V"
+                              , pollutant = "EC")
+               , class = "gtfs2emis_error")
+})
+
+test_that("ef_europe_emep: repeated speed/slope values give the per-element result", {
+  # EFs are computed once per unique (slope, load, speed) and expanded back;
+  # each element must equal a call with that single speed, slope and load
+  spd <- units::set_units(c(37.2, 15, 37, 80, 15, 140 / 2, 37.4), "km/h")
+  slp <- c(0.02, 0, 0.02, -0.04, 0, 0.06, 0.02)
+  lod <- c(0.5, 0, 0.5, 1, 0, 0.5, 1)
+  vt <- c("Ubus Std 15 - 18 t", "Ubus Artic >18 t")
+  pols <- c("CO", "NOx", "CH4", "EC")  # CH4: tabulated at slope 0 only
+  res <- suppressMessages(ef_europe_emep(speed = spd, veh_type = vt, euro = c("IV", "VI")
+                                         , tech = c("SCR", "DPF+SCR"), pollutant = pols
+                                         , slope = slp, load = lod, as_list = FALSE))
+  for(s in seq_along(spd)){
+    one <- suppressMessages(ef_europe_emep(speed = spd[s], veh_type = vt, euro = c("IV", "VI")
+                                           , tech = c("SCR", "DPF+SCR"), pollutant = pols
+                                           , slope = slp[s], load = lod[s]
+                                           , as_list = FALSE))
+    expect_identical(vapply(res, function(x) as.numeric(x)[s], numeric(1))
+                     , vapply(one, as.numeric, numeric(1)))
+  }
+  # a missing slope/load combination still names each pair once, in input order
+  expect_error(ef_europe_emep(speed = spd, veh_type = "Ubus Midi <=15 t", euro = "VI"
+                              , fuel = "CNG", tech = "-", pollutant = "NOx", slope = slp)
+               , "0.02, 0, -0.04, and 0.06"
+               , class = "gtfs2emis_missing_ef")
+})

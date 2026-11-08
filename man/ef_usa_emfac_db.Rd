@@ -36,7 +36,7 @@ Specific data of other regions and seasons can be download at <\url{https://arb.
 \details{
 The function returns the data in a data.frame format. The R script used to process
 the raw EMFAC database can be found in the repository
-<\url{https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R}>.
+<\url{https://github.com/ipea/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R}>.
 }
 \seealso{
 Other emission factor data:

@@ -30,7 +30,7 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
   assert_vector(dist,any.missing = FALSE,min.len = 1,null.ok = FALSE)
   assert_numeric(dist,any.missing = FALSE,min.len = 1)
   assert_class(dist,"units")
-  if(units(dist)$numerator != "km"){
+  if(!has_units(dist, "km")){
     cli::cli_abort(c("{.arg dist} must be in {.val km}."
                      , "x" = "It has units {.val {units::deparse_unit(dist)}}.")
                    , class = "gtfs2emis_error")
@@ -55,7 +55,7 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
                        , "i" = "See the {.pkg units} package.")
                      , class = "gtfs2emis_error", call = call)
     }
-    if(units(tmpEf[[i]])$numerator != "g" | units(tmpEf[[i]])$denominator != "km"){
+    if(!has_units(tmpEf[[i]], "g km-1")){
       cli::cli_abort("{.arg ef} must have units {.val g/km}."
                      , class = "gtfs2emis_error", call = call)
     }
@@ -84,14 +84,15 @@ multiply_ef <- function(fleet_composition, dist, ef, aggregate = TRUE, prefix = 
   
   # emissions----
   
-  emi <- lapply(seq_along(tmpEf), function(i){ # i = 1 
-    temp_emis <- tmpEf[[i]] * fleet_composition[[i]] * dist
-    return(temp_emis)
+  # plain numbers: 'ef' is in g/km and 'dist' in km (checked above), so the
+  # products are in g; units are set once, at the end
+  n_emi <- max(length(dist), length(tmpEf[[1]]))
+  emi <- lapply(seq_along(tmpEf), function(i){ # i = 1
+    temp_emis <- as.numeric(tmpEf[[i]]) * fleet_composition[[i]] * as.numeric(dist)
+    return(rep_len(temp_emis, n_emi))
   })
-  
-  emi <- do.call(cbind, emi) 
-  emi <- data.table::as.data.table(emi)
-  colnames(emi) <- colnames(tmpEf)
+  names(emi) <- colnames(tmpEf)
+  data.table::setDT(emi)
   
   #
   # aggregate condition----
