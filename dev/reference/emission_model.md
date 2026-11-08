@@ -2,7 +2,7 @@
 
 Estimate hot-exhaust emissions of public transport systems. This
 function must be used together with
-[`transport_model`](https://ipeagit.github.io/gtfs2emis/dev/reference/transport_model.md).
+[`transport_model`](https://ipea.github.io/gtfs2emis/dev/reference/transport_model.md).
 
 ## Usage
 
@@ -15,8 +15,8 @@ emission_model(
   reference_year = 2020,
   process = "hot_exhaust",
   heightfile = NULL,
-  parallel = TRUE,
-  ncores = NULL,
+  parallel = NULL,
+  ncores = 2,
   output_path = NULL,
   continue = FALSE,
   quiet = TRUE
@@ -29,9 +29,9 @@ emission_model(
 
   sf_linestring object or a character path the to sf_linestring objects.
   The `tp_model` is the output from
-  [`transport_model`](https://ipeagit.github.io/gtfs2emis/dev/reference/transport_model.md),
+  [`transport_model`](https://ipea.github.io/gtfs2emis/dev/reference/transport_model.md),
   or the path in which the output files from the
-  [`transport_model`](https://ipeagit.github.io/gtfs2emis/dev/reference/transport_model.md)
+  [`transport_model`](https://ipea.github.io/gtfs2emis/dev/reference/transport_model.md)
   are saved.
 
 - ef_model:
@@ -39,9 +39,9 @@ emission_model(
   character. A string indicating the emission factor model to be used.
   Options include `ef_usa_moves`, `ef_usa_emfac`, `ef_europe_emep`,
   `ef_brazil_cetesb`, and `ef_brazil_scaled_euro` (scale
-  [`ef_brazil_cetesb()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb.md)
+  [`ef_brazil_cetesb()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb.md)
   based on
-  [`ef_scaled_euro()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_scaled_euro.md)).
+  [`ef_scaled_euro()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_scaled_euro.md)).
 
 - fleet_data:
 
@@ -55,7 +55,8 @@ emission_model(
   Example: `c("CO", "CO2", "PM10", "NOx")`. See the documentation to
   check which pollutants are available for each emission factor model
   (`ef_usa_moves`, `ef_usa_emfac`, `ef_europe_emep`, or
-  `ef_brazil_cetesb`).
+  `ef_brazil_cetesb`). With `ef_europe_emep`, energy consumption ("EC",
+  in MJ/km) is not a mass and cannot be used.
 
 - reference_year:
 
@@ -70,8 +71,10 @@ emission_model(
   character; Emission process, classified in "hot_exhaust" (Default),
   and wear processes (identified as "tyre","brake" and/or "road" wear).
   Note that wear processes are only available when `ef_model` is
-  `ef_europe_emep`. Details on wear emissions are presented in
-  [`emi_europe_emep_wear`](https://ipeagit.github.io/gtfs2emis/dev/reference/emi_europe_emep_wear.md).
+  `ef_europe_emep`, and that `"hot_exhaust"` cannot be combined with
+  wear processes in the same call. Details on wear emissions are
+  presented in
+  [`emi_europe_emep_wear`](https://ipea.github.io/gtfs2emis/dev/reference/emi_europe_emep_wear.md).
 
 - heightfile:
 
@@ -80,23 +83,27 @@ emission_model(
   slope. This argument is used only when `ef_brazil_scaled_euro` or
   `ef_europe_emep` are selected. Default is `NULL`. Details are provided
   in
-  [`slope_class_europe_emep`](https://ipeagit.github.io/gtfs2emis/dev/reference/slope_class_europe_emep.md).
+  [`slope_class_europe_emep`](https://ipea.github.io/gtfs2emis/dev/reference/slope_class_europe_emep.md).
 
 - parallel:
 
-  logical. Decides whether the function should run in parallel. Defaults
-  is `TRUE`.
+  **Deprecated.** Using it gives a warning. `parallel = FALSE` still
+  runs sequentially; any other value is ignored. Use `ncores` instead.
 
 - ncores:
 
-  integer. Number of cores to be used in parallel execution. This
-  argument is ignored if parallel is `FALSE`. Default (`NULL`) selects
-  the total number of available cores minus one.
+  Number of parallel R processes used when `tp_model` is a folder of
+  files (each process loads the installed gtfs2emis). Defaults to 2; `1`
+  runs sequentially; `Inf` uses all available cores, as given by
+  [`parallelly::availableCores()`](https://parallelly.futureverse.org/reference/availableCores.html),
+  and larger values are reduced to that number; `NULL` is treated as 2.
+  Not used when `tp_model` is an `sf` object.
 
 - output_path:
 
   character. File path where the function output is exported. If `NULL`
-  (Default), the function returns the output to user.
+  (Default), the function returns the output to user. When `tp_model` is
+  a folder, `output_path` must be a different folder.
 
 - continue:
 
@@ -143,14 +150,14 @@ Examples for real data usage).
 
 - `tech`: character; After treatment technology. Required only when
   `ef_europe_emep` or `ef_brazil_scaled_euro` are selected. Check
-  [`?ef_europe_emep`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_europe_emep.md)
+  [`?ef_europe_emep`](https://ipea.github.io/gtfs2emis/dev/reference/ef_europe_emep.md)
   for details.
 
 - `euro`: character; Euro period of vehicle, classified in
   "Conventional", "I", "II", "III", "IV", "V", "VI", and "EEV". Required
   only when `ef_europe_emep` or `ef_brazil_scaled_euro` are selected.
   Check
-  [`?ef_europe_emep`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_europe_emep.md)
+  [`?ef_europe_emep`](https://ipea.github.io/gtfs2emis/dev/reference/ef_europe_emep.md)
   for details.
 
 - `fuel`: character; Required when `ef_usa_moves`, `ef_usa_emfac`,
@@ -166,7 +173,7 @@ Examples for real data usage).
   column.
 
 Users can check the [gtfs2emis fleet data
-vignette](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html),
+vignette](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_fleet_data.html),
 for more examples.
 
 Based on the input height data, the function returns the slope class
@@ -180,7 +187,7 @@ the seven categories available on the European Environmental Agency
 ## See also
 
 Other Core function:
-[`transport_model()`](https://ipeagit.github.io/gtfs2emis/dev/reference/transport_model.md)
+[`transport_model()`](https://ipea.github.io/gtfs2emis/dev/reference/transport_model.md)
 
 ## Examples
 
@@ -200,8 +207,7 @@ tp_model <- transport_model(gtfs_data = gtfs_small,
                             min_speed = 2,
                             max_speed = 80,
                             new_speed = 20,
-                            spatial_resolution = 100,
-                            parallel = FALSE)
+                            spatial_resolution = 100)
 
 # Example using Brazilian emission model and fleet
 fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",
@@ -284,7 +290,12 @@ emi_emfac <- emission_model(tp_model = tp_model
                           , pollutant = c("CO","PM10","CO2","CH4","NOx")
                           , reference_year = 2020)
 }
-#> Converting shapes to sf objects
-#> Processing the data
+#> ℹ Converting shapes to sf objects
+#> Using 2 threads
+#> ✔ Converting shapes to sf objects [22ms]
+#> 
+#> ℹ Processing the data
+#> ✔ Processing the data [38ms]
+#> 
 # }
 ```

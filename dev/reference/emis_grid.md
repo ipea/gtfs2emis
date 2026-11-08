@@ -47,11 +47,21 @@ emis_grid(
 
 An `"sf" "data.frame"` object with emissions estimates per grid cell.
 
+## Details
+
+Emissions of each road segment are split between grid cells in
+proportion to the length of the segment in each cell. With
+longitude/latitude data, segments are cut by the cells with planar
+geometry (straight cell edges in longitude/latitude, as drawn by
+[`sf::st_make_grid()`](https://r-spatial.github.io/sf/reference/st_make_grid.html)),
+and lengths are geodesic. Grids or segments that cross the antimeridian
+(±180°) are not supported.
+
 ## See also
 
 Other emission analysis:
-[`emis_summary()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emis_summary.md),
-[`emis_to_dt()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emis_to_dt.md)
+[`emis_summary()`](https://ipea.github.io/gtfs2emis/dev/reference/emis_summary.md),
+[`emis_to_dt()`](https://ipea.github.io/gtfs2emis/dev/reference/emis_to_dt.md)
 
 ## Examples
 
@@ -69,8 +79,7 @@ gtfs_small <- gtfstools::filter_by_trip_id(gtfs, trip_id ="4451136")
   
 # run transport model
 tp_model <- transport_model(gtfs_data = gtfs_small,
-                            spatial_resolution = 100,
-                            parallel = FALSE)
+                            spatial_resolution = 100)
 
 # Fleet data, using Brazilian emission model and fleet
 fleet_data_ef_cetesb <- data.frame(veh_type = "BUS_URBAN_D",
@@ -101,9 +110,14 @@ plot(grid)
 plot(emi_grid["PM10_2010"],add = TRUE)
 plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
 }
-#> Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 8.2.1; sf_use_s2() is TRUE
-#> Converting shapes to sf objects
-#> Processing the data
+#> Linking to GEOS 3.14.1, GDAL 3.12.2, PROJ 9.7.1; sf_use_s2() is TRUE
+#> ℹ Converting shapes to sf objects
+#> Using 2 threads
+#> ✔ Converting shapes to sf objects [41ms]
+#> 
+#> ℹ Processing the data
+#> ✔ Processing the data [39ms]
+#> 
 
 # }
 ```

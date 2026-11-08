@@ -46,7 +46,7 @@ emi_europe_emep_wear(
 - veh_type:
 
   character; Bus type, classified in "Ubus Midi \<=15 t", "Ubus Std 15 -
-  18 t", "Ubus Artic \>18 t", "Coaches Std \>18 t", or "Coaches Artic
+  18 t", "Ubus Artic \>18 t", "Coaches Std \<=18 t", or "Coaches Artic
   \>18 t".
 
 - fleet_composition:
@@ -229,11 +229,11 @@ particles
 ## See also
 
 Other Emission factor model:
-[`ef_brazil_cetesb()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb.md),
-[`ef_europe_emep()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_europe_emep.md),
-[`ef_scaled_euro()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_scaled_euro.md),
-[`ef_usa_emfac()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_emfac.md),
-[`ef_usa_moves()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_moves.md)
+[`ef_brazil_cetesb()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb.md),
+[`ef_europe_emep()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_europe_emep.md),
+[`ef_scaled_euro()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_scaled_euro.md),
+[`ef_usa_emfac()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_emfac.md),
+[`ef_usa_moves()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_moves.md)
 
 ## Examples
 

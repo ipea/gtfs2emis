@@ -54,11 +54,11 @@ A data.table with 79198 rows and 8 variables:
 
 The function returns the data in a data.frame format. The R script used
 to process the raw EMFAC database can be found in the repository
-\<<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R>\>.
+\<<https://github.com/ipea/gtfs2emis/blob/master/data-raw/ef_usa_emfac_db.R>\>.
 
 ## See also
 
 Other emission factor data:
-[`ef_brazil_cetesb_db`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb_db.md),
-[`ef_europe_emep_db`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_europe_emep_db.md),
-[`ef_usa_moves_db`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_moves_db.md)
+[`ef_brazil_cetesb_db`](https://ipea.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb_db.md),
+[`ef_europe_emep_db`](https://ipea.github.io/gtfs2emis/dev/reference/ef_europe_emep_db.md),
+[`ef_usa_moves_db`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_moves_db.md)

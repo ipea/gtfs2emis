@@ -68,6 +68,6 @@ A data.table:
 ## See also
 
 Other emission factor data:
-[`ef_brazil_cetesb_db`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb_db.md),
-[`ef_europe_emep_db`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_europe_emep_db.md),
-[`ef_usa_emfac_db`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_emfac_db.md)
+[`ef_brazil_cetesb_db`](https://ipea.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb_db.md),
+[`ef_europe_emep_db`](https://ipea.github.io/gtfs2emis/dev/reference/ef_europe_emep_db.md),
+[`ef_usa_emfac_db`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_emfac_db.md)

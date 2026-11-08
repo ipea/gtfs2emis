@@ -72,11 +72,11 @@ model_year.
 ## See also
 
 Other Emission factor model:
-[`ef_brazil_cetesb()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb.md),
-[`ef_europe_emep()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_europe_emep.md),
-[`ef_scaled_euro()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_scaled_euro.md),
-[`ef_usa_moves()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_moves.md),
-[`emi_europe_emep_wear()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emi_europe_emep_wear.md)
+[`ef_brazil_cetesb()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb.md),
+[`ef_europe_emep()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_europe_emep.md),
+[`ef_scaled_euro()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_scaled_euro.md),
+[`ef_usa_moves()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_moves.md),
+[`emi_europe_emep_wear()`](https://ipea.github.io/gtfs2emis/dev/reference/emi_europe_emep_wear.md)
 
 ## Examples
 

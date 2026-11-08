@@ -2,32 +2,27 @@
 
 ## 1. Introduction
 
-When using the `gtfs2emis` package to estimate the emission levels of a
-given public transport system, users are required to input `data.frame`
-with a few characteristics of the public transport fleet, such as age or
-vehicle type. This vignette explains how users can build this input by
-showing practical examples for fleet data in Brazilian, European, and
-North American cities.
+To estimate emissions with `gtfs2emis`, you need a `data.frame`
+describing the public transport fleet, for example its vehicle types and
+ages. This vignette shows how to build it, with examples for Brazilian,
+European and North American cities.
 
 ## 2. Simple or detailed fleet data table
 
-The first thing to have in mind is that the fleet `data.frame` can be
-either:
+The fleet `data.frame` can be either:
 
-- A **simple** table with the overall composition of the fleet. In this
-  case, the `gtfs2emis` will assume that fleet is homogeneously
-  distributed across all routes; OR
-- A **detailed** table that brings info on the proportion with which
-  each vehicle type is allocated to each transport route.
+- a **simple** table with the overall composition of the fleet, in which
+  case `gtfs2emis` assumes the fleet is evenly distributed across all
+  routes; or
+- a **detailed** table that also says which vehicles run on which
+  routes.
 
-#### Example of *simple* fleet table
+#### Example of a *simple* fleet table
 
-Here is an example of a simple fleet table that tells us the
-characteristics of the urban buses of Dublin, Ireland. The `N` and
-`fleet_composition` columns tell us, respectively, the absolute number
-and the proportion of buses with each combination of the following
-characteristics: vehicle type, Euro standard, technology, and fuel. Note
-that `sum(fleet_df$fleet_composition)` has to be equal to 1.
+This simple table describes the urban buses of Dublin, Ireland. The `N`
+and `fleet_composition` columns give, respectively, the number and the
+share of buses for each combination of vehicle type, Euro standard,
+technology and fuel. `fleet_composition` must sum to 1.
 
 ``` r
 
@@ -41,16 +36,21 @@ head(simple_fleet_df)
 #> 4 Ubus Std 15 - 18 t   VI    D 548        0.54690619 DPF+SCR
 ```
 
-#### Example of *detailed* fleet table
+#### Example of a *detailed* fleet table
 
-This other table illustrates what a detailed fleet data table looks
-like, using the example of the city of Curitiba, Brazil. Here, the
-`total` column tells us the absolute number of buses with each
-combination of vehicle characteristics. However, note that this table
-brings a `shape_id` column. These columns indicate which specific
-vehicles should be allocated to run on predefined `shape_id`s of the
-GTFS data. For example, it allows users to assign articulated buses to
-specific routes in the transport network.
+This detailed table describes buses in Curitiba, Brazil. The `total`
+column gives the number of buses for each combination of vehicle
+characteristics, and the `shape_id` column says which GTFS `shape_id`
+they run on.
+
+[`emission_model()`](https://ipea.github.io/gtfs2emis/dev/reference/emission_model.md)
+does not read `shape_id`: it applies the `fleet_composition` of the
+fleet data to every segment of `tp_model`. To use route-specific fleets
+(for example, articulated buses only on the routes where they run),
+split `tp_model` by `shape_id`, compute a `fleet_composition` for each
+group from the detailed table, and call
+[`emission_model()`](https://ipea.github.io/gtfs2emis/dev/reference/emission_model.md)
+once per group.
 
 ``` r
 
@@ -68,45 +68,39 @@ head(detailed_fleet_df)
 
 ## 3. Fleet characteristics vary by emission factor model
 
-Please note that the columns in your fleet data table should differ
-depending on the data requirements of the emission factor model the user
-wants to consider. For example, the emission factor models for US cities
-(EMFAC2017 and MOVES3), developed by CARB and EPA, only require
-information on the type of bus, the fuel used, and age of the vehicle.
-Meanwhile, the EMEP model developed by the European Environment Agency
-requires much more info, including vehicle type, Euro standard,
-technology, and fuel. It also allows users to consider the passenger
-load and slope of streets.
+The columns of the fleet table depend on the emission factor model.
+Every model needs `veh_type` and `fleet_composition`. The US models
+(EMFAC2017 by CARB and MOVES3 by EPA) also need `model_year` and `fuel`.
+The European EMEP/EEA model also needs `euro`, `tech` and `fuel`; road
+slope can be added with the `heightfile` argument of
+[`emission_model()`](https://ipea.github.io/gtfs2emis/dev/reference/emission_model.md).
 
-To check which columns and sets of vehicle characteristics are required
-by each emission factor model, the user can read the documentation of
-the emission factor functions listed in the table below:
+The table below summarises what each model needs; the documentation of
+each function has the details:
 
 | Emission factor function | Region | Source | Type of buses | Other required characteristics |
 |----|----|----|----|----|
-| [`ef_brazil_cetesb()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb.md) | Brazil | CETESB | Micro, Standard, Articulated | Age |
-| [`ef_europe_emep()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_europe_emep.md) | Europe | EMEP/EEA | Micro, Standard, Articulated | Fuel, EURO stage, technology, load, slope |
-| [`ef_usa_moves()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_moves.md) | US | MOVES3/EPA | Urban Buses | Age, Fuel |
-| [`ef_usa_emfac()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_emfac.md) | US | EMFAC2017/CARB | Urban Buses | Age, Fuel |
+| [`ef_brazil_cetesb()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb.md) | Brazil | CETESB | Micro, Standard, Articulated | Age |
+| [`ef_europe_emep()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_europe_emep.md) | Europe | EMEP/EEA | Micro, Standard, Articulated | Fuel, Euro stage, technology (slope optional) |
+| [`ef_usa_moves()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_moves.md) | US | MOVES3/EPA | Urban Buses | Age, Fuel |
+| [`ef_usa_emfac()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_emfac.md) | US | EMFAC2017/CARB | Urban Buses | Age, Fuel |
 
 ## 4. Examples of fleet data tables
 
-Now here are a few examples of `data.frames` with the fleet
-characteristics required by different emission factor models. Note that
-these examples are built as a simple fleet table that includes the
-`fleet_composition`, indicating what proportion of the fleet is
-represented by vehicles with each characteristic.
+Below are simple fleet tables for each emission factor model. In each
+one, `fleet_composition` gives the share of the fleet with each
+combination of characteristics.
 
-### 4.1 Brazil: Environmental Company of Sao Paulo (CETESB):
+### 4.1 Brazil: Environmental Company of São Paulo (CETESB)
 
-Based on the 2019 data from the emission factor model of CETESB.
+Based on the 2019 CETESB emission factors.
 
 ``` r
 
-fleet_data_ef_cetesb <- data.frame( veh_type = c("BUS_MICRO_D", "BUS_URBAN_D", "BUS_ARTIC_D")
-                                  , model_year = c(2010, 2012, 2018)
-                                  , fuel = rep("D", 3)
-                                  , fleet_composition = c(0.4, 0.4, 0.2))
+fleet_data_ef_cetesb <- data.frame(veh_type = c("BUS_MICRO_D", "BUS_URBAN_D", "BUS_ARTIC_D"),
+                                   model_year = c(2010, 2012, 2018),
+                                   fuel = rep("D", 3),
+                                   fleet_composition = c(0.4, 0.4, 0.2))
 fleet_data_ef_cetesb
 #>      veh_type model_year fuel fleet_composition
 #> 1 BUS_MICRO_D       2010    D               0.4
@@ -122,13 +116,13 @@ developed by EEA.
 
 ``` r
 
-fleet_data_ef_europe <- data.frame(  veh_type = c("Ubus Midi <=15 t"
-                                                  ,"Ubus Std 15 - 18 t"
-                                                  ,"Ubus Artic >18 t")
-                                   , euro = c("III","IV","V")
-                                   , fuel = rep("D",3)
-                                   , tech = c("-","SCR","SCR")
-                                   , fleet_composition = c(0.4,0.5,0.1)) #
+fleet_data_ef_europe <- data.frame(veh_type = c("Ubus Midi <=15 t",
+                                                 "Ubus Std 15 - 18 t",
+                                                 "Ubus Artic >18 t"),
+                                   euro = c("III", "IV", "V"),
+                                   fuel = rep("D", 3),
+                                   tech = c("-", "SCR", "SCR"),
+                                   fleet_composition = c(0.4, 0.5, 0.1))
 fleet_data_ef_europe
 #>             veh_type euro fuel tech fleet_composition
 #> 1   Ubus Midi <=15 t  III    D    -               0.4
@@ -143,10 +137,10 @@ Based on the California Emission Factor model
 
 ``` r
 
-fleet_data_ef_emfac <- data.frame(  veh_type = "BUS_URBAN_D"
-                                  , model_year = 2011:2015
-                                  , fuel = "D"
-                                  , fleet_composition = rep(0.2,5))
+fleet_data_ef_emfac <- data.frame(veh_type = "BUS_URBAN_D",
+                                  model_year = 2011:2015,
+                                  fuel = "D",
+                                  fleet_composition = rep(0.2, 5))
 fleet_data_ef_emfac
 #>      veh_type model_year fuel fleet_composition
 #> 1 BUS_URBAN_D       2011    D               0.2
@@ -163,10 +157,10 @@ Model](https://www.epa.gov/moves)), developed by EPA.
 
 ``` r
 
-fleet_data_ef_moves <- data.frame(  veh_type = "BUS_URBAN_D"
-                                  , model_year = 2011:2015
-                                  , fuel = "D"
-                                  , fleet_composition = rep(0.2,5))
+fleet_data_ef_moves <- data.frame(veh_type = "BUS_URBAN_D",
+                                  model_year = 2011:2015,
+                                  fuel = "D",
+                                  fleet_composition = rep(0.2, 5))
 fleet_data_ef_moves
 #>      veh_type model_year fuel fleet_composition
 #> 1 BUS_URBAN_D       2011    D               0.2
@@ -178,18 +172,18 @@ fleet_data_ef_moves
 
 For both US models, the year of the emission inventory is not a column
 of the fleet data: it is set with the `reference_year` argument of
-[`emission_model()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emission_model.md).
+[`emission_model()`](https://ipea.github.io/gtfs2emis/dev/reference/emission_model.md).
 
 ### Learn more
 
-Check out our extra guide:
+Check out our other guides:
 
 - [Exploring Emission
-  Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
+  Factors](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_emission_factor.html)
 - [Exploring Non-Exhaust Emission
-  Factors](https://ipeagit.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html)
+  Factors](https://ipea.github.io/gtfs2emis/articles/gtfs2emis_non_exhaust_ef.html)
 
 ### Report a bug
 
 If you have any suggestions or want to report an error, please visit
-[the package GitHub page](https://github.com/ipeaGIT/gtfs2emis/issues).
+[the package GitHub page](https://github.com/ipea/gtfs2emis/issues).

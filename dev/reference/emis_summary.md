@@ -49,8 +49,8 @@ or vehicle type.
 ## See also
 
 Other emission analysis:
-[`emis_grid()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emis_grid.md),
-[`emis_to_dt()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emis_to_dt.md)
+[`emis_grid()`](https://ipea.github.io/gtfs2emis/dev/reference/emis_grid.md),
+[`emis_to_dt()`](https://ipea.github.io/gtfs2emis/dev/reference/emis_to_dt.md)
 
 ## Examples
 
@@ -68,8 +68,7 @@ gtfs <- gtfstools::filter_by_trip_id(gtfs
                                                    ,"7081.2.60-X27-b12-1.106.I"))
 # Transport model
 tp_model <- transport_model(gtfs_data = gtfs,
-                            spatial_resolution = 100,
-                            parallel = FALSE)
+                            spatial_resolution = 100)
 
 # fleet data
 fleet_df <- read.csv(system.file("extdata/irl_dub_fleet.txt"
@@ -103,13 +102,16 @@ emis_summary(emi_list
              , by = "time"
              , segment_vars = "slope") 
 }
-#> Converting shapes to sf objects
-#> Processing the data
+#> ℹ Converting shapes to sf objects
+#> Using 2 threads
+#> ✔ Converting shapes to sf objects [25ms]
+#> 
+#> ℹ Processing the data
+#> ✔ Processing the data [37ms]
+#> 
 #>    timestamp_hour pollutant     process              emi
 #>             <int>    <char>      <char>          <units>
-#> 1:              8       CO2 hot_exhaust 1.076303e+04 [g]
-#> 2:              8      PM10 hot_exhaust 3.509064e-01 [g]
-#> 3:              9       CO2 hot_exhaust 8.952295e+01 [g]
-#> 4:              9      PM10 hot_exhaust 3.022266e-03 [g]
+#> 1:              8       CO2 hot_exhaust 9980.2232116 [g]
+#> 2:              8      PM10 hot_exhaust    0.3246524 [g]
 # }
 ```

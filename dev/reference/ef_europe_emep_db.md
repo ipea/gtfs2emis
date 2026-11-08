@@ -98,11 +98,11 @@ The package presents a combination of emission factors from EMEP/EEA
 guidelines of 2007, 2013, 2016, and 2019, aiming to cover a greater
 number of pollutants and vehicle segments. The script used to process
 the raw EMEP/EEA databases can be found in the repository
-\<<https://github.com/ipeaGIT/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R>\>.
+\<<https://github.com/ipea/gtfs2emis/blob/master/data-raw/ef_europe_emep_db.R>\>.
 
 ## See also
 
 Other emission factor data:
-[`ef_brazil_cetesb_db`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb_db.md),
-[`ef_usa_emfac_db`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_emfac_db.md),
-[`ef_usa_moves_db`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_moves_db.md)
+[`ef_brazil_cetesb_db`](https://ipea.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb_db.md),
+[`ef_usa_emfac_db`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_emfac_db.md),
+[`ef_usa_moves_db`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_moves_db.md)

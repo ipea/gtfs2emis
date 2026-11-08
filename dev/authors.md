@@ -20,7 +20,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/ipeaGIT/gtfs2emis/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/ipea/gtfs2emis/blob/master/inst/CITATION)
 
 Vieira, J. P. B., Pereira, R. H. M., & Andrade, P. R. (2023). Estimating
 Public Transport Emissions from General Transit Feed Specification Data.

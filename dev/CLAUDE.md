@@ -2,20 +2,19 @@
 
 **gtfs2emis** is an R package that estimates public transport emissions
 from GTFS data with a bottom-up model.
-[`transport_model()`](https://ipeagit.github.io/gtfs2emis/dev/reference/transport_model.md)
+[`transport_model()`](https://ipea.github.io/gtfs2emis/dev/reference/transport_model.md)
 turns a GTFS feed into stop-to-stop road segments with speeds and
 distances (via {gtfs2gps}). The `ef_*()` functions return emission
 factors from four sources: Europe EMEP/EEA, Brazil CETESB, USA MOVES and
 USA EMFAC, plus scaled-Euro local factors.
-[`emission_model()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emission_model.md)
+[`emission_model()`](https://ipea.github.io/gtfs2emis/dev/reference/emission_model.md)
 combines segments, fleet data and emission factors. The `emis_*()`
 helpers summarise the result by time, vehicle and pollutant, or on a
 spatial grid. It is built on `data.table`, `sf`, `units`, `checkmate`,
 `terra` and `future`/`furrr`. Published on CRAN; developed by Ipea
-(ipeaGIT). Maintainer (cre): Joao Bazzo; authors include Rafael H. M.
-Pereira and Pedro R. Andrade. License MIT. Docs:
-<https://ipea.github.io/gtfs2emis/> (DESCRIPTION still points to the
-dead `ipeagit` host; audit item \#30). Method paper: Vieira, Pereira &
+(GitHub: `ipea`). Maintainer (cre): Joao Bazzo; authors include Rafael
+H. M. Pereira and Pedro R. Andrade. License MIT. Docs:
+<https://ipea.github.io/gtfs2emis/>. Method paper: Vieira, Pereira &
 Andrade (2022), <doi:10.31219/osf.io/8m2cy>. Default branch: `master`.
 
 ------------------------------------------------------------------------
@@ -31,11 +30,10 @@ Andrade (2022), <doi:10.31219/osf.io/8m2cy>. Default branch: `master`.
   `tp_model`, fleet data or `emi_list`
   ([`data.table::copy()`](https://rdrr.io/pkg/data.table/man/copy.html)).
 - **Parallel = sequential.**
-  [`transport_model()`](https://ipeagit.github.io/gtfs2emis/dev/reference/transport_model.md)
+  [`transport_model()`](https://ipea.github.io/gtfs2emis/dev/reference/transport_model.md)
   and
-  [`emission_model()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emission_model.md)
-  must give the same result with `parallel = TRUE` and
-  `parallel = FALSE`.
+  [`emission_model()`](https://ipea.github.io/gtfs2emis/dev/reference/emission_model.md)
+  must give the same result with `ncores = 1` and `ncores = 2`.
 - **CRAN-ready at all times.** `R CMD check --as-cran`: 0 errors, 0
   warnings. Examples and vignettes use ≤ 2 cores and write only to
   [`tempdir()`](https://rdrr.io/r/base/tempfile.html).
@@ -53,9 +51,9 @@ Andrade (2022), <doi:10.31219/osf.io/8m2cy>. Default branch: `master`.
   style of the file you are editing.
 
 Conventions are in
-[`.claude/rules/r-package-conventions.md`](https://ipeagit.github.io/gtfs2emis/dev/.claude/rules/r-package-conventions.md);
+[`.claude/rules/r-package-conventions.md`](https://ipea.github.io/gtfs2emis/dev/.claude/rules/r-package-conventions.md);
 gates are in
-[`.claude/rules/quality-gates.md`](https://ipeagit.github.io/gtfs2emis/dev/.claude/rules/quality-gates.md).
+[`.claude/rules/quality-gates.md`](https://ipea.github.io/gtfs2emis/dev/.claude/rules/quality-gates.md).
 
 ------------------------------------------------------------------------
 
@@ -64,8 +62,8 @@ gates are in
     gtfs2emis/
     ├── DESCRIPTION, NAMESPACE        # NAMESPACE is roxygen-generated; never hand-edit
     ├── R/
-    │   ├── transport_model.R         # GTFS → sf segments (gtfs2gps), parallel/output_path
-    │   ├── emission_model.R          # tp_model + fleet + EF → emi_list, parallel
+    │   ├── transport_model.R         # GTFS → sf segments (gtfs2gps), ncores/output_path
+    │   ├── emission_model.R          # tp_model + fleet + EF → emi_list, ncores
     │   ├── ef_europe_emep.R, ef_brazil_cetesb.R, ef_usa_moves.R, ef_usa_emfac.R, ef_scaled_euro.R
     │   ├── emi_europe_emep_wear.R    # non-exhaust (tyre, brake, road wear)
     │   ├── slope_class_europe_emep.R # road slope from a DEM (terra)

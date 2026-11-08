@@ -15,10 +15,12 @@ ef_brazil_cetesb(pollutant, veh_type, model_year, as_list = TRUE)
 - pollutant:
 
   character. Pollutants "CH4", "CO2", "PM10", "N2O", "NOx", "NO2", "NO",
-  "RCHO", "ETOH" "KML" (Vehicle Kilometers Traveled), "FC" (Fuel
-  Consumption), "gD/KWH" (grams of Diesel per kWh), "gCO2/KWH" (grams of
-  CO2 per per kWh), "CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane
-  Hydrocarbon), "FS"(Fuel Sales) and "NH3".
+  "KML" (Vehicle Kilometers Traveled), "FC" (Fuel Consumption), "gD/KWH"
+  (grams of Diesel per kWh), "gCO2/KWH" (grams of CO2 per per kWh),
+  "CO", "HC" (Total Hydrocarbon), "NMHC" (Non-Methane Hydrocarbon) and
+  "NH3". "RCHO", "ETOH" and "FS" (Fuel Sales) are in
+  `ef_brazil_cetesb_db` but have no values for buses, so they give an
+  error.
 
 - veh_type:
 
@@ -27,7 +29,7 @@ ef_brazil_cetesb(pollutant, veh_type, model_year, as_list = TRUE)
 
 - model_year:
 
-  numeric. Vehicle model year. Supports `model_year` from 1960 to 2020.
+  numeric. Vehicle model year, a whole number from 1960 to 2020.
 
 - as_list:
 
@@ -65,11 +67,11 @@ These emission factors are not exactly the same as the report of CETESB.
 ## See also
 
 Other Emission factor model:
-[`ef_europe_emep()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_europe_emep.md),
-[`ef_scaled_euro()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_scaled_euro.md),
-[`ef_usa_emfac()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_emfac.md),
-[`ef_usa_moves()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_moves.md),
-[`emi_europe_emep_wear()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emi_europe_emep_wear.md)
+[`ef_europe_emep()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_europe_emep.md),
+[`ef_scaled_euro()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_scaled_euro.md),
+[`ef_usa_emfac()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_emfac.md),
+[`ef_usa_moves()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_moves.md),
+[`emi_europe_emep_wear()`](https://ipea.github.io/gtfs2emis/dev/reference/emi_europe_emep_wear.md)
 
 ## Examples
 

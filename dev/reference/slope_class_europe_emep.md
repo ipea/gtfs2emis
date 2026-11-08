@@ -20,7 +20,8 @@ slope_class_europe_emep(tp_model, heightfile, keep = FALSE)
 - tp_model:
 
   LineString Simple Feature; transport model output. Geometries must be
-  LINESTRING and have a coordinate reference system; `dist` is in km.
+  LINESTRING and have a coordinate reference system; `dist` is in km (or
+  a `units` length).
 
 - heightfile:
 
@@ -70,15 +71,19 @@ tp_model <- transport_model(gtfs_data = gtfs_small,
                             min_speed = 2,
                             max_speed = 80,
                             new_speed = 20,
-                            spatial_resolution = 100,
-                            parallel = FALSE)
+                            spatial_resolution = 100)
 
 # read raster file
 raster_cur <- system.file("extdata/bra_cur-srtm.tif", package = "gtfs2emis")
 
 tp_model_slope <- slope_class_europe_emep(tp_model,raster_cur)
 }
-#> Converting shapes to sf objects
-#> Processing the data
+#> ℹ Converting shapes to sf objects
+#> Using 2 threads
+#> ✔ Converting shapes to sf objects [22ms]
+#> 
+#> ℹ Processing the data
+#> ✔ Processing the data [44ms]
+#> 
 # }
 ```

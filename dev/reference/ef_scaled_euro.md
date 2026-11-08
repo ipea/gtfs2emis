@@ -46,8 +46,9 @@ ef_scaled_euro(
 
 - pollutant:
 
-  character. Pollutant: "FC", "CO2", "CO", "NOx", "VOC", "PM10", "EC",
-  "CH4", "NH3", "N2O", "FC" (fuel consumption).
+  character. Pollutant: "FC" (fuel consumption), "CO2", "CO", "NOx",
+  "VOC", "PM10", "CH4", "NH3" or "N2O". "EC" (energy consumption, MJ/km)
+  is not supported.
 
 - fuel:
 
@@ -117,11 +118,11 @@ approach applies for other input arguments. See more in the examples.
 ## See also
 
 Other Emission factor model:
-[`ef_brazil_cetesb()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb.md),
-[`ef_europe_emep()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_europe_emep.md),
-[`ef_usa_emfac()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_emfac.md),
-[`ef_usa_moves()`](https://ipeagit.github.io/gtfs2emis/dev/reference/ef_usa_moves.md),
-[`emi_europe_emep_wear()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emi_europe_emep_wear.md)
+[`ef_brazil_cetesb()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_brazil_cetesb.md),
+[`ef_europe_emep()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_europe_emep.md),
+[`ef_usa_emfac()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_emfac.md),
+[`ef_usa_moves()`](https://ipea.github.io/gtfs2emis/dev/reference/ef_usa_moves.md),
+[`emi_europe_emep_wear()`](https://ipea.github.io/gtfs2emis/dev/reference/emi_europe_emep_wear.md)
 
 ## Examples
 

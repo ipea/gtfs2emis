@@ -41,7 +41,7 @@ Edit for small changes.
 multisession workers load the *installed* package →
 `devtools::install(quick = TRUE, upgrade = FALSE)` before testing a
 changed worker path in
-[`transport_model()`](https://ipeagit.github.io/gtfs2emis/dev/reference/transport_model.md)/[`emission_model()`](https://ipeagit.github.io/gtfs2emis/dev/reference/emission_model.md).
+[`transport_model()`](https://ipea.github.io/gtfs2emis/dev/reference/transport_model.md)/[`emission_model()`](https://ipea.github.io/gtfs2emis/dev/reference/emission_model.md).
 
 \[LEARN:tooling\] (inherited) `gh` CLI is not installed on this machine
 → PRs are opened by the user from the GitHub compare URL; prepare the
