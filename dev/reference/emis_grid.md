@@ -113,10 +113,10 @@ plot(st_geometry(emi_list$tp_model), add = TRUE,col = "black")
 #> Linking to GEOS 3.14.1, GDAL 3.12.2, PROJ 9.7.1; sf_use_s2() is TRUE
 #> ℹ Converting shapes to sf objects
 #> Using 2 threads
-#> ✔ Converting shapes to sf objects [41ms]
+#> ✔ Converting shapes to sf objects [43ms]
 #> 
 #> ℹ Processing the data
-#> ✔ Processing the data [39ms]
+#> ✔ Processing the data [50ms]
 #> 
 
 # }

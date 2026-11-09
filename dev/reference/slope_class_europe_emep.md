@@ -80,10 +80,10 @@ tp_model_slope <- slope_class_europe_emep(tp_model,raster_cur)
 }
 #> ℹ Converting shapes to sf objects
 #> Using 2 threads
-#> ✔ Converting shapes to sf objects [22ms]
+#> ✔ Converting shapes to sf objects [26ms]
 #> 
 #> ℹ Processing the data
-#> ✔ Processing the data [44ms]
+#> ✔ Processing the data [55ms]
 #> 
 # }
 ```

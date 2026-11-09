@@ -104,10 +104,10 @@ emis_summary(emi_list
 }
 #> ℹ Converting shapes to sf objects
 #> Using 2 threads
-#> ✔ Converting shapes to sf objects [25ms]
+#> ✔ Converting shapes to sf objects [31ms]
 #> 
 #> ℹ Processing the data
-#> ✔ Processing the data [37ms]
+#> ✔ Processing the data [48ms]
 #> 
 #>    timestamp_hour pollutant     process              emi
 #>             <int>    <char>      <char>          <units>

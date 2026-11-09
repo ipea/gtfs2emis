@@ -99,10 +99,10 @@ dt <- emis_to_dt(emi_list)
 }
 #> ℹ Converting shapes to sf objects
 #> Using 2 threads
-#> ✔ Converting shapes to sf objects [21ms]
+#> ✔ Converting shapes to sf objects [31ms]
 #> 
 #> ℹ Processing the data
-#> ✔ Processing the data [41ms]
+#> ✔ Processing the data [48ms]
 #> 
 # }
 ```

@@ -292,10 +292,10 @@ emi_emfac <- emission_model(tp_model = tp_model
 }
 #> ℹ Converting shapes to sf objects
 #> Using 2 threads
-#> ✔ Converting shapes to sf objects [22ms]
+#> ✔ Converting shapes to sf objects [26ms]
 #> 
 #> ℹ Processing the data
-#> ✔ Processing the data [38ms]
+#> ✔ Processing the data [55ms]
 #> 
 # }
 ```

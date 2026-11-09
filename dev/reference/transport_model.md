@@ -156,10 +156,10 @@ head(tp_model)
   }
 #> ℹ Converting shapes to sf objects
 #> Using 2 threads
-#> ✔ Converting shapes to sf objects [22ms]
+#> ✔ Converting shapes to sf objects [25ms]
 #> 
 #> ℹ Processing the data
-#> ✔ Processing the data [38ms]
+#> ✔ Processing the data [47ms]
 #> 
 #> Simple feature collection with 1 feature and 14 fields
 #> Geometry type: LINESTRING
